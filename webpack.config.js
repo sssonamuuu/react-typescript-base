@@ -1,0 +1,153 @@
+const path = require('path');
+
+const { getThemeVariables } = require('antd/dist/theme');
+
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TsconfigPathPlugin = require('tsconfig-paths-webpack-plugin');
+const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
+// const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
+
+module.exports = {
+  entry: {
+    index: `./${SRC_ROOT_DIR}/index.tsx`,
+  },
+  output: {
+    publicPath: '/',
+    path: path.join(__dirname, DIST_ROOT_DIR),
+    chunkFilename: `${DIST_SCRIPT_DIR}/[name].[chunkhash:5].js`,
+    filename: `${DIST_SCRIPT_DIR}/[name].[hash:5].js`,
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json'],
+    plugins: [new TsconfigPathPlugin()],
+    alias: {},
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+
+    new ExtraWatchWebpackPlugin({ files: `${SRC_ROOT_DIR}/config.toml` }),
+
+    // new TomlPlugin(),
+
+    new HtmlWebpackPlugin({
+      template: `./${SRC_ROOT_DIR}/index.html`,
+      filename: `index.html`,
+      templateParameters: {},
+    }),
+
+    /** 抽离CSS单独打包 */
+    new MiniCssExtractPlugin({
+      filename: `${DIST_STYLE_DIR}/[name].[hash:5].css`,
+      chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
+    }),
+  ],
+  externals: {},
+  module: {
+    rules: [
+      {
+        test: /\.toml$/,
+        use: {
+          loader: './build/toml-loader',
+        },
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+            },
+          },
+          { loader: 'ts-loader' },
+          { loader: 'eslint-loader' },
+        ],
+      },
+      {
+        test: /\.styl(?:us)?$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'typings-for-css-modules-loader',
+            options: {
+              modules: true,
+              namedExport: true,
+              camelCase: true,
+              less: true,
+              minimize: true,
+              localIdentName: '[local]_[hash:base64:5]',
+            },
+          },
+          { loader: 'postcss-loader' },
+          {
+            loader: 'stylus-loader',
+            options: {
+              globals: {},
+              import: [path.join(__dirname, `src/styles/function.styl`)],
+            },
+          },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+                modifyVars: {
+                  ...getThemeVariables({ dark: false }),
+                  ...{},
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
+      },
+      {
+        test: /\.(?:png|jpg|jpeg|gif|ico|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 2 ** 10 * 10,
+              name: `${DIST_IMAGE_DIR}/[name].[hash:5].[ext]`,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(?:eot|ttf|woff|otf)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 2 ** 10 * 10,
+              name: `${DIST_FONT_DIR}/[name].[hash:5].[ext]`,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
+    host: '0.0.0.0',
+    overlay: { errors: true, warnings: false },
+    disableHostCheck: true,
+    historyApiFallback: { rewrites: [{ from: /.*/, to: path.posix.join('/', 'index.html') }]},
+  },
+};

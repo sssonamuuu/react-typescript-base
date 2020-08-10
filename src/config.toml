@@ -1,0 +1,14 @@
+# 所有配置都分为 .common .local .dev .pro 不同环境
+# 基本配置在 所有环境相同配置放在 .common ，不同环境配置不一致的通过.env区分
+
+[configure.common]
+a = 2
+
+[configure.local]
+a = 1
+
+[configure.dev]
+a = 3
+
+[theme.common]
+primary-color = 'red'
