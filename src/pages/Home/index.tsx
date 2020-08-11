@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from 'antd';
-import * as style from './index.styl';
+import * as style from './index.less';
 
 export default function HomeIndexPage () {
   return (

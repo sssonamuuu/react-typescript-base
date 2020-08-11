@@ -70,7 +70,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.styl(?:us)?$/,
+        test: /\.less$/,
+        exclude: /node_modules/, // 非 第三方框架的采用 css-modules
         use: [
           MiniCssExtractPlugin.loader,
           {
@@ -86,16 +87,19 @@ module.exports = {
           },
           { loader: 'postcss-loader' },
           {
-            loader: 'stylus-loader',
+            loader: 'less-loader',
             options: {
-              globals: addPrefixForObjectKey(config.theme, '$'),
-              import: [path.join(__dirname, `src/styles/function.styl`)],
+              lessOptions: {
+                javascriptEnabled: true,
+                modifyVars: addPrefixForObjectKey(config.theme, '@'),
+              },
             },
           },
         ],
       },
       {
         test: /\.less$/,
+        include: /node_modules/, // 第三方框架的采用 css-loader
         use: [
           MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
