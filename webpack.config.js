@@ -82,6 +82,7 @@ module.exports = {
               camelCase: true,
               less: true,
               minimize: true,
+              esModule: true,
               localIdentName: '[local]_[hash:base64:5]',
             },
           },
