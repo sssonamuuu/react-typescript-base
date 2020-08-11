@@ -5,8 +5,8 @@ import * as style from './index.styl';
 export default function HomeIndexPage () {
   return (
     <div>
-      <Button>1</Button>
-      <span className={style.a}>122</span>
+      <Button>antd主色调测试</Button>
+      <p className={style.testColor}>stylus 主色调测试</p>
     </div>
   );
 }

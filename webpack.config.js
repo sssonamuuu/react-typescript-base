@@ -1,7 +1,5 @@
 const path = require('path');
 
-const { getThemeVariables } = require('antd/dist/theme');
-
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -10,8 +8,13 @@ const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
+const { getEnv, getConfig, mergeConfig, addPrefixForObjectKey } = require('./build/tools');
+
+const { mode } = getEnv();
+const config = mergeConfig(getConfig());
 
 module.exports = {
+  mode,
   entry: {
     index: `./${SRC_ROOT_DIR}/index.tsx`,
   },
@@ -30,8 +33,6 @@ module.exports = {
     new CleanWebpackPlugin(),
 
     new ExtraWatchWebpackPlugin({ files: `${SRC_ROOT_DIR}/config.toml` }),
-
-    // new TomlPlugin(),
 
     new HtmlWebpackPlugin({
       template: `./${SRC_ROOT_DIR}/index.html`,
@@ -87,7 +88,7 @@ module.exports = {
           {
             loader: 'stylus-loader',
             options: {
-              globals: {},
+              globals: addPrefixForObjectKey(config.theme, '$'),
               import: [path.join(__dirname, `src/styles/function.styl`)],
             },
           },
@@ -104,10 +105,7 @@ module.exports = {
             options: {
               lessOptions: {
                 javascriptEnabled: true,
-                modifyVars: {
-                  ...getThemeVariables({ dark: false }),
-                  ...{},
-                },
+                modifyVars: addPrefixForObjectKey(config.theme, '@'),
               },
             },
           },
