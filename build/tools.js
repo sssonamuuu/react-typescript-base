@@ -39,13 +39,13 @@ exports.getConfigTypings = function getConfigTypings (config, indent = 1, paths 
   if (types[paths]) {
     return types[paths];
   }
-  if (['number', 'boolean', 'string', 'null', 'undefined'].includes(typeof config)) {
+  if (['number', 'boolean', 'string', 'undefined'].includes(typeof config)) {
     return typeof config;
   }
   if (Array.isArray(config)) {
     return config.length ? `Array<${[...new Set(config.map((item, index) => getConfigTypings(item, indent, `${paths}[${index}]`)))].join(' | ')}>` : 'Array<string>';
   }
-  return `{${Object.entries(config).reduce((p, [key, value]) => `${p}${os.EOL}${'  '.repeat(indent)}${key.includes('-') ? `${key.replace(/-+([^-])/g, (_, $1) => $1.toUpperCase())}` : key}: ${getConfigTypings(value, indent + 1, `${paths}${paths && '.'}${key}`)};`, '')}${os.EOL}${'  '.repeat(indent - 1)}}`;
+  return `{${Object.entries(config).reduce((p, [key, value]) => `${p}${os.EOL}${'  '.repeat(indent)}${key.includes('-') ? `'${key}'` : key}: ${getConfigTypings(value, indent + 1, `${paths}${paths && '.'}${key}`)};`, '')}${os.EOL}${'  '.repeat(indent - 1)}}`;
 };
 
 /** 给主题添加配置 */

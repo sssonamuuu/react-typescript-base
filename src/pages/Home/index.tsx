@@ -9,7 +9,7 @@ export default function HomeIndexPage () {
     <div className={`${globalStyle.px20} ${globalStyle.py20}`}>
       <Button>antd主色调测试</Button>
       <p className={style.testColor}>less 主色调测试</p>
-      <p style={{ color: globalConfig.theme.primaryColor }}>js 主色调测试</p>
+      <p style={{ color: globalConfig.theme['primary-color'] }}>js 主色调测试</p>
     </div>
   );
 }
