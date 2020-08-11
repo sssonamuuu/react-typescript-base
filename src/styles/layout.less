@@ -93,12 +93,12 @@
 
 .toe-loop (@i) when (@i <=3) {
   .toe-@{i} {
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-all;
-    -webkit-line-clamp: @i;
-    -webkit-box-orient: vertical;
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: break-all !important;
+    -webkit-line-clamp: @i  !important;
+    -webkit-box-orient: vertical !important;
     .toe-loop(@i + 1);
   }
 }
