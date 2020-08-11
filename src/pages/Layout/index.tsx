@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Layout } from 'antd';
-import * as globalStyle from 'styles/index.less';
+import * as globalStyle from 'index.less';
 
 export default function LayoutPage ({ children }: React.PropsWithChildren<{}>) {
   return (
