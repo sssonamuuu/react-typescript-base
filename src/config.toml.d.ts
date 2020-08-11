@@ -7,7 +7,7 @@ declare const globalConfig: {
     a: number;
   };
   theme: {
-    'primary-color': string;
+    primaryColor: string;
   };
 };
 export default globalConfig;
