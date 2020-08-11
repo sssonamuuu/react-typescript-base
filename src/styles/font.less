@@ -1,0 +1,19 @@
+/* 字体大小 */
+.fs-loop (@i) when (@i >=12) {
+  .fs-@{i} {
+    font-size:~'@{i}px' !important;
+  }
+
+  .fs-loop(@i - 2);
+}
+
+.fs-loop (50);
+
+
+.fc-primary {
+  color: @primary-color;
+}
+
+.fc-white {
+  color: #fff;
+}
