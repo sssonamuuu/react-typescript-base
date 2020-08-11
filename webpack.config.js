@@ -126,6 +126,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: 2 ** 10 * 10,
+              esModule: true,
               name: `${DIST_IMAGE_DIR}/[name].[hash:5].[ext]`,
             },
           },
@@ -138,6 +139,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: 2 ** 10 * 10,
+              esModule: true,
               name: `${DIST_FONT_DIR}/[name].[hash:5].[ext]`,
             },
           },
