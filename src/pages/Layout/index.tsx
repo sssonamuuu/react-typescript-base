@@ -8,9 +8,7 @@ export default function LayoutPage ({ children }: React.PropsWithChildren<{}>) {
       <Layout.Header>Header</Layout.Header>
       <Layout>
         <Layout.Sider>menu</Layout.Sider>
-        <Layout.Content>
-          {children}
-        </Layout.Content>
+        {children}
       </Layout>
     </Layout>
   );

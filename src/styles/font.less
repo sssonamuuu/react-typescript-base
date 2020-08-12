@@ -4,10 +4,32 @@
     font-size:~'@{i}px' !important;
   }
 
-  .fs-loop(@i - 2);
+  .fs-loop(@i - 1);
 }
 
 .fs-loop (50);
+
+.fw-loop (@i) when (@i <=6) {
+  .fw-@{i}00 {
+    font-weight:~'@{i}00px' !important;
+  }
+
+  .fw-loop(@i + 1);
+}
+
+.fw-normal {
+  font-weight: normal;
+}
+
+.fw-lighter {
+  font-weight: lighter;
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+.fw-loop (1);
 
 
 .fc-primary {
