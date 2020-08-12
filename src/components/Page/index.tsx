@@ -23,7 +23,7 @@ export default function Page ({ children, className = '', contentClassName = '',
     return () => {
       document.title = '加载中...';
     };
-  }, []);
+  }, [title]);
 
   return (
     <main className={`${fullContent ? style.full : ANTD_POPUP_CONTAINER} ${style.container} ${className}`}>
