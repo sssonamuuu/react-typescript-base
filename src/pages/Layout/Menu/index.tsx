@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Layout, Menu as AntdMenu } from 'antd';
 import menus from 'configs/menus';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { routerWithInLayout } from 'configs/routres';
+import useHistory from 'hooks/useHistory';
 
 export default function Menu () {
   const [selectedKeys, setSelectedKeys] = React.useState<string[]>();
