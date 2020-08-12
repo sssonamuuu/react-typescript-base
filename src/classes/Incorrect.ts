@@ -1,7 +1,7 @@
 export default class Incorrect {
-  code: string;
+  code: number;
   messge: string;
-  constructor (code: string, message: string) {
+  constructor (code: number, message: string) {
     this.code = code;
     this.messge = message;
   }

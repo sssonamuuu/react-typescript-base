@@ -1,9 +1,30 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import Incorrect from 'classes/Incorrect';
+import { errorCode } from 'configs/enumerations';
 
-interface RequestOption extends AxiosRequestConfig {
-
+interface RequestModel extends AxiosRequestConfig {
+  /** 默认错误会进行 `message.error` 提示，是否禁用 */
+  disableErrorMessage?: boolean;
 }
 
-export default function request <T> (option: RequestOption) {
-  return axios.request<T>(option);
+interface ResponseModel<T> {
+  code: number;
+  data: T;
+  message: string;
+  success: boolean;
+}
+
+export default function request <T> ({ disableErrorMessage, ...option }: RequestModel): Promise<T> {
+  return axios
+    .request<ResponseModel<T>>(option)
+    .then(({ data }) => {
+      if (data.success) {
+        return data.data;
+      }
+      throw new Incorrect(data.code, data.message ?? errorCode[data.code]?.label ?? errorCode.default.label);
+    }).catch(e => {
+      const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code, e?.message ?? e ?? errorCode.default.label);
+      // TODO 部分特殊 `code` 处理
+      throw error;
+    });
 }
