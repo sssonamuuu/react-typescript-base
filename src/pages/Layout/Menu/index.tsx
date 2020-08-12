@@ -1,0 +1,69 @@
+import * as React from 'react';
+import { Layout, Menu as AntdMenu } from 'antd';
+import menus from 'configs/menus';
+import { Link, useHistory } from 'react-router-dom';
+import { routerWithInLayout } from 'configs/routres';
+
+export default function Menu () {
+  const [selectedKeys, setSelectedKeys] = React.useState<string[]>();
+  const [openKeys, setOpenKeys] = React.useState<string[]>();
+
+  const { location } = useHistory();
+
+  React.useEffect(() => {
+    const pathname = location.pathname;
+
+    /**
+     * 找到当前地址需要活跃的地址
+     *
+     * 默认取当前页面的地址 `location.pathname`
+     *
+     * 如果对应的 `route` 设置有 `activeMenuPath`，取 `activeMenuPath`
+     */
+    let currentMenuActivePath: string = pathname;
+
+    /** 查找当前路由，如果有 `activeMenuPath` 配置，修改其值 */
+    const currentRoute = routerWithInLayout.find(route => Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname);
+
+    if (currentRoute?.activeMenuPath) {
+      currentMenuActivePath = currentRoute.activeMenuPath;
+    }
+
+    for (const menu of menus) {
+      if (menu.path === currentMenuActivePath) {
+        setSelectedKeys([`${menu.key}`]);
+        break;
+      }
+
+      const child = (menu.children || []).find(mc => mc.path === currentMenuActivePath);
+
+      if (child) {
+        setOpenKeys([`${menu.key}`]);
+        setSelectedKeys([`${child.key}`]);
+        break;
+      }
+    }
+  }, [location]);
+
+  const onOpenChange = React.useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), [openKeys]);
+
+  return (
+    <Layout.Sider>
+      <AntdMenu theme="dark" mode="inline" selectedKeys={selectedKeys} openKeys={openKeys} onOpenChange={values => onOpenChange(values as string[])}>
+        {menus.map(menu => menu.children?.length ? (
+          <AntdMenu.SubMenu key={menu.key} icon={menu.icon} title={menu.title}>
+            {menu.children.map(child => (
+              <AntdMenu.Item key={child.key} icon={child.icon}>
+                {child.path ? <Link to={child.path}>{child.title}</Link> : child.title}
+              </AntdMenu.Item>
+            ))}
+          </AntdMenu.SubMenu>
+        ) : (
+          <AntdMenu.Item key={menu.key} icon={menu.icon}>
+            {menu.path ? <Link to={menu.path}>{menu.title}</Link> : menu.title}
+          </AntdMenu.Item>
+        ))}
+      </AntdMenu>
+    </Layout.Sider>
+  );
+}

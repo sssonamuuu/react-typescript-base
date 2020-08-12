@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Card } from 'antd';
 import Page from 'components/Page';
 import { hot } from 'react-hot-loader/root';
+import { Card } from 'antd';
 
-const TITLE = '首页';
+const TITLE = 'XXX详情';
 
 export default hot(() => (
   <Page
@@ -12,6 +12,6 @@ export default hot(() => (
     header={(
       <Page.Header title={TITLE} />
     )}>
-    <Card>首页</Card>
+    <Card>XXX详情</Card>
   </Page>
 ));
