@@ -27,7 +27,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
     plugins: [new TsconfigPathPlugin()],
-    alias: {},
+    alias: {
+      'react-dom': '@hot-loader/react-dom',
+    },
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -42,6 +44,7 @@ module.exports = {
 
     /** 抽离CSS单独打包 */
     new MiniCssExtractPlugin({
+      disable: mode !== 'production',
       filename: `${DIST_STYLE_DIR}/[name].[hash:5].css`,
       chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
     }),
@@ -73,7 +76,7 @@ module.exports = {
         test: /\.less$/,
         exclude: /node_modules/, // 非 第三方框架的采用 css-modules
         use: [
-          MiniCssExtractPlugin.loader,
+          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
             loader: 'typings-for-css-modules-loader',
             options: {
@@ -102,7 +105,7 @@ module.exports = {
         test: /\.less$/,
         include: /node_modules/, // 第三方框架的采用 css-loader
         use: [
-          MiniCssExtractPlugin.loader,
+          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
           {
@@ -118,7 +121,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
+        use: [mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
       },
       {
         test: /\.(?:png|jpg|jpeg|gif|ico|svg)$/,
