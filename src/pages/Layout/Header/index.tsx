@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Layout } from 'antd';
-import * as style from './index.less';
+import style from './index.less';
 
 export default function Header () {
   return (
