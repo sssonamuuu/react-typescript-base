@@ -17,5 +17,5 @@ npm run build -- --env {env} # env 为启动环境，可选：dev/pro
 # 包兼容问题
 
 1. css-loader@1.x 之后的版本存在找不到 css-loader/locals
-2. file-loader@2.x 之后的版本存在引入的资源为 esModule，需要加入配置：esModule: true
+2. file-loader@2.x 之后的版本存在引入的资源为 esModule
 3. ts-loader@6.x 之后版本无法检测新增的less.d.ts

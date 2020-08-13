@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Page from 'components/Page';
+import BasePage from 'components/BasePage';
 import { hot } from 'react-hot-loader/root';
 
 export default hot(() => (
-  <Page title="登录">Login</Page>
+  <BasePage title="登录">Login</BasePage>
 ));

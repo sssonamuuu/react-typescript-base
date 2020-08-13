@@ -3,81 +3,81 @@
   height: 100% !important;
 }
 
-.full-width {
+.fullWidth {
   width: 100% !important;
 }
 
-.full-height {
+.fullHeight {
   height: 100% !important;
 }
 
 /* 间距样式 */
-.mp-loop (@i) when (@i >=0) {
+.mpLoop (@i) when (@i >=0) {
 
   // margin
-  .ml-@{i} {
+  .ml@{i} {
     margin-left:~"@{i}px" !important;
   }
 
-  .mr-@{i} {
+  .mr@{i} {
     margin-right:~"@{i}px" !important;
   }
 
-  .mt-@{i} {
+  .mt@{i} {
     margin-top:~"@{i}px" !important;
   }
 
-  .mb-@{i} {
+  .mb@{i} {
     margin-bottom:~"@{i}px" !important;
   }
 
-  .mx-@{i} {
+  .mx@{i} {
     margin-right:~"@{i}px" !important;
     margin-left:~"@{i}px" !important;
   }
 
-  .my-@{i} {
+  .my@{i} {
     margin-top:~"@{i}px" !important;
     margin-bottom:~"@{i}px" !important;
   }
 
   // padding
-  .pl-@{i} {
+  .pl@{i} {
     padding-left:~"@{i}px" !important;
   }
 
-  .pr-@{i} {
+  .pr@{i} {
     padding-right:~"@{i}px" !important;
   }
 
-  .pt-@{i} {
+  .pt@{i} {
     padding-top:~"@{i}px" !important;
   }
 
-  .pb-@{i} {
+  .pb@{i} {
     padding-bottom:~"@{i}px" !important;
   }
 
-  .px-@{i} {
+  .px@{i} {
     padding-right:~"@{i}px" !important;
     padding-left:~"@{i}px" !important;
   }
 
-  .py-@{i} {
+  .py@{i} {
     padding-top:~"@{i}px" !important;
     padding-bottom:~"@{i}px" !important;
   }
 
-  .mp-loop(@i - 1);
+  .mpLoop(@i - 1);
 }
 
-.mp-loop (50);
+.mpLoop (50);
 
-.d-flex {
+.dFlex {
   display: flex !important;
 }
 
-.d-flex-column {
+.dFlexColumn {
   display: flex !important;
   flex-direction: column !important;
 }
@@ -86,30 +86,35 @@
   flex: 1;
 }
 
-.flex-shrink-0 {
+.flexShrink0 {
   flex-shrink: 0;
 }
 
 
-.toe-loop (@i) when (@i <=3) {
-  .toe-@{i} {
+.toeLoop (@i) when (@i <=3) {
+  .toe@{i} {
     display: -webkit-box !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     word-break: break-all !important;
     -webkit-line-clamp: @i  !important;
     -webkit-box-orient: vertical !important;
-    .toe-loop(@i + 1);
+    .toeLoop(@i + 1);
   }
 }
 
-.toe-loop (1);
+.toeLoop (1);
 
 
-.scroll-x {
+.scrollX {
   overflow-x: auto;
 }
 
-.scroll-y {
+.scrollY {
   overflow-y: auto;
+}
+
+
+.bgWhite {
+  background: #fff;
 }

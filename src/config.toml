@@ -15,4 +15,5 @@ a = 3
 # 两种变量都可以在 less 中 通过 @variable-name 使用
 # 同样，也可以在tsx?中通过 globalConfig.theme[variable-name] 使用
 [theme.common]
-primary-color = 'red'
+primary-color = '#1890ff'
+label-color = '#6E7F9C'

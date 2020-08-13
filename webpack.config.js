@@ -40,6 +40,7 @@ module.exports = {
       template: `./${SRC_ROOT_DIR}/index.html`,
       filename: `index.html`,
       templateParameters: {},
+      favicon: `./${SRC_ROOT_DIR}/favicon.ico`,
     }),
 
     /** 抽离CSS单独打包 */
@@ -78,15 +79,12 @@ module.exports = {
         use: [
           mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
-            loader: 'typings-for-css-modules-loader',
+            loader: '@teamsupercell/typings-for-css-modules-loader',
+          },
+          {
+            loader: 'css-loader',
             options: {
               modules: true,
-              namedExport: true,
-              camelCase: true,
-              less: true,
-              minimize: true,
-              esModule: true,
-              localIdentName: '[local]_[hash:base64:5]',
             },
           },
           { loader: 'postcss-loader' },
@@ -130,7 +128,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: 2 ** 10 * 10,
-              esModule: true,
+              esModule: false,
               name: `${DIST_IMAGE_DIR}/[name].[hash:5].[ext]`,
             },
           },
@@ -143,7 +141,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               limit: 2 ** 10 * 10,
-              esModule: true,
+              esModule: false,
               name: `${DIST_FONT_DIR}/[name].[hash:5].[ext]`,
             },
           },

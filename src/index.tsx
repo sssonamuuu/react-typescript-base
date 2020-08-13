@@ -8,7 +8,7 @@ import zhCN from 'antd/es/locale/zh_CN';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import Layout from 'pages/Layout';
 import { ConfigProvider } from 'antd';
-import { ANTD_POPUP_CONTAINER } from 'components/Page';
+import { ANTD_POPUP_CONTAINER } from 'components/BasePage';
 
 import { hot } from 'react-hot-loader/root';
 import { routerWithInLayout, routerWithOutLayout } from 'configs/routres';

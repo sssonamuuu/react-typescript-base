@@ -1,5 +1,7 @@
 import * as React from 'react';
-import Placeholder from 'components/Placeholder';
+import BasePlaceholder from 'components/BasePlaceholder';
+import Incorrect from 'classes/Incorrect';
+import { errorCode } from 'configs/enumerations';
 
 /**
  * 异步加载组件，并在加载中以及加载失败返回一个占位组件
@@ -12,10 +14,10 @@ import Placeholder from 'components/Placeholder';
  */
 export default function asyncLoadComponent (fn: () => Promise<{ default: React.ComponentType }>) {
   return (props: any) => {
-    const [component, setComponent] = React.useState(<Placeholder />);
+    const [component, setComponent] = React.useState(<BasePlaceholder status={new Incorrect(errorCode.loading.code, '正在加载页面资源')} />);
 
     React.useEffect(() => {
-      fn().then(res => setComponent(React.createElement(res.default, props))).catch(() => setComponent(<Placeholder />));
+      fn().then(res => setComponent(React.createElement(res.default, props))).catch(() => setComponent(<BasePlaceholder status={new Incorrect(errorCode.default.code, '页面资源加载失败')} />));
     }, []);
 
     return component;

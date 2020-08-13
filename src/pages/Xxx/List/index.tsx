@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Page from 'components/Page';
+import BasePage from 'components/BasePage';
 import { hot } from 'react-hot-loader/root';
 import { Card, Table } from 'antd';
 import { Link } from 'react-router-dom';
@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
 const TITLE = 'XXX列表';
 
 export default hot(() => (
-  <Page
+  <BasePage
     title={TITLE}
     fullContent
     header={(
-      <Page.Header title={TITLE} />
+      <BasePage.Header title={TITLE} />
     )}>
     <Card>
       <Table
@@ -31,5 +31,5 @@ export default hot(() => (
           },
         ]} />
     </Card>
-  </Page>
+  </BasePage>
 ));

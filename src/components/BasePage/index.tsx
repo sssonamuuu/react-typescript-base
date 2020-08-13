@@ -1,12 +1,12 @@
 import * as React from 'react';
-import * as style from './index.less';
-import * as globalStyle from 'index.less';
-import PageHeader from './PageHeader';
+import style from './index.less';
+import globalStyle from 'index.less';
+import BasePageHeader from './BasePageHeader';
 import { PageHeaderProps } from 'antd/lib/page-header';
 
 export const ANTD_POPUP_CONTAINER = 'JS-antd-popup-container';
 
-interface PageProps {
+interface BasePageProps {
   /** document.title 显示的标题 */
   title?: string;
   header?: React.FunctionComponentElement<PageHeaderProps>;
@@ -17,7 +17,7 @@ interface PageProps {
   fullContent?: boolean;
 }
 
-export default function Page ({ children, className = '', contentClassName = '', title, header, contentSpace = 20, fullContent = false }: React.PropsWithChildren<PageProps>) {
+export default function BasePage ({ children, className = '', contentClassName = '', title, header, contentSpace = 20, fullContent = false }: React.PropsWithChildren<BasePageProps>) {
   React.useEffect(() => {
     title && (document.title = title);
     return () => {
@@ -35,4 +35,4 @@ export default function Page ({ children, className = '', contentClassName = '',
   );
 }
 
-Page.Header = PageHeader;
+BasePage.Header = BasePageHeader;
