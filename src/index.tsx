@@ -3,6 +3,8 @@ import 'index.less';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import zhCN from 'antd/es/locale/zh_CN';
+
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import Layout from 'pages/Layout';
 import { ConfigProvider } from 'antd';
@@ -21,6 +23,7 @@ const App = hot(() => (
      *
      */
   <ConfigProvider
+    locale={zhCN}
     getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
     <BrowserRouter>
       <Switch>
