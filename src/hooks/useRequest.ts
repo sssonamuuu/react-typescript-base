@@ -8,6 +8,13 @@ interface UseRequestOption<U> {
   fetchKey?(param: U): string | number;
 }
 
+interface FetchesProps<T> {
+  data: T;
+  loading: boolean;
+  cancelled: boolean;
+  error: Incorrect | null;
+}
+
 /**
  * 1. 如果使用了 `fetcheKey`
  *    - 外层的 `data` 和 `error` 无效，需使用 `fetches[key]` 下的  `data` 和 `error`
@@ -24,17 +31,23 @@ export default function useRequest<U, T> (
 ) {
   const DEFAULT_KEY = '__DEFAULT_KEY__';
 
-  const [fetches, setFetches] = useState<{ [key: string]: {loading: boolean; data: T; error: Incorrect | null} }>({});
+  const [fetches, setFetches] = useState<{ [key: string]: FetchesProps<T> }>({});
+
+  const cancel = useCallback((key: string | number = DEFAULT_KEY) => setFetches({ ...fetches, [key]: { ...fetches[key], cancelled: true, loading: false } }), [fetches]);
 
   const run = useCallback((params: U) => {
     const key = fetchKey ? fetchKey(params) : DEFAULT_KEY;
 
-    setFetches(Object.assign(fetches, { [key]: { ...fetches[key], loading: true } }));
+    if (fetches[key].loading) {
+      return;
+    }
+
+    setFetches({ ...fetches, [key]: { ...fetches[key], error: null, loading: true, cancelled: false } });
 
     fn(params)
-      .then(res => setFetches(Object.assign(fetches, { [key]: { ...fetches[key], data: res } })))
-      .catch(e => setFetches(Object.assign(fetches, { [key]: { ...fetches[key], error: e } })))
-      .finally(() => setFetches(Object.assign(fetches, { [key]: { ...fetches[key], loading: false } })));
+      .then(res => !fetches[key].cancelled && setFetches({ ...fetches, [key]: { ...fetches[key], data: res } }))
+      .catch(e => setFetches({ ...fetches, [key]: { ...fetches[key], error: e } }))
+      .finally(() => setFetches({ ...fetches, [key]: { ...fetches[key], loading: false } }));
   }, [fetches]);
 
   useEffect(() => {
@@ -47,5 +60,6 @@ export default function useRequest<U, T> (
     error: fetchKey ? null : fetches[DEFAULT_KEY].error,
     data: fetchKey ? null : fetches[DEFAULT_KEY].data,
     run,
+    cancel,
   };
 }
