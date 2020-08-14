@@ -29,4 +29,4 @@ export default function BaseForm <T> (props: BaseFormProps<T>) {
 }
 
 BaseForm.useForm = Form.useForm as unknown as <T>() => [BaseFormInstance<T>];
-BaseForm.FormItem = BaseFormItem;
+BaseForm.Item = BaseFormItem;
