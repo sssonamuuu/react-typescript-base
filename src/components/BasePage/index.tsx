@@ -7,8 +7,6 @@ import { PageHeaderProps } from 'antd/lib/page-header';
 export const ANTD_POPUP_CONTAINER = 'JS-antd-popup-container';
 
 interface BasePageProps {
-  /** document.title 显示的标题 */
-  title?: string;
   header?: React.FunctionComponentElement<PageHeaderProps>;
   className?: string;
   contentSpace?: React.CSSProperties['padding'];
@@ -17,14 +15,7 @@ interface BasePageProps {
   fullContent?: boolean;
 }
 
-export default function BasePage ({ children, className = '', contentClassName = '', title, header, contentSpace = 20, fullContent = false }: React.PropsWithChildren<BasePageProps>) {
-  React.useEffect(() => {
-    title && (document.title = title);
-    return () => {
-      document.title = '加载中...';
-    };
-  }, [title]);
-
+export default function BasePage ({ children, className = '', contentClassName = '', header, contentSpace = 20, fullContent = false }: React.PropsWithChildren<BasePageProps>) {
   return (
     <main className={`${fullContent ? style.full : ANTD_POPUP_CONTAINER} ${style.container} ${className}`}>
       {header}
