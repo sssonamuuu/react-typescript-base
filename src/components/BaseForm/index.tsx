@@ -16,10 +16,10 @@ interface BaseFormInstance<T> {
   /** 设置字段 */
   setFieldsValue: (value: Partial<T>) => void;
   /** 校验所有(不传参数)/部分字段 */
-  validateFields: <K extends keyof T>(names: K[]) => Promise<T>;
+  validateFields: <K extends keyof T>(names?: K[]) => Promise<T>;
 }
 
-interface BaseFormProps<T> extends Omit<FormProps, 'form'> {
+export interface BaseFormProps<T> extends Omit<FormProps, 'form'> {
   initialValues?: T;
   form?: BaseFormInstance<T>;
 }
