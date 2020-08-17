@@ -23,6 +23,13 @@ interface FetchesItemProps<T> {
   cancelled: boolean;
   /** 多个带 `key` 请求，无效，请使用 `fetches[key].loading` */
   error: Incorrect | null;
+  /**
+   *
+   * `loading` 或者 `error` 的状态，给 `BasePlaceholder` 使用
+   *
+   * 多个带 `key` 请求，无效，请使用 `fetches[key].loading`
+   */
+  placeholder: Incorrect | null;
 }
 
 interface FetchesProps<T> {
@@ -52,6 +59,7 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
       cancelled: false,
       data: {} as T,
       error: null,
+      placeholder: manual ? null : new Incorrect(errorCode.loading.code),
     },
   });
   const [fetches, setFetches] = React.useState({ ...fetchesRef.current });
@@ -62,6 +70,7 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
       cancelled: true,
       error: fetchesRef.current[key]?.error ?? null,
       data: fetchesRef.current[key]?.data ?? {} as T,
+      placeholder: fetchesRef.current[key]?.placeholder ?? null,
     };
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
@@ -73,6 +82,7 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
       cancelled: false,
       error: null,
       data: fetchesRef.current[key]?.data ?? {} as T,
+      placeholder: new Incorrect(errorCode.loading.code),
     };
     setFetches({ ...fetchesRef.current });
     fn(params)
@@ -85,17 +95,20 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
           loading: false,
           error: null,
           cancelled: fetchesRef.current[key]?.cancelled ?? false,
+          placeholder: null,
         };
         setFetches({ ...fetchesRef.current });
       }).catch(e => {
         if (fetchesRef.current[key]?.cancelled) {
           return;
         }
+        const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code);
         fetchesRef.current[key] = {
           data: fetchesRef.current[key]?.data ?? {} as T,
           loading: false,
           cancelled: false,
-          error: e instanceof Incorrect ? e : new Incorrect(errorCode.default.code),
+          error,
+          placeholder: error,
         };
         setFetches({ ...fetchesRef.current });
       });
@@ -106,5 +119,5 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
     return () => Object.keys(fetchesRef.current).forEach(key => cancel(key));
   }, []);
 
-  return { ...fetches[DEFALUT_KEY]!, cancel, fetches };
+  return { ...fetches[DEFALUT_KEY]!, cancel, fetches, run };
 }

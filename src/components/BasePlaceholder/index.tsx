@@ -5,12 +5,15 @@ import style from './index.less';
 import { Spin } from 'antd';
 import { errorCode } from 'configs/enumerations';
 import Button from 'antd/es/button';
+import useHistory from 'hooks/useHistory';
 
 interface BasePlaceholderProps {
   status: Incorrect;
 }
 
 export default function BasePlaceholder ({ status }: BasePlaceholderProps) {
+  const history = useHistory();
+
   if (errorCode[status.code]?.is('loading')) {
     return (
       <div className={style.box}>
@@ -26,8 +29,8 @@ export default function BasePlaceholder ({ status }: BasePlaceholderProps) {
       <div className={style['error-icon']} />
       <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
       <div className={`${globalStyle.mt20}`}>
-        <Button>返回首页</Button>
-        <Button type="primary" className={globalStyle.ml10}>刷新页面</Button>
+        <Button onClick={() => history.push('/')}>返回首页</Button>
+        <Button onClick={() => location.reload()} type="primary" className={globalStyle.ml10}>刷新页面</Button>
       </div>
     </div>
   );
