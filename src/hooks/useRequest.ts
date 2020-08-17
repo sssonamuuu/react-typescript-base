@@ -52,6 +52,7 @@ export default function useRequest<U, T> (
 
   useEffect(() => {
     !manual && run(params!);
+    return () => Object.keys(fetches).forEach(key => cancel(key));
   }, []);
 
   return {
