@@ -1,17 +1,21 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import * as React from 'react';
 import Incorrect from 'classes/Incorrect';
 import { errorCode } from 'configs/enumerations';
+// import Incorrect from 'classes/Incorrect';
+// import { errorCode } from 'configs/enumerations';
 
 interface UseRequestOption<U> {
   /** 请求参数 */
   params?: U;
   /** 是否手动触发run */
   manual?: boolean;
+  /** 如果是 manual，默认 false， 否则 默认 true */
+  defaultLoading?: boolean;
   /** 同于同个请求不同参数的情况 */
   fetchKey?(param: U): string | number;
 }
 
-interface FetchesProps<T> {
+interface FetchesItemProps<T> {
   data: T;
   /** 多个带 `key` 请求，只要有一个 `loading` 即为 `loading` */
   loading: boolean;
@@ -19,21 +23,17 @@ interface FetchesProps<T> {
   cancelled: boolean;
   /** 多个带 `key` 请求，无效，请使用 `fetches[key].loading` */
   error: Incorrect | null;
-  /**
-   * `loading/error` 都会返回，用于 `BasePlaceholder` 渲染
-   *
-   * 多个带 `key` 请求，无效，请使用 `fetches[key].loading`
-   */
-  placeholder: Incorrect | null;
 }
 
-interface FetchesModel <T> {
-  [key: string]: undefined | FetchesProps<T>;
+interface FetchesProps<T> {
+  [key: string]: undefined | FetchesItemProps<T>;
 }
 
 type AnyPromisFunction = (arg: any) => Promise<any>;
 type GetParam<F extends AnyPromisFunction> = F extends (arg: infer P) => Promise<any> ? P : never;
 type GetReturn<F extends AnyPromisFunction> = F extends (arg: any) => Promise<infer R> ? R : never;
+
+const DEFALUT_KEY = '__FETCH_DEFAULT__';
 
 /**
  * 1. 如果使用了 `fetcheKey`
@@ -44,88 +44,67 @@ type GetReturn<F extends AnyPromisFunction> = F extends (arg: any) => Promise<in
  */
 export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>, T = GetReturn<F>> (
   fn: F,
-  {
-    params,
-    fetchKey,
-    manual = false,
-  }: UseRequestOption<U> = {},
+  { params, manual = false, fetchKey }: UseRequestOption<U> = {},
 ) {
-  const DEFAULT_KEY = '__DEFAULT_KEY__';
-
-  /** 存储实时变化的值，避免多次请求 fetches 不试试更新问题 */
-  const fetchesRef = useRef<FetchesModel<T>>({});
-  const [fetches, setFetches] = useState<FetchesModel<T>>({});
-
-  const cancel = useCallback((key: string | number = DEFAULT_KEY) => setFetches({
-    ...fetchesRef.current = {
-      ...fetchesRef.current,
-      [key]: {
-        ...fetchesRef.current[key]!,
-        cancelled: true,
-        loading: false,
-      },
+  const fetchesRef = React.useRef<FetchesProps<T>>({
+    [DEFALUT_KEY]: {
+      loading: !manual,
+      cancelled: false,
+      data: {} as T,
+      error: null,
     },
-  }), []);
+  });
+  const [fetches, setFetches] = React.useState({ ...fetchesRef.current });
 
-  const run = useCallback((params: U) => {
-    const key = fetchKey ? fetchKey(params) : DEFAULT_KEY;
-
-    if (fetchesRef.current[key]?.loading) {
-      return;
-    }
-
-    setFetches({
-      ...fetchesRef.current = {
-        ...fetchesRef.current,
-        [key]: {
-          data: fetchesRef.current[key]?.data ?? {} as T,
-          error: null,
-          loading: true,
-          cancelled: false,
-          placeholder: new Incorrect(errorCode.loading.code, '数据加载中...'),
-        },
-      },
-    });
-
-    fn(params)
-      .then(res => setFetches({
-        ...fetchesRef.current = {
-          ...fetchesRef.current,
-          [key]: {
-            data: res,
-            error: null,
-            loading: false,
-            cancelled: false,
-            placeholder: null,
-          },
-        },
-      }))
-      .catch(e => setFetches({
-        ...fetchesRef.current = {
-          ...fetchesRef.current,
-          [key]: {
-            data: fetchesRef.current[key]?.data ?? {} as T,
-            error: e,
-            loading: false,
-            cancelled: false,
-            placeholder: e instanceof Incorrect ? e : new Incorrect(errorCode.default.code),
-          },
-        },
-      }));
+  const cancel = React.useCallback((key: string | number) => {
+    fetchesRef.current[key] = {
+      loading: false,
+      cancelled: true,
+      error: fetchesRef.current[key]?.error ?? null,
+      data: fetchesRef.current[key]?.data ?? {} as T,
+    };
+    setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
-  useEffect(() => {
-    !manual && run(params!);
-    return () => Object.keys(fetches).forEach(key => cancel(key));
+  const run = React.useCallback((params: U) => {
+    const key = fetchKey?.(params) ?? DEFALUT_KEY;
+    fetchesRef.current[key] = {
+      loading: true,
+      cancelled: false,
+      error: null,
+      data: fetchesRef.current[key]?.data ?? {} as T,
+    };
+    setFetches({ ...fetchesRef.current });
+    fn(params)
+      .then(data => {
+        if (fetchesRef.current[key]?.cancelled) {
+          return;
+        }
+        fetchesRef.current[key] = {
+          data,
+          loading: false,
+          error: null,
+          cancelled: fetchesRef.current[key]?.cancelled ?? false,
+        };
+        setFetches({ ...fetchesRef.current });
+      }).catch(e => {
+        if (fetchesRef.current[key]?.cancelled) {
+          return;
+        }
+        fetchesRef.current[key] = {
+          data: fetchesRef.current[key]?.data ?? {} as T,
+          loading: false,
+          cancelled: false,
+          error: e instanceof Incorrect ? e : new Incorrect(errorCode.default.code),
+        };
+        setFetches({ ...fetchesRef.current });
+      });
+  }, [fetches]);
+
+  React.useEffect(() => {
+    !manual && run(params ?? {} as U);
+    return () => Object.keys(fetchesRef.current).forEach(key => cancel(key));
   }, []);
 
-  const defaultFetch: FetchesProps<T> = {
-    loading: Object.values(fetches).some(fetch => fetch?.loading),
-    placeholder: fetches[DEFAULT_KEY]?.placeholder ?? null,
-    error: fetches[DEFAULT_KEY]?.error ?? null,
-    data: fetches[DEFAULT_KEY]?.data ?? {} as T,
-    cancelled: fetches[DEFAULT_KEY]?.cancelled ?? false,
-  };
-
-  return { ...defaultFetch, fetches, run, cancel };
+  return { ...fetches[DEFALUT_KEY]!, cancel, fetches };
 }
