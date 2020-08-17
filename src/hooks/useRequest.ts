@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Incorrect from 'classes/Incorrect';
 
 interface UseRequestOption<U> {
+  /** 请求参数 */
+  params?: U;
   /** 是否手动触发run */
   manual?: boolean;
   /** 同于同个请求不同参数的情况 */
@@ -15,6 +17,10 @@ interface FetchesProps<T> {
   error: Incorrect | null;
 }
 
+type AnyPromisFunction = (arg: any) => Promise<any>;
+type GetParam<F extends AnyPromisFunction> = F extends (arg: infer P) => Promise<any> ? P : never;
+type GetReturn<F extends AnyPromisFunction> = F extends (arg: any) => Promise<infer R> ? R : never;
+
 /**
  * 1. 如果使用了 `fetcheKey`
  *    - 外层的 `data` 和 `error` 无效，需使用 `fetches[key]` 下的  `data` 和 `error`
@@ -22,15 +28,18 @@ interface FetchesProps<T> {
  * 2. 未使用 `fetcheKey`
  *    - 直接使用 外层的 `loading` `data` 和 `error`
  */
-export default function useRequest<U, T> (
-  fn: (params: U) => Promise<T>, params?: U,
+export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>, T = GetReturn<F>> (
+  fn: F,
   {
+    params,
     fetchKey,
     manual = false,
   }: UseRequestOption<U> = {},
 ) {
   const DEFAULT_KEY = '__DEFAULT_KEY__';
 
+  /** 存储实时变化的值，避免多次请求 fetches 不试试更新问题 */
+  const fetchesRef = useRef<{ [key: string]: FetchesProps<T> }>({});
   const [fetches, setFetches] = useState<{ [key: string]: FetchesProps<T> }>({});
 
   const cancel = useCallback((key: string | number = DEFAULT_KEY) => setFetches({ ...fetches, [key]: { ...fetches[key], cancelled: true, loading: false } }), [fetches]);
@@ -38,16 +47,15 @@ export default function useRequest<U, T> (
   const run = useCallback((params: U) => {
     const key = fetchKey ? fetchKey(params) : DEFAULT_KEY;
 
-    if (fetches[key].loading) {
+    if (fetches[key]?.loading) {
       return;
     }
 
-    setFetches({ ...fetches, [key]: { ...fetches[key], error: null, loading: true, cancelled: false } });
+    setFetches({ ...fetchesRef.current = { ...fetchesRef.current, [key]: { data: fetches[key]?.data, error: null, loading: true, cancelled: false } } });
 
     fn(params)
-      .then(res => !fetches[key].cancelled && setFetches({ ...fetches, [key]: { ...fetches[key], data: res } }))
-      .catch(e => setFetches({ ...fetches, [key]: { ...fetches[key], error: e } }))
-      .finally(() => setFetches({ ...fetches, [key]: { ...fetches[key], loading: false } }));
+      .then(res => setFetches({ ...fetchesRef.current = { ...fetchesRef.current, [key]: { data: res, error: null, loading: false, cancelled: false } } }))
+      .catch(e => setFetches({ ...fetchesRef.current = { ...fetchesRef.current, [key]: { data: fetches[key]?.data, error: e, loading: false, cancelled: false } } }));
   }, [fetches]);
 
   useEffect(() => {
@@ -57,9 +65,9 @@ export default function useRequest<U, T> (
 
   return {
     fetches,
-    loading: Object.values(fetches).some(Boolean),
-    error: fetchKey ? null : fetches[DEFAULT_KEY].error,
-    data: fetchKey ? null : fetches[DEFAULT_KEY].data,
+    loading: Object.values(fetches).some(fetch => fetch.loading),
+    error: fetches[DEFAULT_KEY]?.error ?? null,
+    data: fetches[DEFAULT_KEY]?.data ?? {} as T,
     run,
     cancel,
   };
