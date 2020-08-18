@@ -13,6 +13,10 @@ interface BaseDescriptionsItem {
   labelAlign?: Align;
   labelWidth?: number | string;
   span?: number;
+  /** 仅在 空字符串 undefined null 时显示，默认：'--' */
+  defaultValue?: string;
+  /** 是否显示冒号，默认显示 */
+  colon?: boolean;
 }
 
 interface BaseDescriptionsProps {
@@ -23,6 +27,10 @@ interface BaseDescriptionsProps {
   labelWidth?: number | string;
   descriptions?: BaseDescriptionsItem[];
   span?: number;
+  /** 仅在 空字符串 undefined null 时显示，默认：'--' */
+  defaultValue?: string;
+  /** 是否显示冒号，默认显示 */
+  colon?: boolean;
 }
 
 export default function BaseDescriptions ({
@@ -32,6 +40,8 @@ export default function BaseDescriptions ({
   labelAlign = 'left',
   labelWidth = 150,
   span,
+  defaultValue = '--',
+  colon = true,
 }: BaseDescriptionsProps) {
   return (
     <Row gutter={[10, 20]} className={`${className}`}>
@@ -43,6 +53,8 @@ export default function BaseDescriptions ({
         labelAlign: itemLabelAlign = labelAlign,
         layout: itemLayout = layout,
         labelWidth: itemLabelWidth = labelWidth,
+        defaultValue: itemDefaultValue = defaultValue,
+        colon: itemColon = colon,
       }) => (
         <Col
           style={{ flexDirection: itemLayout === 'horizontal' ? 'row' : 'column' }}
@@ -53,17 +65,13 @@ export default function BaseDescriptions ({
             className={`${globalStyle.mr10} ${globalStyle.flexShrink0} ${globalStyle.fcLabel}`}
             style={{
               textAlign: itemLabelAlign,
-              width:
-                  itemLayout === 'horizontal'
-                    ? itemLabelAlign === 'left'
-                      ? 'auto'
-                      : itemLabelWidth
-                    : '100%',
+              width: itemLabelAlign === 'left' ? 'auto' : itemLabelWidth,
             }}>
             {label}
+            {itemColon ? <span className={globalStyle.px2}>:</span> : ''}
           </span>
           <span style={{ flex: 1, marginTop: itemLayout === 'horizontal' ? 0 : 10 }}>
-            {value}
+            {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
           </span>
         </Col>
       ))}
