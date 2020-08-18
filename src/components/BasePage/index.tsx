@@ -22,7 +22,7 @@ export default function BasePage ({ children, className = '', contentClassName =
   return (
     <main className={`${fullContent ? style.full : ANTD_POPUP_CONTAINER} ${style.container} ${className}`}>
       {header}
-      <section style={{ padding: contentSpace }} className={`${contentClassName} ${globalStyle.flex1}`}>
+      <section style={{ padding: contentSpace, overflow: 'hidden' }} className={`${contentClassName} ${globalStyle.flex1}`}>
         {children}
       </section>
     </main>
