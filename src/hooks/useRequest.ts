@@ -71,8 +71,9 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
-  const run = React.useCallback((params: U) => {
-    const key = fetchKey?.(params) ?? DEFALUT_KEY;
+  const run = React.useCallback((runParams?: U) => {
+    const currentParams = runParams ?? params ?? {} as U;
+    const key = fetchKey?.(currentParams) ?? DEFALUT_KEY;
     fetchesRef.current[key] = {
       loading: true,
       cancelled: false,
@@ -81,7 +82,7 @@ export default function useRequest<U, T> (
       placeholder: new Incorrect(errorCode.loading.code),
     };
     setFetches({ ...fetchesRef.current });
-    return fn(params)
+    return fn(currentParams)
       .then(data => {
         if (fetchesRef.current[key]?.cancelled) {
           return;
