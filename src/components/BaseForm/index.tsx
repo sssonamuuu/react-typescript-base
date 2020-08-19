@@ -1,6 +1,5 @@
 import * as React from 'react';
-import Form, { FormProps } from 'antd/lib/form';
-import BaseFormItem from './BaseFormItem';
+import Form, { FormProps, FormItemProps } from 'antd/lib/form';
 
 interface BaseFormInstance<T> {
   /** 获取某个字段的值 */
@@ -24,8 +23,17 @@ export interface BaseFormProps<T> extends Omit<FormProps, 'form'> {
   form?: BaseFormInstance<T>;
 }
 
+interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name'> {
+  name?: keyof T;
+  children?: React.ReactNode | ((form: BaseFormInstance<T>) => React.ReactNode);
+}
+
 export default function BaseForm <T> (props: BaseFormProps<T>) {
   return <Form {...props as unknown as FormProps} />;
+}
+
+function BaseFormItem<T> (props: BaseFormItemProps<T>) {
+  return <Form.Item {...props as unknown as FormItemProps} />;
 }
 
 BaseForm.useForm = Form.useForm as unknown as <T>() => [BaseFormInstance<T>];
