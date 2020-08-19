@@ -36,10 +36,6 @@ interface FetchesProps<T> {
   [key: string]: undefined | FetchesItemProps<T>;
 }
 
-type AnyPromisFunction = (arg: any) => Promise<any>;
-type GetParam<F extends AnyPromisFunction> = F extends (arg: infer P) => Promise<any> ? P : never;
-type GetReturn<F extends AnyPromisFunction> = F extends (arg: any) => Promise<infer R> ? R : never;
-
 const DEFALUT_KEY = '__FETCH_DEFAULT__';
 
 /**
@@ -49,8 +45,8 @@ const DEFALUT_KEY = '__FETCH_DEFAULT__';
  * 2. 未使用 `fetcheKey`
  *    - 直接使用 外层的 `loading` `data` 和 `error`
  */
-export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>, T = GetReturn<F>> (
-  fn: F,
+export default function useRequest<U, T> (
+  fn: (param: U) => Promise<T>,
   { params, manual = false, fetchKey }: UseRequestOption<U> = {},
 ) {
   const fetchesRef = React.useRef<FetchesProps<T>>({
@@ -85,7 +81,7 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
       placeholder: new Incorrect(errorCode.loading.code),
     };
     setFetches({ ...fetchesRef.current });
-    fn(params)
+    return fn(params)
       .then(data => {
         if (fetchesRef.current[key]?.cancelled) {
           return;
@@ -111,6 +107,7 @@ export default function useRequest<F extends AnyPromisFunction, U = GetParam<F>,
           placeholder: error,
         };
         setFetches({ ...fetchesRef.current });
+        throw e;
       });
   }, [fetches]);
 
