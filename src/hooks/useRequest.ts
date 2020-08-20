@@ -83,7 +83,7 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
-  const run = React.useCallback((runParams?: U) => {
+  const run = React.useCallback((runParams?: U): Promise<T> => {
     const currentParams = runParams ?? params ?? {} as U;
     const key = fetchKey?.(currentParams) ?? DEFALUT_KEY;
     fetchesRef.current[key] = {
@@ -96,30 +96,29 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
     return fn(currentParams)
       .then(data => {
-        if (fetchesRef.current[key]?.cancelled) {
-          return;
+        if (!fetchesRef.current[key]?.cancelled) {
+          fetchesRef.current[key] = {
+            data,
+            loading: false,
+            error: null,
+            cancelled: fetchesRef.current[key]?.cancelled ?? false,
+            placeholder: null,
+          };
+          setFetches({ ...fetchesRef.current });
         }
-        fetchesRef.current[key] = {
-          data,
-          loading: false,
-          error: null,
-          cancelled: fetchesRef.current[key]?.cancelled ?? false,
-          placeholder: null,
-        };
-        setFetches({ ...fetchesRef.current });
+        return data;
       }).catch(e => {
-        if (fetchesRef.current[key]?.cancelled) {
-          return;
+        if (!fetchesRef.current[key]?.cancelled) {
+          const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code);
+          fetchesRef.current[key] = {
+            data: fetchesRef.current[key]?.data ?? {} as T,
+            loading: false,
+            cancelled: false,
+            error,
+            placeholder: error,
+          };
+          setFetches({ ...fetchesRef.current });
         }
-        const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code);
-        fetchesRef.current[key] = {
-          data: fetchesRef.current[key]?.data ?? {} as T,
-          loading: false,
-          cancelled: false,
-          error,
-          placeholder: error,
-        };
-        setFetches({ ...fetchesRef.current });
         throw e;
       });
   }, [fetches]);
