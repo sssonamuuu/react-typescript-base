@@ -129,5 +129,12 @@ export default function useRequest<U, T> (
     return () => Object.keys(fetchesRef.current).forEach(key => cancel(key));
   }, []);
 
-  return { ...fetches[DEFALUT_KEY]!, cancel, fetches, run, setData };
+  return {
+    ...fetches[DEFALUT_KEY]!,
+    cancel,
+    fetches,
+    run,
+    setData,
+    loading: Object.keys(fetches).some(key => fetches[key]?.loading),
+  };
 }
