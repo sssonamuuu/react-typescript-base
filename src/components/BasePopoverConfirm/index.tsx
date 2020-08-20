@@ -13,11 +13,25 @@ interface BasePopoverConfirmProps extends Omit<PopoverProps, 'content'> {
   onCancel?(): void;
 }
 
-export default function BasePopoverConfirm ({ title, message, okText = '确认', cancelText = '取消', ...props }: BasePopoverConfirmProps) {
+export default function BasePopoverConfirm ({ title, message, okText = '确认', cancelText = '取消', onOk, onCancel, ...props }: BasePopoverConfirmProps) {
+  const [visible, setVisible] = React.useState<boolean>(false);
+
+  function onCancelClick () {
+    onCancel?.();
+    setVisible(false);
+  }
+
+  async function onOkClick () {
+    await onOk?.();
+    setVisible(false);
+  }
+
   return (
     <Popover
       trigger="click"
       placement="left"
+      visible={visible}
+      onVisibleChange={setVisible}
       {...props}
       content={(
         <div className={style.popover}>
@@ -26,8 +40,8 @@ export default function BasePopoverConfirm ({ title, message, okText = '确认',
             <div className={style.content}>{message}</div>
           </Space>
           <div className={style.ctrl}>
-            <Button size="small">{cancelText}</Button>
-            <Button type="primary" size="small" className={globalStyle.ml10}>{okText}</Button>
+            <Button size="small" onClick={onCancelClick}>{cancelText}</Button>
+            <Button type="primary" size="small" className={globalStyle.ml10} onClick={onOkClick}>{okText}</Button>
           </div>
         </div>
       )} />
