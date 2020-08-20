@@ -71,6 +71,18 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
+  const setData = React.useCallback((data: T, key: string | number = DEFALUT_KEY) => {
+    fetchesRef.current[key] = {
+      loading: false,
+      cancelled: false,
+      error: null,
+      placeholder: null,
+      ...fetchesRef.current[key],
+      data,
+    };
+    setFetches({ ...fetchesRef.current });
+  }, [fetches]);
+
   const run = React.useCallback((runParams?: U) => {
     const currentParams = runParams ?? params ?? {} as U;
     const key = fetchKey?.(currentParams) ?? DEFALUT_KEY;
@@ -117,5 +129,5 @@ export default function useRequest<U, T> (
     return () => Object.keys(fetchesRef.current).forEach(key => cancel(key));
   }, []);
 
-  return { ...fetches[DEFALUT_KEY]!, cancel, fetches, run };
+  return { ...fetches[DEFALUT_KEY]!, cancel, fetches, run, setData };
 }
