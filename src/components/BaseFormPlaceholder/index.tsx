@@ -8,12 +8,13 @@ import { RedoOutlined } from '@ant-design/icons';
 interface BaseFormPlaceholderProps {
   status: Incorrect;
   onReload?(): void;
+  style?: React.CSSProperties;
 }
 
-export default function BaseFormPlaceholder ({ status }: BaseFormPlaceholderProps) {
+export default function BaseFormPlaceholder ({ status, onReload, style }: BaseFormPlaceholderProps) {
   if (errorCode[status.code]?.is('loading')) {
-    return <Input disabled value="正在加载努力数据" />;
+    return <Input disabled value="正在加载努力数据" style={style} />;
   }
 
-  return <Input disabled value={status.messge} addonAfter={<RedoOutlined className={globalStyle.cup} />} />;
+  return <Input style={style} disabled value={status.messge} addonAfter={<RedoOutlined className={globalStyle.cup} onClick={onReload} />} />;
 }
