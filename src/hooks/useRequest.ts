@@ -4,7 +4,7 @@ import { errorCode } from 'configs/enumerations';
 // import Incorrect from 'classes/Incorrect';
 // import { errorCode } from 'configs/enumerations';
 
-interface UseRequestOption<U> {
+interface UseRequestOption<U, T> {
   /** 请求参数 */
   params?: U;
   /** 是否手动触发run */
@@ -13,6 +13,7 @@ interface UseRequestOption<U> {
   defaultLoading?: boolean;
   /** 同于同个请求不同参数的情况 */
   fetchKey?(param: U): string | number;
+  defaultValue?: T;
 }
 
 interface FetchesItemProps<T> {
@@ -47,13 +48,13 @@ const DEFALUT_KEY = '__FETCH_DEFAULT__';
  */
 export default function useRequest<U, T> (
   fn: (param: U) => Promise<T>,
-  { params, manual = false, fetchKey }: UseRequestOption<U> = {},
+  { params, manual = false, fetchKey, defaultLoading, defaultValue = {} as T }: UseRequestOption<U, T> = {},
 ) {
   const fetchesRef = React.useRef<FetchesProps<T>>({
     [DEFALUT_KEY]: {
-      loading: !manual,
+      loading: defaultLoading ?? !manual,
       cancelled: false,
-      data: {} as T,
+      data: defaultValue,
       error: null,
       placeholder: manual ? null : new Incorrect(errorCode.loading.code),
     },
