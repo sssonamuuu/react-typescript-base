@@ -22,20 +22,27 @@ function getEnv () {
 
 exports.getEnv = getEnv;
 
-exports.getConfig = function getConfig () {
-  return toml.parse(fs.readFileSync(`${SRC_ROOT_DIR}/config.toml`));
-};
-
-exports.mergeConfig = function mergeConfig (config) {
+exports.getConfig = function getConfig (config = toml.parse(fs.readFileSync(`${SRC_ROOT_DIR}/config.toml`))) {
+  const { env, mode } = getEnv();
   for (const [key, value] of Object.entries(config)) {
-    config[key] = { ...value.common, ...value[getEnv().env] };
+    if (['env', 'model'].includes(key)) {
+      console.error(`${key} 为内置属性，不能设置。`);
+    }
+    config[key] = { ...value.common, ...value[env] };
   }
+
+  config.env = env;
+  config.mode = mode;
+
   return config;
 };
 
 /** 把 config json 文件生成 typings 文件 字符串 */
 exports.getConfigTypings = function getConfigTypings (config, indent = 1, paths = '') {
-  const types = {};
+  const types = {
+    'configure.env': `'local' | 'dev' | 'pro'`,
+    'configure.mode': `'development' | 'production'`,
+  };
   if (types[paths]) {
     return types[paths];
   }

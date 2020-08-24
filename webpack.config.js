@@ -8,10 +8,10 @@ const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
-const { getEnv, getConfig, mergeConfig, addPrefixForObjectKey } = require('./build/tools');
+const { getEnv, getConfig, addPrefixForObjectKey } = require('./build/tools');
 
 const { mode } = getEnv();
-const config = mergeConfig(getConfig());
+const config = getConfig();
 
 module.exports = {
   mode,
@@ -152,6 +152,12 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
     host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: config.configure.requestUrl,
+        changeOrigin: true,
+      },
+    },
     overlay: { errors: true, warnings: false },
     disableHostCheck: true,
     historyApiFallback: { rewrites: [{ from: /.*/, to: path.posix.join('/', 'index.html') }]},

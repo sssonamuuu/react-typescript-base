@@ -9,7 +9,10 @@ declare module 'config.toml' {
     };
     theme: {
       'primary-color': string;
+      'label-color': string;
     };
+    env: string;
+    mode: string;
   };
   export default globalConfig;
 }
