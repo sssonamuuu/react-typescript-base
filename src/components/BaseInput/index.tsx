@@ -13,6 +13,8 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
    * 如果是 number decimal 表示小数精度
    */
   decimal?: number;
+  /** 是否可以使用负数 */
+  negative?: boolean;
   trim?: boolean;
   search?: boolean;
   onSearch?(value?: string): void;
@@ -21,7 +23,7 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   loading?: boolean;
 }
 
-export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onSearch, loading = false, trim = true, ...props }: BaseInputProps) {
+export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onSearch, loading = false, trim = true, negative, ...props }: BaseInputProps) {
   const lastValue = React.useRef(value);
   const [currentValue, setCurrentValue] = React.useState(lastValue.current);
 
@@ -30,7 +32,7 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
   function calcValue (value: string = '') {
     switch (valueType) {
       case 'number':
-        const matches = value.match(new RegExp(`\\d+${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`));
+        const matches = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`));
         return matches?.[0] ?? '';
       default: return value;
     }
@@ -52,7 +54,15 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onSearch?.(currentValue)} /> : void 0}
       onKeyDown={e => e.keyCode === 13 && onSearch?.(currentValue)}
       onFocus={e => e.target.readOnly = false}
-      onBlur={e => trim && setCurrentValue(e.target.value.trim())}
+      onBlur={e => {
+        let value = trim ? e.target.value.trim() : e.target.value;
+
+        if (valueType === 'number') {
+          value = isNaN(Number(value)) ? '' : `${Number(value)}`;
+        }
+
+        setCurrentValue(value);
+      }}
       {...props}
       value={currentValue}
       onChange={onChangeHandle} />
