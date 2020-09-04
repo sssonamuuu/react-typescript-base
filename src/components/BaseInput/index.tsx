@@ -58,7 +58,7 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
         let value = trim ? e.target.value.trim() : e.target.value;
 
         if (valueType === 'number') {
-          value = isNaN(Number(value)) ? '' : `${Number(value)}`;
+          value = value && !isNaN(Number(value)) ? `${Number(value)}` : '';
         }
 
         setCurrentValue(value);
