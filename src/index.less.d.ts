@@ -8,7 +8,6 @@ declare namespace IndexLessNamespace {
     fcLabel: string;
     fcPrimary: string;
     fcWhite: string;
-    file: string;
     flex1: string;
     flexShrink0: string;
     fs12: string;
@@ -63,7 +62,6 @@ declare namespace IndexLessNamespace {
     fwLighter: string;
     fwNormal: string;
     link: string;
-    mappings: string;
     mb0: string;
     mb1: string;
     mb10: string;
@@ -370,7 +368,6 @@ declare namespace IndexLessNamespace {
     my7: string;
     my8: string;
     my9: string;
-    names: string;
     pb0: string;
     pb1: string;
     pb10: string;
@@ -679,12 +676,9 @@ declare namespace IndexLessNamespace {
     py9: string;
     scrollX: string;
     scrollY: string;
-    sources: string;
-    sourcesContent: string;
     toe1: string;
     toe2: string;
     toe3: string;
-    version: string;
   }
 }
 

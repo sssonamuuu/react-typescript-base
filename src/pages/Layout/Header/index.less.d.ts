@@ -1,12 +1,6 @@
 declare namespace IndexLessNamespace {
   export interface IIndexLess {
-    file: string;
     header: string;
-    mappings: string;
-    names: string;
-    sources: string;
-    sourcesContent: string;
-    version: string;
   }
 }
 

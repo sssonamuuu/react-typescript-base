@@ -10,22 +10,22 @@ type DataItem<C, O> = {
   label?: string;
 } & DataItemBuildIn & O;
 
-type EnumItemBuild<K, C, O> = {
+type EnumItemBuild<K, C> = {
   is (key: K): boolean;
   in (keys: K[]): boolean;
   eq (code: C): boolean;
 };
 
-type EnumItem<K, C, O> = EnumItemBuild<K, C, O> & DataItem<C, O>;
-
-type EnumBuildIn<K extends string, C, O> = {
-  $list (this: Enum<K, C, O>, excludes?: K | K[]): EnumItem<K, C, O>[];
-  $map <R>(this: Enum<K, C, O>, fn: (item: EnumItem<K, C, O>) => R, excludes?: K | K[]): R[];
-};
+type EnumItem<K, C, O> = EnumItemBuild<K, C> & DataItem<C, O>;
 
 type EnumKeyRes<K extends string, C, O> = Record<K, EnumItem<K, C, O>>;
 
 type EnumCodeRes<K, C, O> = {[key: string]: undefined | EnumItem<K, C, O>};
+
+type EnumBuildIn<K extends string, C, O> = {
+  $list (this: EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>, excludes?: K | K[]): EnumItem<K, C, O>[];
+  $map <R>(this: EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>, fn: (item: EnumItem<K, C, O>) => R, excludes?: K | K[]): R[];
+};
 
 type Enum<K extends string, C, O> = EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>;
 
