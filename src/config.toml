@@ -2,6 +2,7 @@
 # 基本配置在 所有环境相同配置放在 .common ，不同环境配置不一致的通过.env区分
 
 [configure.common]
+requestUrl = ''
 a = 2
 
 [configure.local]
@@ -16,5 +17,6 @@ a = 3
 # 同样，也可以在tsx?中通过 globalConfig.theme[variable-name] 使用
 # https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less
 [theme.common]
+rootId = 'app'
 primary-color = '#1890ff'
 label-color = '#6E7F9C'

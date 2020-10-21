@@ -12,6 +12,7 @@ import { ANTD_POPUP_CONTAINER } from 'components/BasePage';
 
 import { hot } from 'react-hot-loader/root';
 import { routerWithInLayout, routerWithOutLayout } from 'configs/routres';
+import globalConfig from 'config.toml';
 
 const App = hot(() => (
   /**
@@ -41,4 +42,4 @@ const App = hot(() => (
   </ConfigProvider>
 ));
 
-ReactDOM.render(<App />, document.querySelector('#app'));
+ReactDOM.render(<App />, document.querySelector(`#${globalConfig.theme.rootId}`));

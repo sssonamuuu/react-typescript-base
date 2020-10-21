@@ -39,7 +39,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: `./${SRC_ROOT_DIR}/index.html`,
       filename: `index.html`,
-      templateParameters: {},
+      templateParameters: { config },
       favicon: `./${SRC_ROOT_DIR}/favicon.ico`,
     }),
 

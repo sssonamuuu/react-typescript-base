@@ -5,9 +5,11 @@
 declare module 'config.toml' {
   const globalConfig: {
     configure: {
+      requestUrl: string;
       a: number;
     };
     theme: {
+      rootId: string;
       'primary-color': string;
       'label-color': string;
     };
