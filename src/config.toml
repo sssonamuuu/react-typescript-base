@@ -17,6 +17,9 @@ a = 3
 # 同样，也可以在tsx?中通过 globalConfig.theme[variable-name] 使用
 # https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less
 [theme.common]
-rootId = 'app'
+rootId = 'app' # 根节点的id
+
+ant-prefix = 'sonamu' # antd class 的前缀名
+
 primary-color = '#1890ff'
 label-color = '#6E7F9C'

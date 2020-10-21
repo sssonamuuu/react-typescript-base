@@ -24,6 +24,7 @@ const App = hot(() => (
      *
      */
   <ConfigProvider
+    prefixCls={globalConfig.theme['ant-prefix']}
     locale={zhCN}
     getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
     <BrowserRouter>

@@ -10,6 +10,7 @@ declare module 'config.toml' {
     };
     theme: {
       rootId: string;
+      'ant-prefix': string;
       'primary-color': string;
       'label-color': string;
     };
