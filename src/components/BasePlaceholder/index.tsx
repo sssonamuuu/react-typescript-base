@@ -2,9 +2,8 @@ import * as React from 'react';
 import globalStyle from 'index.less';
 import Incorrect from 'classes/Incorrect';
 import style from './index.less';
-import { Spin } from 'antd';
+import { Spin, Button } from 'antd';
 import { errorCode } from 'configs/enumerations';
-import Button from 'antd/es/button';
 import useHistory from 'hooks/useHistory';
 
 interface BasePlaceholderProps {
