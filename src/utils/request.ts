@@ -15,7 +15,7 @@ interface ResponseModel<T> {
   success: boolean;
 }
 
-export default function request <T> ({ disableErrorMessage, ...option }: RequestModel): Promise<T> {
+function request <T> ({ disableErrorMessage, ...option }: RequestModel): Promise<T> {
   return axios
     .request<ResponseModel<T>>(option)
     .then(({ data }) => {
@@ -30,3 +30,22 @@ export default function request <T> ({ disableErrorMessage, ...option }: Request
       throw error;
     });
 }
+
+function mergeParam (...o: Partial<RequestModel>[]): RequestModel {
+  let res: RequestModel = {};
+  o.forEach(item => res = { ...res, ...item });
+  return res;
+}
+
+type DIS_KEYS = 'url' | 'data' | 'params' | 'method';
+
+export default {
+  get<R = void, P = void>(url: string, option: Omit<RequestModel, DIS_KEYS> = {}) {
+    return (param: Omit<RequestModel, DIS_KEYS> & (P extends null | void | undefined ? {} : { params: P })) =>
+      request<R>(mergeParam({ url, method: 'GET' }, option, param));
+  },
+  post<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, DIS_KEYS> = {}) {
+    return (param: Omit<RequestModel, DIS_KEYS> & (P extends void | void | undefined ? {} : { params: P }) & (D extends void | void | undefined ? {} : { data: D })) =>
+      request<R>(mergeParam({ url, method: 'POST' }, option, param));
+  },
+};
