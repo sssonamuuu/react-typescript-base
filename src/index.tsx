@@ -1,3 +1,5 @@
+window.Promise = Promise;
+
 import 'index.less';
 
 import * as React from 'react';
