@@ -19,7 +19,8 @@ a = 3
 [theme.common]
 rootId = 'app' # 根节点的id
 
-ant-prefix = 'sonamu' # antd class 的前缀名
+# 暂时不要更改，ant部分组件存在不生效问题
+ant-prefix = 'ant'
 
 primary-color = '#1890ff'
 label-color = '#6E7F9C'
