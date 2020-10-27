@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Popover, Button, Space } from 'antd';
 import { PopoverProps } from 'antd/lib/popover';
 import globalStyle from 'index.less';
@@ -14,7 +14,7 @@ interface BasePopoverConfirmProps extends Omit<PopoverProps, 'content'> {
 }
 
 export default function BasePopoverConfirm ({ title, message, okText = '确认', cancelText = '取消', onOk, onCancel, ...props }: BasePopoverConfirmProps) {
-  const [visible, setVisible] = React.useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   function onCancelClick () {
     onCancel?.();

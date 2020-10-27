@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import globalStyle from 'index.less';
 import Incorrect from 'classes/Incorrect';
 import style from './index.less';

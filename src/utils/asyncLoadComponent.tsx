@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ComponentType, createElement, useEffect, useState } from 'react';
 import BasePlaceholder from 'components/BasePlaceholder';
 import Incorrect from 'classes/Incorrect';
 import { errorCode } from 'configs/enumerations';
@@ -12,12 +12,12 @@ import { errorCode } from 'configs/enumerations';
  * - 当然也可以添加 `webpackChunkName` 注释增加 `webpack` 分块编译输出的文件名
  * @example asyncLoadComponent(() => import(\/* webpackChunkName: "page-home" *\/ 'pages/Home'))
  */
-export default function asyncLoadComponent (fn: () => Promise<{ default: React.ComponentType }>) {
+export default function asyncLoadComponent (fn: () => Promise<{ default: ComponentType }>) {
   return (props: any) => {
-    const [component, setComponent] = React.useState(<BasePlaceholder status={new Incorrect(errorCode.loading.code, '正在加载页面资源')} />);
+    const [component, setComponent] = useState(<BasePlaceholder status={new Incorrect(errorCode.loading.code, '正在加载页面资源')} />);
 
-    React.useEffect(() => {
-      fn().then(res => setComponent(React.createElement(res.default, props))).catch(() => setComponent(<BasePlaceholder status={new Incorrect(errorCode.default.code, '页面资源加载失败')} />));
+    useEffect(() => {
+      fn().then(res => setComponent(createElement(res.default, props))).catch(() => setComponent(<BasePlaceholder status={new Incorrect(errorCode.default.code, '页面资源加载失败')} />));
     }, []);
 
     return component;

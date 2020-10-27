@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import BasePage from 'components/BasePage';
 import { hot } from 'react-hot-loader/root';
 import { Card, Table } from 'antd';

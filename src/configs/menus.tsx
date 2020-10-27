@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React, { ReactNode } from 'react';
 import { HomeOutlined } from '@ant-design/icons';
 
 interface MenuProps {
   title: string;
   key: number;
   path?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   children?: MenuProps[];
 }
 

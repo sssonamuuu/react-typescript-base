@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Incorrect from 'classes/Incorrect';
 import { errorCode } from 'configs/enumerations';
 // import Incorrect from 'classes/Incorrect';
@@ -50,7 +50,7 @@ export default function useRequest<U, T> (
   fn: (param: U) => Promise<T>,
   { params, manual = false, fetchKey, defaultLoading, defaultValue = {} as T }: UseRequestOption<U, T> = {},
 ) {
-  const fetchesRef = React.useRef<FetchesProps<T>>({
+  const fetchesRef = useRef<FetchesProps<T>>({
     [DEFALUT_KEY]: {
       loading: defaultLoading ?? !manual,
       cancelled: false,
@@ -59,9 +59,9 @@ export default function useRequest<U, T> (
       placeholder: manual ? null : new Incorrect(errorCode.loading.code),
     },
   });
-  const [fetches, setFetches] = React.useState({ ...fetchesRef.current });
+  const [fetches, setFetches] = useState({ ...fetchesRef.current });
 
-  const cancel = React.useCallback((key: string | number) => {
+  const cancel = useCallback((key: string | number) => {
     fetchesRef.current[key] = {
       loading: false,
       cancelled: true,
@@ -72,7 +72,7 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
-  const setData = React.useCallback((data: T, key: string | number = DEFALUT_KEY) => {
+  const setData = useCallback((data: T, key: string | number = DEFALUT_KEY) => {
     fetchesRef.current[key] = {
       loading: false,
       cancelled: false,
@@ -84,7 +84,7 @@ export default function useRequest<U, T> (
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
 
-  const run = React.useCallback((runParams?: U): Promise<T> => {
+  const run = useCallback((runParams?: U): Promise<T> => {
     const currentParams = runParams ?? params ?? {} as U;
     const key = fetchKey?.(currentParams) ?? DEFALUT_KEY;
     fetchesRef.current[key] = {
@@ -124,7 +124,7 @@ export default function useRequest<U, T> (
       });
   }, [fetches]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     !manual && run(params ?? {} as U);
     return () => Object.keys(fetchesRef.current).forEach(key => cancel(key));
   }, []);

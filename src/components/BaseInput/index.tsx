@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
@@ -24,10 +24,10 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
 }
 
 export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onSearch, loading = false, trim = true, negative, ...props }: BaseInputProps) {
-  const lastValue = React.useRef(value);
-  const [currentValue, setCurrentValue] = React.useState(lastValue.current);
+  const lastValue = useRef(value);
+  const [currentValue, setCurrentValue] = useState(lastValue.current);
 
-  React.useEffect(() => setCurrentValue(value), [value]);
+  useEffect(() => setCurrentValue(value), [value]);
 
   function calcValue (value: string = '') {
     switch (valueType) {
@@ -38,12 +38,12 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     lastValue.current !== currentValue && onChange?.(currentValue);
     lastValue.current = currentValue;
   }, [currentValue]);
 
-  function onChangeHandle (e: React.ChangeEvent<HTMLInputElement>) {
+  function onChangeHandle (e: ChangeEvent<HTMLInputElement>) {
     setCurrentValue(calcValue(e.target.value));
   }
 

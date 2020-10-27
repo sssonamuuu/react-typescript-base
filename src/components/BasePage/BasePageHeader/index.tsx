@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { PageHeader } from 'antd';
 import { PageHeaderProps } from 'antd/lib/page-header';
 import style from './index.less';
@@ -15,8 +15,8 @@ interface BasePageHeaderProps extends Omit<PageHeaderProps, 'breadcrumb'>{
   breadcrumb?: Breadcrumb[];
 }
 
-export default function BasePageHeader ({ className = '', fixed = false, breadcrumb, ...props }: React.PropsWithChildren<BasePageHeaderProps>) {
-  const currentBreadcrumb = React.useMemo<PageHeaderProps['breadcrumb']>(() => ({
+export default function BasePageHeader ({ className = '', fixed = false, breadcrumb, ...props }: PropsWithChildren<BasePageHeaderProps>) {
+  const currentBreadcrumb = useMemo<PageHeaderProps['breadcrumb']>(() => ({
     routes: breadcrumb as any,
     // 面包屑默认使用hash跳转，需要处理
     itemRender: (route, params, routes, paths) =>

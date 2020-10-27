@@ -2,8 +2,8 @@ window.Promise = Promise;
 
 import 'index.less';
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 import zhCN from 'antd/es/locale/zh_CN';
 

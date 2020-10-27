@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Layout, Menu as AntdMenu } from 'antd';
 import menus from 'configs/menus';
 import { Link } from 'react-router-dom';
@@ -6,12 +6,12 @@ import { routerWithInLayout } from 'configs/routres';
 import useHistory from 'hooks/useHistory';
 
 export default function Menu () {
-  const [selectedKeys, setSelectedKeys] = React.useState<string[]>();
-  const [openKeys, setOpenKeys] = React.useState<string[]>();
+  const [selectedKeys, setSelectedKeys] = useState<string[]>();
+  const [openKeys, setOpenKeys] = useState<string[]>();
 
   const { location } = useHistory();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const pathname = location.pathname;
 
     /**
@@ -46,7 +46,7 @@ export default function Menu () {
     }
   }, [location]);
 
-  const onOpenChange = React.useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), [openKeys]);
+  const onOpenChange = useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), [openKeys]);
 
   return (
     <Layout.Sider>

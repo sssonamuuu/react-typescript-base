@@ -7,8 +7,8 @@ type Align = 'left' | 'center' | 'right';
 
 interface BaseDescriptionsItem {
   className?: string;
-  label?: React.ReactNode;
-  value?: React.ReactNode;
+  label?: ReactNode;
+  value?: ReactNode;
   layout?: Layout;
   labelAlign?: Align;
   labelWidth?: number | string;

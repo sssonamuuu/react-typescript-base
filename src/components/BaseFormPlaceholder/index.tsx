@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Incorrect from 'classes/Incorrect';
 import { errorCode } from 'configs/enumerations';
 import globalStyle from 'index.less';
@@ -8,7 +8,7 @@ import { RedoOutlined } from '@ant-design/icons';
 interface BaseFormPlaceholderProps {
   status: Incorrect;
   onReload?(): void;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
 export default function BaseFormPlaceholder ({ status, onReload, style }: BaseFormPlaceholderProps) {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Form } from 'antd';
 import { FormItemProps } from 'antd/lib/form';
 
@@ -21,7 +21,7 @@ export interface BaseFormInstance<T> {
 
 interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdate' | 'dependencies'> {
   name?: keyof T;
-  children?: React.ReactNode | ((form: BaseFormInstance<T>) => React.ReactNode);
+  children?: ReactNode | ((form: BaseFormInstance<T>) => ReactNode);
   shouldUpdate?: boolean | ((prev: T, next: T) => boolean);
   dependencies?: (keyof T)[];
 }

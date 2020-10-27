@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { CSSProperties, FunctionComponentElement, PropsWithChildren } from 'react';
 import style from './index.less';
 import globalStyle from 'index.less';
 import BasePageHeader from './BasePageHeader';
@@ -10,15 +10,15 @@ export const ANTD_POPUP_CONTAINER = 'JS-antd-popup-container';
 export const CONTENT_SPACE_DEFAULT = 10;
 
 interface BasePageProps {
-  header?: React.FunctionComponentElement<PageHeaderProps>;
+  header?: FunctionComponentElement<PageHeaderProps>;
   className?: string;
-  contentSpace?: React.CSSProperties['padding'];
+  contentSpace?: CSSProperties['padding'];
   contentClassName?: string;
   /** 是否是满屏布局，不需要滚动条，除去header区域内容铺满 */
   fullContent?: boolean;
 }
 
-export default function BasePage ({ children, className = '', contentClassName = '', header, contentSpace = CONTENT_SPACE_DEFAULT, fullContent = false }: React.PropsWithChildren<BasePageProps>) {
+export default function BasePage ({ children, className = '', contentClassName = '', header, contentSpace = CONTENT_SPACE_DEFAULT, fullContent = false }: PropsWithChildren<BasePageProps>) {
   return (
     <main className={`${fullContent ? style.full : ANTD_POPUP_CONTAINER} ${style.container} ${className}`}>
       {header}

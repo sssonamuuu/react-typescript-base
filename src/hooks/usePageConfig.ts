@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 interface UsePageStatusOption {
   /** 页面标题 */
@@ -8,7 +8,7 @@ interface UsePageStatusOption {
 export default function usePageConfig ({
   documentTitle,
 }: UsePageStatusOption) {
-  React.useEffect(() => {
+  useEffect(() => {
     documentTitle && (document.title = documentTitle);
     return () => {
       document.title = '加载中...';

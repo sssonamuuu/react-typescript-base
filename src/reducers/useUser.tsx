@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 interface UseModel {
   name: string;
@@ -7,7 +7,7 @@ interface UseModel {
 
 const defaultValue: UseModel = { } as unknown as UseModel;
 
-const Context = React.createContext(defaultValue);
+const Context = createContext(defaultValue);
 
 interface Action {type: 'set'; payload: UseModel}
 function reducer (state: UseModel, action: Action) {
@@ -19,13 +19,13 @@ function reducer (state: UseModel, action: Action) {
   }
 }
 
-export function UserProvider ({ children }: React.PropsWithChildren<{}>) {
-  const [user, dispatch] = React.useReducer(reducer, defaultValue);
+export function UserProvider ({ children }: PropsWithChildren<{}>) {
+  const [user, dispatch] = useReducer(reducer, defaultValue);
   return <Context.Provider value={{ user, dispatch } as any}>{children}</Context.Provider>;
 }
 
 export function useUser () {
-  const { user, dispatch } = React.useContext(Context) as unknown as { user: UseModel; dispatch: React.Dispatch<Action> };
+  const { user, dispatch } = useContext(Context) as unknown as { user: UseModel; dispatch: Dispatch<Action> };
 
   return {
     user,
