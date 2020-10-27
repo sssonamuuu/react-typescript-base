@@ -7,6 +7,7 @@ interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex'> {
 }
 
 interface BaseColumnGroupType<T> extends Omit<BaseColumnType<T>, 'dataIndex'> {
+  // eslint-disable-next-line no-use-before-define
   children: BaseColumnsType<T>[];
 }
 

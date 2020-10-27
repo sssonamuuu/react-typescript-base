@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import globalStyle from 'index.less';
 import { Row, Col } from 'antd';
 

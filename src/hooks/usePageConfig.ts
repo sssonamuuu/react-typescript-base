@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 
 interface UsePageStatusOption {
   /** 页面标题 */
