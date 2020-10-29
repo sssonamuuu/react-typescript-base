@@ -2,10 +2,12 @@ import axios, { AxiosRequestConfig } from 'axios';
 import Incorrect from 'classes/Incorrect';
 import { errorCode } from 'configs/enumerations';
 import { message } from 'antd';
+import qs from 'qs';
 
 interface RequestModel extends AxiosRequestConfig {
   /** 默认错误会进行 `message.error` 提示，是否禁用 */
   disableErrorMessage?: boolean;
+  isFormData?: boolean;
 }
 
 interface ResponseModel<T> {
@@ -15,7 +17,12 @@ interface ResponseModel<T> {
   success: boolean;
 }
 
-function request <T> ({ disableErrorMessage, ...option }: RequestModel): Promise<T> {
+function request <T> ({ disableErrorMessage, isFormData, ...option }: RequestModel): Promise<T> {
+  if (isFormData) {
+    option.headers = { ...option.headers, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' };
+    option.data = qs.stringify(option.data);
+  }
+
   return axios
     .request<ResponseModel<T>>(option)
     .then(({ data }) => {
@@ -37,15 +44,16 @@ function mergeParam (...o: Partial<RequestModel>[]): RequestModel {
   return res;
 }
 
-type DIS_KEYS = 'url' | 'data' | 'params' | 'method';
+type OPTION_DISABLED_KEYS = 'url' | 'data' | 'params' | 'method';
+type PARAMS_DISABLED_KEYS= 'url' | 'data' | 'params' | 'method' | 'isFormData';
 
 export default {
-  get<R = void, P = void>(url: string, option: Omit<RequestModel, DIS_KEYS> = {}) {
-    return (param: Omit<RequestModel, DIS_KEYS> & (P extends null | void | undefined ? {} : { params: P })) =>
+  get<R = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
+    return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P })) =>
       request<R>(mergeParam({ url, method: 'GET' }, option, param));
   },
-  post<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, DIS_KEYS> = {}) {
-    return (param: Omit<RequestModel, DIS_KEYS> & (P extends void | void | undefined ? {} : { params: P }) & (D extends void | void | undefined ? {} : { data: D })) =>
+  post<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
+    return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends void | void | undefined ? {} : { params: P }) & (D extends void | void | undefined ? {} : { data: D })) =>
       request<R>(mergeParam({ url, method: 'POST' }, option, param));
   },
 };
