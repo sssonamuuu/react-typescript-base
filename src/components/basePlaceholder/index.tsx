@@ -1,36 +1,46 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import globalStyle from 'index.less';
 import Incorrect from 'classes/Incorrect';
 import style from './index.less';
-import { Spin, Button } from 'antd';
+import { Spin, Button, Empty } from 'antd';
 import { errorCode } from 'configs/enumerations';
-import useHistory from 'hooks/useHistory';
 
 interface BasePlaceholderProps {
   status: Incorrect;
+  /** page=true 无效 */
+  height?: number | string;
 }
 
-export default function BasePlaceholder ({ status }: BasePlaceholderProps) {
-  const history = useHistory();
-
-  if (errorCode[status.code]?.is('loading')) {
-    return (
-      <div className={style.box}>
-        <Spin />
-        <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
-      </div>
-    );
-  }
-
+export default function BasePlaceholder ({ status, height }: BasePlaceholderProps) {
   return (
-    <div className={style.box}>
-      <div className={style.errorIcon} />
-      <div className={style['error-icon']} />
-      <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
-      <div className={`${globalStyle.mt20}`}>
-        <Button onClick={() => history.push('/')}>返回首页</Button>
-        <Button onClick={() => location.reload()} type="primary" className={globalStyle.ml10}>刷新页面</Button>
-      </div>
+    <div className={style.box} style={{ height }}>
+      {(() => {
+        if (errorCode[status.code]?.is('loading')) {
+          return (
+            <Fragment>
+              <Spin />
+              <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
+            </Fragment>
+          );
+        }
+
+        if (errorCode[status.code]?.is('nodata')) {
+          return (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={status.messge} />
+          );
+        }
+        return (
+          <Fragment>
+            <div className={style.errorIcon} />
+            <div className={style['error-icon']} />
+            <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
+            <div className={`${globalStyle.mt20}`}>
+              <Button onClick={() => location.href = '/'}>返回首页</Button>
+              <Button onClick={() => location.reload()} type="primary" className={globalStyle.ml10}>刷新页面</Button>
+            </div>
+          </Fragment>
+        );
+      })()}
     </div>
   );
 }
