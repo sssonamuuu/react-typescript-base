@@ -152,12 +152,6 @@ module.exports = {
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
     host: '0.0.0.0',
-    proxy: {
-      '/api': {
-        target: config.configure.requestUrl,
-        changeOrigin: true,
-      },
-    },
     overlay: { errors: true, warnings: false },
     disableHostCheck: true,
     historyApiFallback: { rewrites: [{ from: /.*/, to: path.posix.join('/', 'index.html') }]},
