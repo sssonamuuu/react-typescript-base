@@ -3,7 +3,7 @@ const os = require('os');
 const toml = require('toml');
 const { mode, env = 'local' } = require('yargs').argv;
 
-const envs = (mode === 'development' ? ['local'] : []).concat(['dev', 'pro']);
+const envs = ['local', 'dev', 'pro'];
 
 const { SRC_ROOT_DIR } = require('./config');
 
