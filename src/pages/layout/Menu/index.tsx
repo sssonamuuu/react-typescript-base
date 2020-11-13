@@ -46,7 +46,7 @@ export default function Menu () {
     }
   }, [location]);
 
-  const onOpenChange = useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), [openKeys]);
+  const onOpenChange = useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), []);
 
   return (
     <Layout.Sider>

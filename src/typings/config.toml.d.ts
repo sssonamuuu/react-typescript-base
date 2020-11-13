@@ -14,8 +14,8 @@ declare module 'config.toml' {
       'primary-color': string;
       'label-color': string;
     };
-    env: string;
-    mode: string;
+    env: 'local '|' dev '|' pro';
+    mode: 'development' | 'production';
   };
   export default globalConfig;
 }

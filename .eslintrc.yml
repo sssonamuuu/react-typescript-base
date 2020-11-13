@@ -12,6 +12,7 @@ plugins:
   - react
   - '@typescript-eslint'
   - html
+  - react-hooks
 # globals:
 parserOptions:
   ecmaVersion: 10
@@ -20,6 +21,7 @@ parserOptions:
     jsx: true
     experimentalObjectRestSpread: true
 rules:
+  react-hooks/rules-of-hooks: 2
   '@typescript-eslint/ban-ts-comment': 2
   '@typescript-eslint/no-unused-vars':
     - 2

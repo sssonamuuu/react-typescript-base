@@ -3,13 +3,11 @@ const os = require('os');
 const toml = require('toml');
 const { mode, env = 'local' } = require('yargs').argv;
 
-const envs = ['local', 'dev', 'pro'];
-
-const { SRC_ROOT_DIR } = require('./config');
+const { SRC_ROOT_DIR, ENVS } = require('./config');
 
 function getEnv () {
-  if (!envs.includes(env)) {
-    throw new Error(`请使用一下命令：\n\nnpm ${mode === 'development' ? 'start' : 'run build'} -- --env {env} # env 为启动环境，可选：${envs.join('/')}\n\n`);
+  if (!ENVS.includes(env)) {
+    throw new Error(`请使用一下命令：\n\nnpm ${mode === 'development' ? 'start' : 'run build'} -- --env {env} # env 为启动环境，可选：${ENVS.join('/')}\n\n`);
   }
 
   return { mode, env };
@@ -35,7 +33,7 @@ exports.getConfig = function getConfig (config = toml.parse(fs.readFileSync(`${S
 /** 把 config json 文件生成 typings 文件 字符串 */
 exports.getConfigTypings = function getConfigTypings (config, indent = 1, paths = '') {
   const types = {
-    env: `'${envs.join(' \'|\' ')}'`,
+    env: `'${ENVS.join(' \'|\' ')}'`,
     mode: `'development' | 'production'`,
   };
 

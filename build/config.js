@@ -1,3 +1,6 @@
+
+exports.ENVS = ['local', 'dev', 'pro'];
+
 exports.SRC_ROOT_DIR = 'src';
 
 /** 编译生成文件根目录 */
@@ -14,3 +17,4 @@ exports.DIST_IMAGE_DIR = 'images';
 
 /** 编译生成文件：字体 */
 exports.DIST_FONT_DIR = 'fonts';
+
