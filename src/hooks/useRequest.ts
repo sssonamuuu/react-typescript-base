@@ -110,7 +110,7 @@ export default function useRequest<U, T> (
         return data;
       }).catch(e => {
         if (!fetchesRef.current[key]?.cancelled) {
-          const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code);
+          const error = Incorrect.formatTryCatchError(e);
           fetchesRef.current[key] = {
             data: fetchesRef.current[key]?.data ?? {} as T,
             loading: false,

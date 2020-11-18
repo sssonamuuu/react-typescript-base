@@ -31,7 +31,7 @@ function request <T> ({ disableErrorMessage, isFormData, ...option }: RequestMod
       }
       throw new Incorrect(data.code, data.message ?? errorCode[data.code]?.label ?? errorCode.default.label);
     }).catch(e => {
-      const error = e instanceof Incorrect ? e : new Incorrect(errorCode.default.code, e?.message ?? e ?? errorCode.default.label);
+      const error = Incorrect.formatTryCatchError(e);
       !disableErrorMessage && message.error(error.messge);
       // TODO 部分特殊 `code` 处理
       throw error;
