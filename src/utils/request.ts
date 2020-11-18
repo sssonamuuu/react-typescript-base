@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import Incorrect from 'classes/Incorrect';
-import { errorCode } from 'configs/enumerations';
+import { errorCode } from 'enumerations';
 import { message } from 'antd';
 import qs from 'qs';
 

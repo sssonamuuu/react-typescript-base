@@ -1,4 +1,4 @@
-import { errorCode } from 'configs/enumerations';
+import { errorCode } from 'enumerations';
 
 export default class Incorrect {
   /** 格式化 try / catch 中的 error */

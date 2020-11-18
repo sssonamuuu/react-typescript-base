@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Layout, Menu as AntdMenu } from 'antd';
 import menus from 'configs/menus';
 import { Link } from 'react-router-dom';
-import { routerWithInLayout } from 'configs/routres';
+import { routerWithInLayout } from 'routers';
 import useHistory from 'hooks/useHistory';
 
 export default function Menu () {

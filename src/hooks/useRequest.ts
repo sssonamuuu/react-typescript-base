@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Incorrect from 'classes/Incorrect';
-import { errorCode } from 'configs/enumerations';
+import { errorCode } from 'enumerations';
 // import Incorrect from 'classes/Incorrect';
 // import { errorCode } from 'configs/enumerations';
 

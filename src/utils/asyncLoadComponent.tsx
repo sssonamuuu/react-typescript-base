@@ -1,7 +1,7 @@
 import React, { ComponentType, createElement, useEffect, useState } from 'react';
 import BasePlaceholder from 'components/basePlaceholder';
 import Incorrect from 'classes/Incorrect';
-import { errorCode } from 'configs/enumerations';
+import { errorCode } from 'enumerations';
 
 /**
  * 异步加载组件，并在加载中以及加载失败返回一个占位组件
