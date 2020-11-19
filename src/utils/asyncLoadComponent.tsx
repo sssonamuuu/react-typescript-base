@@ -12,7 +12,7 @@ import { errorCode } from 'enumerations';
  * - 当然也可以添加 `webpackChunkName` 注释增加 `webpack` 分块编译输出的文件名
  * @example asyncLoadComponent(() => import(\/* webpackChunkName: "page-home" *\/ 'pages/Home'))
  */
-export default function asyncLoadComponent (fn: () => Promise<{ default: ComponentType }>) {
+export default function asyncLoadComponent (fn: () => Promise<{ default: ComponentType<any> }>) {
   return (props: any) => {
     const [component, setComponent] = useState(<BasePlaceholder status={new Incorrect(errorCode.loading.code, '正在加载页面资源')} />);
 
