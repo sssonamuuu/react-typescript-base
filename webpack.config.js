@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TsconfigPathPlugin = require('tsconfig-paths-webpack-plugin');
 const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
@@ -33,6 +34,8 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
+
+    new ESLintPlugin({ emitError: true, emitWarning: true }),
 
     new ExtraWatchWebpackPlugin({ files: `${SRC_ROOT_DIR}/config.toml` }),
 
