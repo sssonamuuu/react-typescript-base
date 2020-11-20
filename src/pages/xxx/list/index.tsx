@@ -3,7 +3,7 @@ import BasePage from 'components/basePage';
 import { Card, Table } from 'antd';
 import { Link } from 'react-router-dom';
 
-export default (() => (
+export default () => (
   <BasePage
     fullContent
     header={(
@@ -28,4 +28,4 @@ export default (() => (
         ]} />
     </Card>
   </BasePage>
-));
+);

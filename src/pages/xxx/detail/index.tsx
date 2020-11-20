@@ -2,7 +2,7 @@ import React from 'react';
 import BasePage from 'components/basePage';
 import { Card } from 'antd';
 
-export default (() => (
+export default () => (
   <BasePage
     fullContent
     header={(
@@ -10,4 +10,4 @@ export default (() => (
     )}>
     <Card>XXX详情</Card>
   </BasePage>
-));
+);

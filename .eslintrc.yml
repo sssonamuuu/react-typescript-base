@@ -35,13 +35,13 @@ rules:
   '@typescript-eslint/member-delimiter-style': 2
   '@typescript-eslint/semi': 2
   '@typescript-eslint/space-before-function-paren': 2
+  '@typescript-eslint/no-use-before-define': 2
   '@typescript-eslint/no-extra-parens': # 禁止不必要的括号
     - 2
     - all
     - ignoreJSX: all
   no-undef: 2
   no-undefined: 2
-  no-use-before-define: 2
   for-direction: 2 # 强制 “for” 循环中更新子句的计数器朝着正确的方向移动
   getter-return: 2 # 强制 "getter" 函数中出现 "return" 语句
   # no-await-in-loop: 2 # 禁止在循环中出现 await
