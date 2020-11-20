@@ -5,13 +5,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TsconfigPathPlugin = require('tsconfig-paths-webpack-plugin');
 const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-// const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
 const { getEnv, getConfig, addPrefixForObjectKey } = require('./build/tools');
 
-const { mode } = getEnv();
+const { mode = 'development' } = getEnv();
 const config = getConfig();
 
 module.exports = {
@@ -23,14 +23,11 @@ module.exports = {
     publicPath: '/',
     path: path.join(__dirname, DIST_ROOT_DIR),
     chunkFilename: `${DIST_SCRIPT_DIR}/[name].[chunkhash:5].js`,
-    filename: `${DIST_SCRIPT_DIR}/[name].[hash:5].js`,
+    filename: `${DIST_SCRIPT_DIR}/[name].[contenthash:5].js`,
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
     plugins: [new TsconfigPathPlugin()],
-    alias: {
-      'react-dom': '@hot-loader/react-dom',
-    },
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -43,15 +40,16 @@ module.exports = {
       template: `./${SRC_ROOT_DIR}/index.html`,
       filename: `index.html`,
       templateParameters: { config },
-      favicon: `./${SRC_ROOT_DIR}/favicon.ico`,
     }),
 
-    /** 抽离CSS单独打包 */
-    new MiniCssExtractPlugin({
-      disable: mode !== 'production',
-      filename: `${DIST_STYLE_DIR}/[name].[hash:5].css`,
-      chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
-    }),
+    ...mode === 'development' ? [] : [
+      new MiniCssExtractPlugin({
+        filename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
+        chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
+      }),
+
+      new CssMinimizerPlugin({ cache: true }),
+    ],
   ],
   externals: {},
   module: {
@@ -73,7 +71,6 @@ module.exports = {
             },
           },
           { loader: 'ts-loader' },
-          { loader: 'eslint-loader' },
         ],
       },
       {
@@ -132,7 +129,7 @@ module.exports = {
             options: {
               limit: 2 ** 10 * 10,
               esModule: false,
-              name: `${DIST_IMAGE_DIR}/[name].[hash:5].[ext]`,
+              name: `${DIST_IMAGE_DIR}/[name].[contenthash:5].[ext]`,
             },
           },
         ],
@@ -145,12 +142,17 @@ module.exports = {
             options: {
               limit: 2 ** 10 * 10,
               esModule: false,
-              name: `${DIST_FONT_DIR}/[name].[hash:5].[ext]`,
+              name: `${DIST_FONT_DIR}/[name].[contenthash:5].[ext]`,
             },
           },
         ],
       },
     ],
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
   },
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),

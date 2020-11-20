@@ -1,10 +1,9 @@
 import React from 'react';
 import BasePage from 'components/basePage';
-import { hot } from 'react-hot-loader/root';
 import { Card, Table } from 'antd';
 import { Link } from 'react-router-dom';
 
-export default hot(() => (
+export default (() => (
   <BasePage
     fullContent
     header={(

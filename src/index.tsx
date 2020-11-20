@@ -12,13 +12,12 @@ import Layout from 'pages/layout';
 import { ConfigProvider, message } from 'antd';
 import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 
-import { hot } from 'react-hot-loader/root';
 import { routerWithInLayout, routerWithOutLayout } from 'routers';
 import globalConfig from 'config.toml';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
 
-const App = hot(() => (
+const App = (() => (
   /**
      * 设置滚动区域
      *
