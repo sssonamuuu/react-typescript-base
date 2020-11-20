@@ -32,7 +32,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
 
-    new ESLintPlugin({ emitError: true, emitWarning: true }),
+    new ESLintPlugin({ emitError: true, emitWarning: true, extensions: ['ts', 'tsx', 'js']}),
 
     new ExtraWatchWebpackPlugin({ files: `${SRC_ROOT_DIR}/config.toml` }),
 
