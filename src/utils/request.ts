@@ -53,7 +53,7 @@ export default {
       request<R>(mergeParam({ url, method: 'GET' }, option, param));
   },
   post<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
-    return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends void | void | undefined ? {} : { params: P }) & (D extends void | void | undefined ? {} : { data: D })) =>
+    return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: D })) =>
       request<R>(mergeParam({ url, method: 'POST' }, option, param));
   },
 };
