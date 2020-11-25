@@ -1,24 +1,47 @@
-const path = require('path');
+/**
+ * 把 npm script 设置的 TS_NODE_PROJECT 置空
+ *
+ * 否则 TsconfigPathPlugin 也会读取改值
+ */
+process.env['TS_NODE_PROJECT'] = '';
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TsconfigPathPlugin = require('tsconfig-paths-webpack-plugin');
-const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
+import fs from 'fs';
+import path from 'path';
+import yargs from 'yargs';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import TsconfigPathPlugin from 'tsconfig-paths-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import ESLintPlugin from 'eslint-webpack-plugin';
+import webpack from 'webpack';
+import { GlobalConfigProps } from 'typings/config';
+import WebpackDevServer from 'webpack-dev-server';
 
-const { SRC_ROOT_DIR, DIST_FONT_DIR, DIST_IMAGE_DIR, DIST_ROOT_DIR, DIST_SCRIPT_DIR, DIST_STYLE_DIR } = require('./build/config');
-const { getEnv, getConfig, addPrefixForObjectKey } = require('./build/tools');
+const MODE: 'production' | 'development' = yargs.argv.mode !== 'production' ? 'production' : 'development';
 
-const { mode = 'development' } = getEnv();
-const config = getConfig();
+const STATIC = 'Content/refactor';
+const SRC_ROOT_DIR = 'src';
+const DIST_ROOT_DIR = `dist`;
+const CONFIG_DIR = `${SRC_ROOT_DIR}/configs`;
+const DIST_SCRIPT_DIR = `${STATIC}/scripts`;
+const DIST_STYLE_DIR = `${STATIC}/styles`;
+const DIST_IMAGE_DIR = `${STATIC}/images`;
+const DIST_FONT_DIR = `${STATIC}/fonts`;
 
-module.exports = {
-  mode,
-  entry: {
-    index: `./${SRC_ROOT_DIR}/index.tsx`,
-  },
+const ENVS = fs.readdirSync(CONFIG_DIR).reduce<string[]>((p, c) => p.concat(c === 'common.ts' || c === 'index.ts' ? [] : c.replace(/\.ts$/, '')), []);
+const ENV: string = (yargs.argv as any).env || 'local';
+
+if (!ENVS.includes(ENV)) {
+  throw new Error(`请使用一下命令：\n\nnpm ${MODE === 'development' ? 'start' : 'run build'} -- --env {env} # env 为启动环境，可选：${ENVS.join('/')}\n\n`);
+}
+
+const config: GlobalConfigProps = require(`./${CONFIG_DIR}/${ENV}.ts`).default;
+const lessVariable = Object.entries(config.theme).reduce((p, [key, value]) => ({ ...p, [`@${key}`]: value }), {});
+
+const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Configuration} = {
+  mode: MODE,
+  entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',
     path: path.join(__dirname, DIST_ROOT_DIR),
@@ -27,14 +50,17 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
+    alias: {
+      configs: path.resolve(__dirname, CONFIG_DIR, `${ENV}.ts`),
+    },
     plugins: [new TsconfigPathPlugin()],
   },
   plugins: [
     new CleanWebpackPlugin(),
 
-    new ESLintPlugin({ emitError: true, emitWarning: true, extensions: ['ts', 'tsx', 'js']}),
+    new webpack.DefinePlugin({ __ENV__: JSON.stringify(ENV) }),
 
-    new ExtraWatchWebpackPlugin({ files: `${SRC_ROOT_DIR}/config.toml` }),
+    new ESLintPlugin({ emitError: true, emitWarning: true, extensions: ['ts', 'tsx', 'js']}),
 
     new HtmlWebpackPlugin({
       template: `./${SRC_ROOT_DIR}/index.html`,
@@ -42,7 +68,7 @@ module.exports = {
       templateParameters: { config },
     }),
 
-    ...mode === 'development' ? [] : [
+    ...MODE === 'development' ? [] : [
       new MiniCssExtractPlugin({
         filename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
         chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
@@ -54,12 +80,6 @@ module.exports = {
   externals: {},
   module: {
     rules: [
-      {
-        test: /\.toml$/,
-        use: {
-          loader: './build/toml-loader',
-        },
-      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
@@ -77,7 +97,7 @@ module.exports = {
         test: /\.less$/,
         exclude: /node_modules/, // 非 第三方框架的采用 css-modules
         use: [
-          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
             loader: '@teamsupercell/typings-for-css-modules-loader',
           },
@@ -93,7 +113,7 @@ module.exports = {
             options: {
               lessOptions: {
                 javascriptEnabled: true,
-                modifyVars: addPrefixForObjectKey(config.theme, '@'),
+                modifyVars: lessVariable,
               },
             },
           },
@@ -103,7 +123,7 @@ module.exports = {
         test: /\.less$/,
         include: /node_modules/, // 第三方框架的采用 css-loader
         use: [
-          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
           { loader: 'postcss-loader' },
           {
@@ -111,7 +131,7 @@ module.exports = {
             options: {
               lessOptions: {
                 javascriptEnabled: true,
-                modifyVars: addPrefixForObjectKey(config.theme, '@'),
+                modifyVars: lessVariable,
               },
             },
           },
@@ -119,7 +139,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
+        use: [MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
       },
       {
         test: /\.(?:png|jpg|jpeg|gif|ico|svg)$/,
@@ -149,16 +169,13 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
-  },
+  optimization: { splitChunks: { chunks: 'all' } },
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
-    host: '0.0.0.0',
     overlay: { errors: true, warnings: false },
     disableHostCheck: true,
     historyApiFallback: { rewrites: [{ from: /.*/, to: path.posix.join('/', 'index.html') }]},
   },
 };
+
+export default webpackConfig;

@@ -13,7 +13,8 @@ plugins:
   - '@typescript-eslint'
   - html
   - react-hooks
-# globals:
+globals:
+  __ENV__: true
 parserOptions:
   ecmaVersion: 10
   sourceType: module

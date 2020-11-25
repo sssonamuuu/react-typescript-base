@@ -13,11 +13,11 @@ import { ConfigProvider, message } from 'antd';
 import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 
 import { routerWithInLayout, routerWithOutLayout } from 'routers';
-import globalConfig from 'config.toml';
+import globalConfig from 'configs';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
 
-const App = (() => (
+const App = () => (
   /**
      * 设置滚动区域
      *
@@ -44,6 +44,6 @@ const App = (() => (
       </Switch>
     </BrowserRouter>
   </ConfigProvider>
-));
+);
 
 ReactDOM.render(<App />, document.querySelector(`#${globalConfig.theme.rootId}`));
