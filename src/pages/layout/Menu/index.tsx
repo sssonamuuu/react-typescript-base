@@ -6,8 +6,8 @@ import { routerWithInLayout } from 'routers';
 import useHistory from 'hooks/useHistory';
 
 export default function Menu () {
-  const [selectedKeys, setSelectedKeys] = useState<string[]>();
-  const [openKeys, setOpenKeys] = useState<string[]>();
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
   const { location } = useHistory();
 
