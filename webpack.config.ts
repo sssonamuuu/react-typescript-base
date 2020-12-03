@@ -50,9 +50,6 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
-    alias: {
-      configs: path.resolve(__dirname, CONFIG_DIR, `${ENV}.ts`),
-    },
     plugins: [new TsconfigPathPlugin()],
   },
   plugins: [
