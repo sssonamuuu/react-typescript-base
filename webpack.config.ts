@@ -20,9 +20,9 @@ import WebpackDevServer from 'webpack-dev-server';
 
 const MODE: 'production' | 'development' = yargs.argv.mode !== 'production' ? 'production' : 'development';
 
-const STATIC = 'Content/refactor';
 const SRC_ROOT_DIR = 'src';
 const DIST_ROOT_DIR = `dist`;
+const STATIC = 'static';
 const CONFIG_DIR = `${SRC_ROOT_DIR}/configs`;
 const DIST_SCRIPT_DIR = `${STATIC}/scripts`;
 const DIST_STYLE_DIR = `${STATIC}/styles`;
