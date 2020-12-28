@@ -2,7 +2,7 @@ window.Promise = Promise;
 
 import 'index.less';
 
-import React, { createElement } from 'react';
+import React, { createElement, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import zhCN from 'antd/es/locale/zh_CN';
@@ -13,27 +13,52 @@ import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 import routes from 'routers';
 import globalConfig from 'configs';
 import Layout from 'layouts/default';
+import useHistory from 'hooks/useHistory';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
 
-const Index = () => (
-  <React.Fragment>
-    {routes.map(route => {
-      const paths = route.routes.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []);
-      const children = route.routes.map(child => <Route key={`${child.path}`} exact path={child.path} component={child.component} />);
+const Index = () => {
+  const history = useHistory();
 
-      if (route.layout) {
-        return (
-          <Route key={`${paths}`} exact path={paths}>
-            {createElement(Layout, { children })}
-          </Route>
-        );
+  function findCurrentRoute (pathname: string) {
+    for (const route of routes) {
+      for (const child of route.routes) {
+        if (Array.isArray(child.path) ? child.path.includes(pathname) : child.path === pathname) {
+          return child;
+        }
       }
+    }
+    return void 0;
+  }
 
-      return children;
-    })}
-  </React.Fragment>
-);
+  function setTitle (title?: string) {
+    document.title = title || 'unset';
+  }
+
+  useEffect(() => {
+    setTitle(findCurrentRoute(history.location.pathname)?.title);
+    history.listen((s: any) => setTitle(findCurrentRoute(s.pathname)?.title));
+  }, []);
+
+  return (
+    <React.Fragment>
+      {routes.map(route => {
+        const paths = route.routes.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []);
+        const children = route.routes.map(child => <Route key={`${child.path}`} exact path={child.path} component={child.component} />);
+
+        if (route.layout) {
+          return (
+            <Route key={`${paths}`} exact path={paths}>
+              {createElement(Layout, { children })}
+            </Route>
+          );
+        }
+
+        return children;
+      })}
+    </React.Fragment>
+  );
+};
 
 const App = () => (
   /**
