@@ -2,17 +2,15 @@ window.Promise = Promise;
 
 import 'index.less';
 
-import React from 'react';
+import React, { createElement } from 'react';
 import ReactDOM from 'react-dom';
 
 import zhCN from 'antd/es/locale/zh_CN';
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
-import Layout from 'pages/layout';
 import { ConfigProvider, message } from 'antd';
 import { ANTD_POPUP_CONTAINER } from 'components/basePage';
-
-import { routerWithInLayout, routerWithOutLayout } from 'routers';
+import routes from 'routers';
 import globalConfig from 'configs';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
@@ -33,14 +31,16 @@ const App = () => (
     <BrowserRouter>
       <Switch>
         {/* 这些必须放在最前面，否则会优先渲染 path = '/' 的路由*/}
-        {routerWithOutLayout.map(route => <Route key={`${route.path}`} {...route} />)}
-        <Route
-          path="/"
-          component={() => (
-            <Layout>
-              {routerWithInLayout.map(route => <Route key={`${route.path}`} {...route} />)}
-            </Layout>
-          )} />
+        {routes.map(route => {
+          const paths = route.children ? route.children.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []) : route.path;
+          const children = route.children?.map(child => <Route key={`child.path`} exact path={child.path} component={child.component} />);
+
+          if (route.component && route.children) {
+            return <Route key={`${paths}`} exact path={paths} component={() => createElement(route.component!, { children })} />;
+          }
+
+          return <Route key={`${paths}`} exact path={paths} component={route.component} />;
+        })}
       </Switch>
     </BrowserRouter>
   </ConfigProvider>

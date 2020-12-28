@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Layout, Menu as AntdMenu } from 'antd';
-import menus from 'pages/layout/Menu/menus';
+import menus from './menus';
 import { Link } from 'react-router-dom';
-import { routerWithInLayout } from 'routers';
 import useHistory from 'hooks/useHistory';
+import routes from 'routers';
 
 export default function Menu () {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
@@ -24,7 +24,7 @@ export default function Menu () {
     let currentMenuActivePath: string = pathname;
 
     /** 查找当前路由，如果有 `activeMenuPath` 配置，修改其值 */
-    const currentRoute = routerWithInLayout.find(route => Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname);
+    const currentRoute = routes.find(route => Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname);
 
     if (currentRoute?.activeMenuPath) {
       currentMenuActivePath = currentRoute.activeMenuPath;
