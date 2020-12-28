@@ -24,10 +24,14 @@ export default function Menu () {
     let currentMenuActivePath: string = pathname;
 
     /** 查找当前路由，如果有 `activeMenuPath` 配置，修改其值 */
-    const currentRoute = routes.find(route => Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname);
-
-    if (currentRoute?.activeMenuPath) {
-      currentMenuActivePath = currentRoute.activeMenuPath;
+    for (const route of routes) {
+      for (const child of route.routes) {
+        if (Array.isArray(child.path) ? child.path.includes(pathname) : child.path === pathname) {
+          if (child.activeMenuPath) {
+            currentMenuActivePath = child.activeMenuPath;
+          }
+        }
+      }
     }
 
     for (const menu of menus) {

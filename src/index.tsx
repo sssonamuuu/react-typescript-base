@@ -12,8 +12,28 @@ import { ConfigProvider, message } from 'antd';
 import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 import routes from 'routers';
 import globalConfig from 'configs';
+import Layout from 'layouts/default';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
+
+const Index = () => (
+  <React.Fragment>
+    {routes.map(route => {
+      const paths = route.routes.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []);
+      const children = route.routes.map(child => <Route key={`${child.path}`} exact path={child.path} component={child.component} />);
+
+      if (route.layout) {
+        return (
+          <Route key={`${paths}`} exact path={paths}>
+            {createElement(Layout, { children })}
+          </Route>
+        );
+      }
+
+      return children;
+    })}
+  </React.Fragment>
+);
 
 const App = () => (
   /**
@@ -25,22 +45,12 @@ const App = () => (
      *
      */
   <ConfigProvider
-    prefixCls={globalConfig.theme['ant-prefix']}
     locale={zhCN}
+    prefixCls={globalConfig.theme['ant-prefix']}
     getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
     <BrowserRouter>
       <Switch>
-        {/* 这些必须放在最前面，否则会优先渲染 path = '/' 的路由*/}
-        {routes.map(route => {
-          const paths = route.children ? route.children.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []) : route.path;
-          const children = route.children?.map(child => <Route key={`child.path`} exact path={child.path} component={child.component} />);
-
-          if (route.component && route.children) {
-            return <Route key={`${paths}`} exact path={paths} component={() => createElement(route.component!, { children })} />;
-          }
-
-          return <Route key={`${paths}`} exact path={paths} component={route.component} />;
-        })}
+        <Route path="/" component={Index} />
       </Switch>
     </BrowserRouter>
   </ConfigProvider>

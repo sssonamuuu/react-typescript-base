@@ -1,22 +1,28 @@
+import { ComponentType } from 'react';
 import { RouteProps } from 'react-router-dom';
 import asyncLoadComponent from 'utils/asyncLoadComponent';
 
-interface RouteConfig extends Omit<RouteProps, 'children'> {
-  /** 当前路由的活跃菜单 path */
-  activeMenuPath?: string;
-  /** 如果有children，path不生效，会读取children的内容 */
-  path?: string | string[];
-  children?: Omit<RouteConfig, 'children'>[];
+interface RouteConfig {
+  layout?: ComponentType<any>;
+  routes: Array<RouteProps & {
+    /** 当前路由的活跃菜单 path */
+    activeMenuPath?: string;
+  }>;
 }
 
 const routes: RouteConfig[] = [
   {
-    path: '/login',
-    component: asyncLoadComponent(() => import(/* webpackChunkName: "page-login" */ 'pages/login')),
+    layout: void 0,
+    routes: [
+      {
+        path: '/login',
+        component: asyncLoadComponent(() => import(/* webpackChunkName: "page-login" */ 'pages/login')),
+      },
+    ],
   },
   {
-    component: asyncLoadComponent(() => import(/* webpackChunkName: "layout-default" */ 'layouts/default')),
-    children: [
+    layout: asyncLoadComponent(() => import(/* webpackChunkName: "layout-default" */ 'layouts/default')),
+    routes: [
       {
         path: '/',
         component: asyncLoadComponent(() => import(/* webpackChunkName: "page-home" */ 'pages/home')),
