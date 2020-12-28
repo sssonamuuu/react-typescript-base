@@ -14,7 +14,7 @@ const common: CommonConfigProps = {
     rootId: 'app',
     /** 暂时不要更改，ant部分组件存在不生效问题 */
     'ant-prefix': 'ant',
-    'primary-color': '#FF9602',
+    'primary-color': '#0170fe',
     'label-color': '#6E7F9C',
   },
 };

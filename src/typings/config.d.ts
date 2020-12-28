@@ -9,10 +9,10 @@ export interface CommonConfigProps {
    */
   theme: {
     /** 根节点ID */
-    rootId: 'app';
-    'ant-prefix': 'ant';
-    'primary-color': '#FF9602';
-    'label-color': '#6E7F9C';
+    rootId: string;
+    'ant-prefix': string;
+    'primary-color': string;
+    'label-color': string;
   };
 }
 
