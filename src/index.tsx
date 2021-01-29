@@ -45,15 +45,11 @@ const Index = () => {
         const paths = route.routes.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []);
         const children = route.routes.map(child => <Route key={`${child.path}`} exact path={child.path} component={child.component} />);
 
-        if (route.layout) {
-          return (
-            <Route key={`${paths}`} exact path={paths}>
-              {createElement(route.layout, { children })}
-            </Route>
-          );
-        }
-
-        return children;
+        return route.layout ? (
+          <Route key={`${paths}`} exact path={paths}>
+            {createElement(route.layout, { children })}
+          </Route>
+        ) : children;
       })}
     </React.Fragment>
   );
