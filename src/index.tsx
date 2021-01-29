@@ -12,7 +12,6 @@ import { ConfigProvider, message } from 'antd';
 import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 import routes from 'routers';
 import globalConfig from 'configs';
-import Layout from 'layouts/default';
 import useHistory from 'hooks/useHistory';
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
@@ -49,7 +48,7 @@ const Index = () => {
         if (route.layout) {
           return (
             <Route key={`${paths}`} exact path={paths}>
-              {createElement(Layout, { children })}
+              {createElement(route.layout, { children })}
             </Route>
           );
         }

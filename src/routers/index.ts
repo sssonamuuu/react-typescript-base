@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 import { RouteProps } from 'react-router-dom';
 import asyncLoadComponent from 'utils/asyncLoadComponent';
+import Layout from 'layouts/default';
 
 interface RouteConfig {
   layout?: ComponentType<any>;
@@ -23,7 +24,7 @@ const routes: RouteConfig[] = [
     ],
   },
   {
-    layout: asyncLoadComponent(() => import(/* webpackChunkName: "layout-default" */ 'layouts/default')),
+    layout: Layout,
     routes: [
       {
         title: '首页',
