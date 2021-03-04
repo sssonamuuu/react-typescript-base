@@ -18,7 +18,8 @@ export default function useHistory <T extends { [key: string]: FormatType }> (pa
   /** 根据 param 类型 格式化 参数 */
   Object.entries<FormatType>((param || {}) as any).forEach(([key, value]) => {
     if (value === 'number') {
-      query[key] = Number(query[key]) as unknown as any;
+      const number = Number(query[key]);
+      query[key] = isNaN(number) ? void 0 : number as unknown as any;
     }
   });
 
