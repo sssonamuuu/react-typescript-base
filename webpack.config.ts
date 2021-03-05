@@ -41,9 +41,9 @@ const lessVariable = Object.entries(config.theme).reduce((p, [key, value]) => ({
 
 const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Configuration} = {
   mode: MODE,
-  cache: {
-    type: 'filesystem',
-  },
+  target: 'web',
+  cache: MODE === 'development' ? { type: 'filesystem' } : void 0,
+  devtool: MODE === 'development' ? 'eval-cheap-module-source-map' : void 0,
   entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',
@@ -143,38 +143,39 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       },
       {
         test: /\.(?:png|jpg|jpeg|gif|ico|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 2 ** 10 * 10,
-              esModule: false,
-              name: `${DIST_IMAGE_DIR}/[name].[contenthash:5].[ext]`,
-            },
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024,
           },
-        ],
+        },
+        generator: {
+          filename: `${DIST_IMAGE_DIR}/[name].[contenthash:5].[ext]`,
+        },
       },
       {
         test: /\.(?:eot|ttf|woff|otf)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 2 ** 10 * 10,
-              esModule: false,
-              name: `${DIST_FONT_DIR}/[name].[contenthash:5].[ext]`,
-            },
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024,
           },
-        ],
+        },
+        generator: {
+          filename: `${DIST_FONT_DIR}/[name].[contenthash:5].[ext]`,
+        },
       },
     ],
   },
-  optimization: { splitChunks: { chunks: 'all' } },
+  optimization: {
+    splitChunks: { chunks: 'all' },
+    chunkIds: 'named',
+  },
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
     overlay: { errors: true, warnings: false },
     disableHostCheck: true,
-    historyApiFallback: { rewrites: [{ from: /.*/, to: path.posix.join('/', 'index.html') }]},
+    historyApiFallback: true,
   },
 };
 
