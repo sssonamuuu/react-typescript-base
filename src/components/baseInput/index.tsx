@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { onKeyDownIfEnter } from 'utils/keyboardEvent';
 
 interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   value?: string;
@@ -17,13 +18,14 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   negative?: boolean;
   trim?: boolean;
   search?: boolean;
-  onSearch?(value?: string): void;
+  onEnter?(value?: string): void;
   onChange?(value?: string): void;
   /** 仅在search下生效 */
   loading?: boolean;
 }
 
-export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onSearch, loading = false, trim = true, negative, ...props }: BaseInputProps) {
+export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onEnter, loading = false, trim = true, negative, ...props }: BaseInputProps) {
+  const ref = useRef<Input>(null);
   const lastValue = useRef(value);
   const [currentValue, setCurrentValue] = useState(lastValue.current);
 
@@ -47,22 +49,32 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
     setCurrentValue(calcValue(e.target.value));
   }
 
+  function resetValue (val: string) {
+    let value = trim ? val.trim() : val;
+
+    if (valueType === 'number') {
+      value = value && !isNaN(Number(value)) ? `${Number(value)}` : '';
+    }
+
+    return value;
+  }
+
+  function onKeyDown () {
+    ref.current?.blur();
+    const val = resetValue(currentValue || '');
+    setCurrentValue(val);
+    setTimeout(() => onEnter?.(val), 0);
+  }
+
   return (
     <Input
+      ref={ref}
       autoComplete="off"
       spellCheck={false}
-      suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onSearch?.(currentValue)} /> : void 0}
-      onKeyDown={e => e.keyCode === 13 && onSearch?.(currentValue)}
+      suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
+      onKeyDown={e => onKeyDownIfEnter(e, onKeyDown)}
       onFocus={e => e.target.readOnly = false}
-      onBlur={e => {
-        let value = trim ? e.target.value.trim() : e.target.value;
-
-        if (valueType === 'number') {
-          value = value && !isNaN(Number(value)) ? `${Number(value)}` : '';
-        }
-
-        setCurrentValue(value);
-      }}
+      onBlur={e => setCurrentValue(resetValue(e.target.value))}
       {...props}
       value={currentValue}
       onChange={onChangeHandle} />
