@@ -37,6 +37,7 @@ const BaseFileUpload = forwardRef(({
   height = 100,
   errorMessage = '上传失败',
   accept = '*',
+  onChange,
 }: BaseFileUploadProps, ref: Ref<BaseFileUploadRef>) => {
   /** 在上传的回调中 无法获取到最新的 datas */
   const datasRef = useRef<DataItem[]>([]);
@@ -80,6 +81,7 @@ const BaseFileUpload = forwardRef(({
             setDatas([...datasRef.current]);
           });
       }));
+      onChange?.(datasRef.current.map(item => item.url));
     } catch (e) {
       errorMessage && message.error(errorMessage);
       /** 抛出错误，让后续操作终止 */
