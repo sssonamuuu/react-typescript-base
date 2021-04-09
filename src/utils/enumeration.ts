@@ -13,7 +13,7 @@ type DataItem<C, O> = {
 type EnumItemBuild<K, C> = {
   is (key: K): boolean;
   in (keys: K[]): boolean;
-  eq (code: C): boolean;
+  eq (code?: C): boolean;
 };
 
 type EnumItem<K, C, O> = EnumItemBuild<K, C> & DataItem<C, O>;

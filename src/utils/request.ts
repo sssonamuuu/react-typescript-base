@@ -7,6 +7,7 @@ import qs from 'qs';
 interface RequestModel extends AxiosRequestConfig {
   /** 默认错误会进行 `message.error` 提示，是否禁用 */
   disableErrorMessage?: boolean;
+  isFormUrlencoded?: boolean;
   isFormData?: boolean;
 }
 
@@ -17,8 +18,16 @@ interface ResponseModel<T> {
   success: boolean;
 }
 
-function request <T> ({ disableErrorMessage, isFormData, ...option }: RequestModel): Promise<T> {
+function request <T> ({ disableErrorMessage, isFormData, isFormUrlencoded, ...option }: RequestModel): Promise<T> {
   if (isFormData) {
+    option.headers = { ...option.headers, 'Content-Type': 'multipart/form-data' };
+    const formdata = new FormData();
+    for (const key in option.data || {}) {
+      formdata.append(key, option.data[key]);
+    }
+    option.data = formdata;
+  }
+  if (isFormUrlencoded) {
     option.headers = { ...option.headers, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' };
     option.data = qs.stringify(option.data);
   }
