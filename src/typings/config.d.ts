@@ -17,7 +17,7 @@ export interface CommonConfigProps {
 }
 
 export interface EvnConfigProps {
-  testEnv: string
+  testEnv: string;
 }
 
 export interface GlobalConfigProps extends CommonConfigProps, EvnConfigProps {}
