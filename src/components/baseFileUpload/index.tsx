@@ -56,7 +56,7 @@ const BaseFileUpload = forwardRef(({
     if (files?.length) {
       const filesArr = [...files];
       /** 如果有限制，裁剪多余的文件 */
-      limit && filesArr.splice(limit - datas.length);
+      limit && filesArr.splice(limit - datas.length + (index !== void 0 ? 1 : 0));
       const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item }));
       index === void 0 ? datas.push(...filesDatas) : datas.splice(index, 1, ...filesDatas);
       setDatas([...datas]);
@@ -105,10 +105,13 @@ const BaseFileUpload = forwardRef(({
             </div>
           </BaseImage>
         ))}
-        <label className={`${style.item} ${style.upload}`} style={{ width, height }}>
-          <PlusOutlined className={globalStyle.fs30} />
-          <input accept={accept} multiple hidden type="file" onChange={onSelectImage} />
-        </label>
+        {/* 没有限制或者没有超过限制才能继续添加 */}
+        {!limit || limit - datas.length > 0 ? (
+          <label className={`${style.item} ${style.upload}`} style={{ width, height }}>
+            <PlusOutlined className={globalStyle.fs30} />
+            <input accept={accept} multiple hidden type="file" onChange={onSelectImage} />
+          </label>
+        ) : null}
       </div>
     </BaseImage.PhotoProvider>
   );
