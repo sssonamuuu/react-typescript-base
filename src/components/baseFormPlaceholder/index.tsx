@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import Incorrect from 'classes/Incorrect';
-import { errorCode } from 'enumerations';
+import errorCode from 'enumerations/errorCode';
 import globalStyle from 'index.less';
 import { Input } from 'antd';
 import { RedoOutlined } from '@ant-design/icons';

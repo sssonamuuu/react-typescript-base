@@ -3,7 +3,7 @@ import globalStyle from 'index.less';
 import Incorrect from 'classes/Incorrect';
 import style from './index.less';
 import { Spin, Button, Empty } from 'antd';
-import { errorCode } from 'enumerations';
+import errorCode from 'enumerations/errorCode';
 
 interface BasePlaceholderProps {
   status: Incorrect;
