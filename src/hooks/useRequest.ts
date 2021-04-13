@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Incorrect from 'classes/Incorrect';
-import { errorCode } from 'enumerations';
-// import Incorrect from 'classes/Incorrect';
-// import { errorCode } from 'configs/enumerations';
+import errorCode from 'enumerations/errorCode';
 
 interface UseRequestOption<U, T> {
   /** 请求参数 */
@@ -74,12 +72,18 @@ export default function useRequest<U, T> (
 
   const setData = useCallback((data: T, key: string | number = DEFALUT_KEY) => {
     fetchesRef.current[key] = {
-      loading: false,
-      cancelled: false,
-      error: null,
-      placeholder: null,
-      ...fetchesRef.current[key],
+      ...fetchesRef.current[key] as any,
       data,
+    };
+    setFetches({ ...fetchesRef.current });
+  }, [fetches]);
+
+  const setPlaceholder = useCallback((placeholder: any, key: string | number = DEFALUT_KEY) => {
+    const error = placeholder ? Incorrect.formatTryCatchError(placeholder) : null;
+    fetchesRef.current[key] = {
+      ...fetchesRef.current[key] as any,
+      error,
+      placeholder: error,
     };
     setFetches({ ...fetchesRef.current });
   }, [fetches]);
@@ -135,6 +139,7 @@ export default function useRequest<U, T> (
     fetches,
     run,
     setData,
+    setPlaceholder,
     loading: Object.keys(fetches).some(key => fetches[key]?.loading),
   };
 }
