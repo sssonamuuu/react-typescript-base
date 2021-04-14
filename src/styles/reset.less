@@ -26,7 +26,18 @@
   }
 
   /** select value 过长，form inline 自动换行问题 */
-  .ant-form-item-control {
+  .@{ant-prefix}-form-item-control {
     overflow: hidden;
+  }
+
+  .@{ant-prefix}-message {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .@{ant-prefix}-form-item-control {
+    .@{ant-prefix}-picker {
+      width: 100%;
+    }
   }
 }
