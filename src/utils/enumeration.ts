@@ -25,6 +25,7 @@ type EnumCodeRes<K, C, O> = {[key: string]: undefined | EnumItem<K, C, O>};
 type EnumBuildIn<K extends string, C, O> = {
   $list (this: EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>, excludes?: K | K[]): EnumItem<K, C, O>[];
   $map <R>(this: EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>, fn: (item: EnumItem<K, C, O>) => R, excludes?: K | K[]): R[];
+  $options (excludes?: K | K[]): { value: C; label: string }[];
 };
 
 type Enum<K extends string, C, O> = EnumBuildIn<K, C, O> & EnumKeyRes<K, C, O> & EnumCodeRes<K, C, O>;
@@ -66,6 +67,9 @@ export default function enumeration <K extends string, C = number, O = {}> (data
     },
     $map (fn, excludes) {
       return this.$list(excludes).map(fn);
+    },
+    $options (excludes = []) {
+      return this.$map(item => ({ label: item.label || `${item.code}`, value: item.code }), excludes);
     },
   };
 
