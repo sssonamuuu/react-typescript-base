@@ -22,7 +22,7 @@ export default function useHistory <T extends { [key: string]: FormatType }> (pa
       const number = Number(query[key]);
       query[key] = isNaN(number) ? void 0 : number as unknown as any;
     } else if (value === 'boolean') {
-      query[key] = !!value as any;
+      query[key] = query[key] === 'true' ? true : false as any;
     }
   });
 
