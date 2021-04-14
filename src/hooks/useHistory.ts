@@ -2,12 +2,13 @@ import { useHistory as useRcHistory } from 'react-router-dom';
 import qs from 'qs';
 import { useMemo } from 'react';
 
-type FormatType = 'number' | 'string';
+type FormatType = 'number' | 'string' | 'boolean';
 
 type Query<T extends { [key: string]: FormatType }> = { [K in keyof T]?: T[K] extends 'string' ? string : T[K] extends 'number' ? number : never };
 
 function formatUrl (url: string, data: any) {
-  return `${url}${url.includes('?') ? '&' : '?'}${qs.stringify(data)}`;
+  const dataStr = qs.stringify(data);
+  return `${url}${url.includes('?') ? '&' : dataStr ? '?' : ''}${dataStr}`;
 }
 
 export default function useHistory <T extends { [key: string]: FormatType }> (param?: T) {
@@ -20,6 +21,8 @@ export default function useHistory <T extends { [key: string]: FormatType }> (pa
     if (value === 'number') {
       const number = Number(query[key]);
       query[key] = isNaN(number) ? void 0 : number as unknown as any;
+    } else if (value === 'boolean') {
+      query[key] = !!value as any;
     }
   });
 
