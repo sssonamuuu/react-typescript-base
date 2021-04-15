@@ -1,7 +1,7 @@
 declare namespace IndexLessNamespace {
   export interface IIndexLess {
-    contentHasTitle: string;
-    title: string;
+    isTop: string;
+    subtitle: string;
   }
 }
 

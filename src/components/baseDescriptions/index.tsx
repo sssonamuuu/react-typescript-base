@@ -1,5 +1,4 @@
-import style from './index.less';
-import React, { Fragment, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import globalStyle from 'index.less';
 import { Row, Col } from 'antd';
 
@@ -21,8 +20,6 @@ interface BaseDescriptionsItem {
 }
 
 interface BaseDescriptionsProps {
-  title?: string;
-  titleClassName?: string;
   className?: string;
   layout?: Layout;
   labelAlign?: Align;
@@ -37,8 +34,6 @@ interface BaseDescriptionsProps {
 }
 
 export default function BaseDescriptions ({
-  title,
-  titleClassName = '',
   descriptions = [],
   layout = 'horizontal',
   className = '',
@@ -49,40 +44,37 @@ export default function BaseDescriptions ({
   colon = true,
 }: BaseDescriptionsProps) {
   return (
-    <Fragment>
-      {title ? <h3 className={`${style.title} ${titleClassName}`}>{title}</h3> : null}
-      <Row gutter={[10, 20]} className={`${className} ${title ? style.contentHasTitle : ''}`}>
-        {descriptions.map(({
-          label,
-          value,
-          className: itemClassName = '',
-          span: itemSpan = span,
-          labelAlign: itemLabelAlign = labelAlign,
-          layout: itemLayout = layout,
-          labelWidth: itemLabelWidth = labelWidth,
-          defaultValue: itemDefaultValue = defaultValue,
-          colon: itemColon = colon,
-        }) => (
-          <Col
-            style={{ flexDirection: itemLayout === 'horizontal' ? 'row' : 'column' }}
-            className={`${globalStyle.dFlex} ${itemClassName}`}
-            span={itemSpan}
-            key={`${label}`}>
-            <span
-              className={`${globalStyle.mr10} ${globalStyle.flexShrink0} ${globalStyle.fcLabel}`}
-              style={{
-                textAlign: itemLabelAlign,
-                width: itemLabelAlign === 'left' ? 'auto' : itemLabelWidth,
-              }}>
-              {label}
-              {itemColon ? <span className={globalStyle.px2}>:</span> : ''}
-            </span>
-            <span style={{ flex: 1, marginTop: itemLayout === 'horizontal' ? 0 : 10 }}>
-              {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
-            </span>
-          </Col>
-        ))}
-      </Row>
-    </Fragment>
+    <Row gutter={[10, 20]} className={`${className}`}>
+      {descriptions.map(({
+        label,
+        value,
+        className: itemClassName = '',
+        span: itemSpan = span,
+        labelAlign: itemLabelAlign = labelAlign,
+        layout: itemLayout = layout,
+        labelWidth: itemLabelWidth = labelWidth,
+        defaultValue: itemDefaultValue = defaultValue,
+        colon: itemColon = colon,
+      }) => (
+        <Col
+          style={{ flexDirection: itemLayout === 'horizontal' ? 'row' : 'column' }}
+          className={`${globalStyle.dFlex} ${itemClassName}`}
+          span={itemSpan}
+          key={`${label}`}>
+          <span
+            className={`${globalStyle.mr10} ${globalStyle.flexShrink0} ${globalStyle.fcLabel}`}
+            style={{
+              textAlign: itemLabelAlign,
+              width: itemLabelAlign === 'left' ? 'auto' : itemLabelWidth,
+            }}>
+            {label}
+            {itemColon ? <span className={globalStyle.px2}>:</span> : ''}
+          </span>
+          <span style={{ flex: 1, marginTop: itemLayout === 'horizontal' ? 0 : 10 }}>
+            {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
+          </span>
+        </Col>
+      ))}
+    </Row>
   );
 }
