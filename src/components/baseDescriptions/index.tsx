@@ -38,7 +38,7 @@ export default function BaseDescriptions ({
   layout = 'horizontal',
   className = '',
   labelAlign = 'left',
-  labelWidth = 150,
+  labelWidth = 100,
   span,
   defaultValue = '--',
   colon = true,
