@@ -1,6 +1,8 @@
-import React, { ReactNode } from 'react';
-import { Form } from 'antd';
+import globalStyle from 'index.less';
+import React, { Fragment, ReactNode } from 'react';
+import { Form, Tooltip } from 'antd';
 import { FormItemProps } from 'antd/lib/form';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 export interface BaseFormInstance<T> {
   /** 获取某个字段的值 */
@@ -24,9 +26,22 @@ interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdat
   children?: ReactNode | ((form: BaseFormInstance<T>) => ReactNode);
   shouldUpdate?: boolean | ((prev: T, next: T) => boolean);
   dependencies?: (keyof T)[];
+  question?: React.ReactNode;
 }
 
-export default function BaseFormItem<T> (props: BaseFormItemProps<T>) {
-  return <Form.Item {...props as unknown as FormItemProps} />;
+export default function BaseFormItem<T> ({ label, question, ...props }: BaseFormItemProps<T>) {
+  return (
+    <Form.Item
+      {...props as unknown as FormItemProps} label={(
+        <Fragment>
+          {label}
+          {question ? (
+            <Tooltip overlay={question}>
+              <QuestionCircleOutlined className={globalStyle.px5} />
+            </Tooltip>
+          ) : null}
+        </Fragment>
+      )} />
+  );
 }
 
