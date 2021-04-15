@@ -24,7 +24,7 @@ export default function BaseAdvancedSearch <T> ({
   ...props
 }: BaseAdvancedSearchProps<T>) {
   return (
-    <BaseForm {...props} className={`${style.searchBox} ${className}`}>
+    <BaseForm {...props} className={className}>
       <Row gutter={10}>
         {Children.map(children, child => child ? (
           <Col span={6}>
