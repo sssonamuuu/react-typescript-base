@@ -13,6 +13,10 @@ export interface CommonConfigProps {
     'ant-prefix': string;
     'primary-color': string;
     'label-color': string;
+    'link-color': string;
+    'success-color': string;
+    'warning-color': string;
+    'error-color': string;
   };
 }
 

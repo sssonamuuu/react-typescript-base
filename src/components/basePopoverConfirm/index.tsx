@@ -36,8 +36,8 @@ export default function BasePopoverConfirm ({ title, message, okText = '确认',
       content={(
         <div className={style.popover}>
           <Space direction="vertical" size={10}>
-            <div className={style.title}>{title}</div>
-            <div className={style.content}>{message}</div>
+            {title ? <div className={style.title}>{title}</div> : null}
+            {message ? <div className={style.content}>{message}</div> : null}
           </Space>
           <div className={style.ctrl}>
             <Button size="small" onClick={onCancelClick}>{cancelText}</Button>
