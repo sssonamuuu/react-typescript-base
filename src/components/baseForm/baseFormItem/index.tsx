@@ -32,7 +32,7 @@ interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdat
 export default function BaseFormItem<T> ({ label, question, ...props }: BaseFormItemProps<T>) {
   return (
     <Form.Item
-      {...props as unknown as FormItemProps} label={(
+      {...props as unknown as FormItemProps} label={label ? (
         <Fragment>
           {label}
           {question ? (
@@ -41,7 +41,7 @@ export default function BaseFormItem<T> ({ label, question, ...props }: BaseForm
             </Tooltip>
           ) : null}
         </Fragment>
-      )} />
+      ) : null} />
   );
 }
 
