@@ -2,10 +2,11 @@ window.Promise = Promise;
 
 import 'index.less';
 
-import React, { createElement, useEffect } from 'react';
+import React, { createElement, useEffect, useReducer } from 'react';
 import ReactDOM from 'react-dom';
 
 import zhCN from 'antd/es/locale/zh_CN';
+import 'moment/locale/zh-cn';
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { ConfigProvider, message } from 'antd';
@@ -13,6 +14,10 @@ import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 import routes from 'routers';
 import globalConfig from 'configs';
 import useHistory from 'hooks/useHistory';
+import moment from 'moment';
+import { StoreContext, storeDefaultValue, storeReducer } from 'stores';
+
+moment.locale('zh-cn');
 
 message.config({ prefixCls: `${globalConfig.theme['ant-prefix']}-message` });
 
@@ -55,7 +60,9 @@ const Index = () => {
   );
 };
 
-const App = () => (
+const App = () => {
+  const [stores, reducer] = useReducer(storeReducer, storeDefaultValue);
+
   /**
      * 设置滚动区域
      *
@@ -64,16 +71,21 @@ const App = () => (
      * 否则为 body 滚动
      *
      */
-  <ConfigProvider
-    locale={zhCN}
-    prefixCls={globalConfig.theme['ant-prefix']}
-    getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
-    <BrowserRouter>
-      <Switch>
-        <Route path="/" component={Index} />
-      </Switch>
-    </BrowserRouter>
-  </ConfigProvider>
-);
+  return (
+
+    <ConfigProvider
+      locale={zhCN}
+      prefixCls={globalConfig.theme['ant-prefix']}
+      getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
+      <StoreContext.Provider value={{ stores, reducer }}>
+        <BrowserRouter>
+          <Switch>
+            <Route path="/" component={Index} />
+          </Switch>
+        </BrowserRouter>
+      </StoreContext.Provider>
+    </ConfigProvider>
+  );
+};
 
 ReactDOM.render(<App />, document.querySelector(`#${globalConfig.theme.rootId}`));
