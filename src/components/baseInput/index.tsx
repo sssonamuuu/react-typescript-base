@@ -6,7 +6,11 @@ import { onKeyDownIfEnter } from 'utils/keyboardEvent';
 
 interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   value?: string;
-  valueType?: 'number' | '';
+  /**
+   * numberText: number类型的字符串，仅作用于限制number类型文本输入
+   * number: onchange会转换成 number 类型的数据 如001会返回 1
+   */
+  valueType?: 'numberText' | 'number' | 'phone';
   /**
    * 是否去掉首尾空格，默认：`true`
    */
@@ -34,8 +38,11 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
   function calcValue (value: string = '') {
     switch (valueType) {
       case 'number':
+      case 'numberText':
         const matches = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`));
         return matches?.[0] ?? '';
+      case 'phone':
+        return value.replace(/[^\d()+]/, '');
       default: return value;
     }
   }
