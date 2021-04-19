@@ -1,7 +1,7 @@
 import globalStyle from 'index.less';
 import React, { Fragment, ReactNode } from 'react';
 import { Form, Tooltip } from 'antd';
-import { FormItemProps } from 'antd/lib/form';
+import { FormItemProps, RuleObject } from 'antd/lib/form';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 export interface BaseFormInstance<T> {
@@ -21,12 +21,13 @@ export interface BaseFormInstance<T> {
   validateFields: <K extends keyof T>(names?: K[]) => Promise<T>;
 }
 
-interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdate' | 'dependencies'> {
+interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdate' | 'dependencies' | 'rules'> {
   name?: keyof T;
   children?: ReactNode | ((form: BaseFormInstance<T>) => ReactNode);
   shouldUpdate?: boolean | ((prev: T, next: T) => boolean);
   dependencies?: (keyof T)[];
   question?: React.ReactNode;
+  rules?: Array<RuleObject | ((form: BaseFormInstance<T>) => RuleObject)>;
 }
 
 export default function BaseFormItem<T> ({ label, question, ...props }: BaseFormItemProps<T>) {

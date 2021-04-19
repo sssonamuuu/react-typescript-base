@@ -4,6 +4,7 @@ import BaseFormItem, { BaseFormInstance } from './baseFormItem';
 
 export interface BaseFormProps<T> extends Omit<FormProps, 'form'> {
   initialValues?: T;
+  onValuesChange?: (changeValue: Partial<T>, values: T) => void;
   form?: BaseFormInstance<T>;
 }
 
