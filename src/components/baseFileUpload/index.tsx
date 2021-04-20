@@ -44,11 +44,18 @@ const BaseFileUpload = forwardRef(({
   const [datas, setDatas] = useState<DataItem[]>([]);
 
   useEffect(() => {
-    setDatas(value?.map(item => ({ url: item })) || []);
+    if (`${datasRef.current.map(item => item.url)}` !== `${datas.map(item => item.url)}`) {
+      const urlFiles = datasRef.current.reduce((p, item) => ({ ...p, [item.url]: item.file }), {});
+      setDatas(value?.map(item => ({ url: item, file: urlFiles[item] })) || []);
+    }
   }, [value]);
 
   useEffect(() => {
-    datasRef.current = datas;
+    if (`${datasRef.current.map(item => item.url)}` !== `${datas.map(item => item.url)}`) {
+      onChange?.(datas.map(item => item.url));
+    }
+    /** 重新生成一个，避免使用push改变了 datasRef.current 导致上述判断未生效 */
+    datasRef.current = [...datas];
   }, [datas]);
 
   function onSelectImage (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
@@ -75,13 +82,14 @@ const BaseFileUpload = forwardRef(({
         if (!item.file) {
           return Promise.resolve();
         }
-        return Promise.resolve({ Data: 'TODO:图片上传接口' })
-          .then(res => {
-            datasRef.current[index] = { url: res.Data };
-            setDatas([...datasRef.current]);
+        return Promise.resolve('TODO:图片上传接口')
+          .then(url => {
+            /** 重新生成一个，避免使用push改变了 datasRef.current 导致上述判断未生效 */
+            const datasCopy = [...datasRef.current];
+            datasCopy[index] = { url };
+            setDatas([...datasCopy]);
           });
       }));
-      onChange?.(datasRef.current.map(item => item.url));
     } catch (e) {
       errorMessage && message.error(errorMessage);
       /** 抛出错误，让后续操作终止 */
