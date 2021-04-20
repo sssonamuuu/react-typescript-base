@@ -674,6 +674,7 @@ declare namespace IndexLessNamespace {
     py7: string;
     py8: string;
     py9: string;
+    redLink: string;
     scrollX: string;
     scrollY: string;
     toe1: string;

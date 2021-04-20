@@ -1,0 +1,39 @@
+/** 单页居中的 form */
+.formPageCenter {
+  width: 520px;
+  margin: auto !important;
+}
+
+/** form 弹窗 */
+.formModal {
+  width: 750px !important;
+}
+
+
+/** 根据formlabel 的文本长度设置 formitem的label宽度 */
+.formLabelLoop (@i) when (@i >= 2) {
+
+  /** (after 的 *) + (每个字的宽度) +  (before 的 :) */
+  @width: 12px + (14px * @i) + 12px;
+
+  .formLabelFontMaxLen@{i} {
+    :global {
+      .@{ant-prefix}-form-item-label {
+        width: @width;
+      }
+      .c-base-description-label {
+        width: @width;
+      }
+    }
+
+
+    .formOffsetBox {
+      padding-left: @width;
+    }
+  }
+
+  .formLabelLoop(@i - 1);
+}
+
+.formLabelLoop (10);
+

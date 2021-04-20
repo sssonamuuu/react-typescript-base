@@ -31,6 +31,8 @@ interface BaseDescriptionsProps {
   defaultValue?: string;
   /** 是否显示冒号，默认显示 */
   colon?: boolean;
+  /** 带有副标题的缩进 */
+  indent?: boolean;
 }
 
 export default function BaseDescriptions ({
@@ -38,13 +40,14 @@ export default function BaseDescriptions ({
   layout = 'horizontal',
   className = '',
   labelAlign = 'left',
-  labelWidth = 100,
+  labelWidth,
   span,
   defaultValue = '--',
   colon = true,
+  indent = true,
 }: BaseDescriptionsProps) {
   return (
-    <Row gutter={[10, 20]} className={`${className}`}>
+    <Row gutter={[10, 20]} className={`${className} ${indent ? globalStyle.px10 : ''}`}>
       {descriptions.map(({
         label,
         value,
@@ -62,13 +65,13 @@ export default function BaseDescriptions ({
           span={itemSpan}
           key={`${label}`}>
           <span
-            className={`${globalStyle.mr10} ${globalStyle.flexShrink0} ${globalStyle.fcLabel}`}
+            className={`${globalStyle.flexShrink0} ${globalStyle.fcLabel} c-base-description-label`}
             style={{
               textAlign: itemLabelAlign,
               width: itemLabelAlign === 'left' ? 'auto' : itemLabelWidth,
             }}>
             {label}
-            {itemColon ? <span className={globalStyle.px2}>:</span> : ''}
+            <span className={`${globalStyle.pl2} ${globalStyle.pr8}`} style={{ visibility: itemColon ? 'visible' : 'hidden' }}>:</span>
           </span>
           <span style={{ flex: 1, marginTop: itemLayout === 'horizontal' ? 0 : 10 }}>
             {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
