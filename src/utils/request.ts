@@ -7,8 +7,11 @@ import qs from 'qs';
 interface RequestModel extends AxiosRequestConfig {
   /** 默认错误会进行 `message.error` 提示，是否禁用 */
   disableErrorMessage?: boolean;
+  /** 返回数据是否包裹 Code/data 等字段，默认否 */
+  wrapResponseModel?: boolean;
   isFormUrlencoded?: boolean;
   isFormData?: boolean;
+  intercept? (res: any): ResponseModel<any>;
 }
 
 interface ResponseModel<T> {
@@ -18,7 +21,14 @@ interface ResponseModel<T> {
   success: boolean;
 }
 
-function request <T> ({ disableErrorMessage, isFormData, isFormUrlencoded, ...option }: RequestModel): Promise<T> {
+function request <T> ({
+  disableErrorMessage,
+  isFormData,
+  isFormUrlencoded,
+  wrapResponseModel,
+  intercept,
+  ...option
+}: RequestModel): Promise<T> {
   if (isFormData) {
     option.headers = { ...option.headers, 'Content-Type': 'multipart/form-data' };
     const formdata = new FormData();
@@ -27,6 +37,7 @@ function request <T> ({ disableErrorMessage, isFormData, isFormUrlencoded, ...op
     }
     option.data = formdata;
   }
+
   if (isFormUrlencoded) {
     option.headers = { ...option.headers, 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' };
     option.data = qs.stringify(option.data);
@@ -35,9 +46,13 @@ function request <T> ({ disableErrorMessage, isFormData, isFormUrlencoded, ...op
   return axios
     .request<ResponseModel<T>>(option)
     .then(({ data }) => {
+      /** 拦截处理数据 */
+      data = intercept ? intercept(data) : data;
+
       if (data.success) {
-        return data.data;
+        return wrapResponseModel ? data : data.data as any;
       }
+
       throw new Incorrect(data.code, data.message ?? errorCode[data.code]?.label ?? errorCode.default.label);
     }).catch(e => {
       const error = Incorrect.formatTryCatchError(e);
