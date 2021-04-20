@@ -34,7 +34,7 @@ export default function BaseAdvancedSearch <T> ({
         <Col span={6}>
           <div className={style.searchCtrlBox}>
             <Button {...resetBtnProps} onClick={onReset}>重置</Button>
-            <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={onSearch}>查询</Button>
+            <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={() => onSearch?.()}>查询</Button>
           </div>
         </Col>
       </Row>
