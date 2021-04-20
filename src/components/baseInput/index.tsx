@@ -83,7 +83,7 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
       /** 添加只读，在聚焦时再设置为可填 ，处理chrome自动填充问题 */
       readOnly
       /** 防止本身设置的 readonly 属性 */
-      onFocus={e => e.target.readOnly = props.readOnly || false}
+      onFocus={e => e.target.readOnly = props.readOnly ?? false}
       onBlur={e => setCurrentValue(resetValue(e.target.value))}
       {...props}
       value={currentValue}
