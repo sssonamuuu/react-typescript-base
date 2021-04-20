@@ -14,6 +14,7 @@ interface BasePopoverConfirmProps extends Omit<PopoverProps, 'content'> {
 }
 
 export default function BasePopoverConfirm ({ title, message, okText = '确认', cancelText = '取消', onOk, onCancel, ...props }: BasePopoverConfirmProps) {
+  const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
 
   function onCancelClick () {
@@ -22,8 +23,12 @@ export default function BasePopoverConfirm ({ title, message, okText = '确认',
   }
 
   async function onOkClick () {
-    await onOk?.();
-    setVisible(false);
+    setLoading(true);
+    try {
+      await onOk?.();
+      setVisible(false);
+    } catch {}
+    setLoading(false);
   }
 
   return (
@@ -41,7 +46,7 @@ export default function BasePopoverConfirm ({ title, message, okText = '确认',
           </Space>
           <div className={style.ctrl}>
             <Button size="small" onClick={onCancelClick}>{cancelText}</Button>
-            <Button type="primary" size="small" className={globalStyle.ml10} onClick={onOkClick}>{okText}</Button>
+            <Button type="primary" size="small" loading={loading} className={globalStyle.ml10} onClick={onOkClick}>{okText}</Button>
           </div>
         </div>
       )} />
