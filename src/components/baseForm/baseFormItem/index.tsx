@@ -1,6 +1,6 @@
 import globalStyle from 'index.less';
 import React, { Fragment, ReactNode } from 'react';
-import { Form, Tooltip } from 'antd';
+import { Form, Tooltip, TooltipProps } from 'antd';
 import { FormItemProps, RuleObject } from 'antd/lib/form';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -27,22 +27,23 @@ interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdat
   shouldUpdate?: boolean | ((prev: T, next: T) => boolean);
   dependencies?: (keyof T)[];
   question?: React.ReactNode;
+  questionProps?: Omit<TooltipProps, 'overlay'>;
   rules?: Array<RuleObject | ((form: BaseFormInstance<T>) => RuleObject)>;
 }
 
-export default function BaseFormItem<T> ({ label, question, ...props }: BaseFormItemProps<T>) {
+export default function BaseFormItem<T> ({ label, question, questionProps, ...props }: BaseFormItemProps<T>) {
   return (
     <Form.Item
       {...props as unknown as FormItemProps} label={label ? (
         <Fragment>
           {label}
           {question ? (
-            <Tooltip overlay={question}>
+            <Tooltip overlay={question} {...questionProps} overlayStyle={{ maxWidth: 'unset', ...questionProps?.overlayStyle }}>
               <QuestionCircleOutlined className={globalStyle.px5} />
             </Tooltip>
           ) : null}
         </Fragment>
-      ) : null} />
+      ) : void 0} />
   );
 }
 
