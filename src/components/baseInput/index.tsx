@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
-import { InputProps } from 'antd/lib/input';
+import { InputProps, TextAreaProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { onKeyDownIfEnter } from 'utils/keyboardEvent';
 
@@ -92,4 +92,31 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
 }
 
 BaseInput.Group = Input.Group;
-BaseInput.TextArea = Input.TextArea;
+
+interface BaseTextAreaProps extends Omit<TextAreaProps, 'onChange'> {
+  /** 默认Ture */
+  trim?: boolean;
+  onChange?(value?: string): void;
+}
+
+function BaseTextArea ({ value, trim = true, onChange, ...props }: BaseTextAreaProps) {
+  const lastValue = useRef(value);
+  const [currentValue, setCurrentValue] = useState(value);
+
+  useEffect(() => setCurrentValue(value), [value]);
+
+  useEffect(() => {
+    lastValue.current !== currentValue && onChange?.(currentValue as string);
+    lastValue.current = currentValue;
+  }, [currentValue]);
+
+  return (
+    <Input.TextArea
+      {...props}
+      value={currentValue}
+      onChange={e => setCurrentValue(e.target.value)}
+      onBlur={e => setCurrentValue(trim ? e.target.value.trim() : e.target.value)} />
+  );
+}
+
+BaseInput.TextArea = BaseTextArea;
