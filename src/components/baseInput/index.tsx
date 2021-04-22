@@ -39,10 +39,9 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
     switch (valueType) {
       case 'number':
       case 'numberText':
-        const matches = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`));
-        return matches?.[0] ?? '';
+        return value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`))?.[0] ?? '';
       case 'phone':
-        return value.replace(/[^\d()+]/, '');
+        return value.match(/1\d{0,10}/)?.[0] ?? '';
       default: return value;
     }
   }
