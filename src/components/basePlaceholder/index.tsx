@@ -29,6 +29,7 @@ export default function BasePlaceholder ({ status, height }: BasePlaceholderProp
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={status.messge} />
           );
         }
+
         return (
           <Fragment>
             <div className={style.errorIcon} />
