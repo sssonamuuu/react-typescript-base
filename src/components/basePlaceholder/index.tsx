@@ -15,7 +15,7 @@ export default function BasePlaceholder ({ status, height }: BasePlaceholderProp
   return (
     <div className={style.box} style={{ height }}>
       {(() => {
-        if (errorCode[status.code]?.is('loading')) {
+        if (errorCode.loading.eq(status.code)) {
           return (
             <Fragment>
               <Spin />
@@ -24,7 +24,7 @@ export default function BasePlaceholder ({ status, height }: BasePlaceholderProp
           );
         }
 
-        if (errorCode[status.code]?.is('nodata')) {
+        if (errorCode.nodata.eq(status.code)) {
           return (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={status.messge} />
           );

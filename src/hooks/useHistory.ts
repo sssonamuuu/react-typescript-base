@@ -14,17 +14,21 @@ function formatUrl (url: string, data: any) {
 export default function useHistory <T extends { [key: string]: FormatType }> (param?: T) {
   const history = useRcHistory();
 
-  const query = useMemo(() => qs.parse(history.location.search.replace(/^\?/, '')), [history]);
+  const query = useMemo(() => {
+    const query = qs.parse(history.location.search.replace(/^\?/, ''));
 
-  /** 根据 param 类型 格式化 参数 */
-  Object.entries<FormatType>((param || {}) as any).forEach(([key, value]) => {
-    if (value === 'number') {
-      const number = Number(query[key]);
-      query[key] = isNaN(number) ? void 0 : number as unknown as any;
-    } else if (value === 'boolean') {
-      query[key] = query[key] === 'true' ? true : false as any;
-    }
-  });
+    /** 根据 param 类型 格式化 参数 */
+    Object.entries<FormatType>((param || {}) as any).forEach(([key, value]) => {
+      if (value === 'number') {
+        const number = Number(query[key]);
+        query[key] = isNaN(number) ? void 0 : number as unknown as any;
+      } else if (value === 'boolean') {
+        query[key] = query[key] === 'true' ? true : false as any;
+      }
+    });
+
+    return query;
+  }, [history]);
 
   return {
     ...history,
