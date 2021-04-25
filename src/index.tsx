@@ -15,7 +15,7 @@ import { RouteItemProps, routesArr } from 'routers';
 import globalConfig from 'configs';
 import moment from 'moment';
 import { StoreContext, storeDefaultValue, storeReducer } from 'stores';
-import findCurrentRoute, { history, useLocationChange } from 'utils/navigation';
+import { history, navigation, useLocationChange } from 'utils/navigation';
 
 moment.locale('zh-cn');
 
@@ -37,7 +37,7 @@ const App = () => {
   }, []);
 
   useLocationChange(() => {
-    const currentRoute = findCurrentRoute(location.pathname);
+    const currentRoute = navigation.findCurrentRoute(location.pathname);
 
     document.title = currentRoute ? currentRoute.title : 'unknow';
   });
