@@ -5,6 +5,8 @@ import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { onKeyDownIfEnter } from 'utils/keyboardEvent';
 
 interface BaseInputProps extends Omit<InputProps, 'onChange'> {
+  /** 默认 off */
+  autoComplete?: 'on' | 'off';
   value?: string;
   /**
    * numberText: number类型的字符串，仅作用于限制number类型文本输入
@@ -28,7 +30,7 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   loading?: boolean;
 }
 
-export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onEnter, loading = false, trim = true, negative, ...props }: BaseInputProps) {
+export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onEnter, autoComplete = 'off', loading = false, trim = true, negative, ...props }: BaseInputProps) {
   const ref = useRef<Input>(null);
   const lastValue = useRef(value);
   const [currentValue, setCurrentValue] = useState(lastValue.current);
@@ -75,16 +77,18 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
   return (
     <Input
       ref={ref}
-      autoComplete="off"
+      autoComplete={autoComplete}
       spellCheck={false}
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
       onKeyDown={e => onKeyDownIfEnter(e, onKeyDown)}
-      /** 添加只读，在聚焦时再设置为可填 ，处理chrome自动填充问题 */
-      readOnly
-      /** 防止本身设置的 readonly 属性 */
-      onFocus={e => e.target.readOnly = props.readOnly ?? false}
       onBlur={e => setCurrentValue(resetValue(e.target.value))}
       {...props}
+      {...autoComplete === 'off' ? {
+        /** 添加只读，在聚焦时再设置为可填 ，处理chrome自动填充问题 */
+        readOnly: props.readOnly ?? true,
+        /** 防止本身设置的 readonly 属性 */
+        onFocus: e => e.target.readOnly = props.readOnly ?? false,
+      } : {}}
       value={currentValue}
       onChange={onChangeHandle} />
   );
