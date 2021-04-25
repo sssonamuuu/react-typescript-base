@@ -3,14 +3,14 @@
  * 已知类型 使用 navigation.push/replace/link/open
  */
 
-import { RouteProps, routes, routesArr } from 'routers';
+import { RouteItemWithNameProps, RouteProps, routes, routesMap } from 'routers';
 import { createBrowserHistory, History } from 'history';
 import qs from 'qs';
 import { useEffect } from 'react';
 
 /** 查找当前的路由配置 */
-export default function findCurrentRoute (pathname: string = location.pathname) {
-  return routesArr.find(value => Array.isArray(value.path) ? value.path.map(p => p.toLowerCase()).includes(pathname.toLowerCase()) : value.path.toLowerCase() === pathname.toLowerCase());
+export default function findCurrentRoute (pathname: string = location.pathname): RouteItemWithNameProps | undefined {
+  return routesMap[pathname.toLowerCase()];
 }
 
 export const history = createBrowserHistory() as (History & {

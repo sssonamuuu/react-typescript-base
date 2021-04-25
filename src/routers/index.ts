@@ -51,5 +51,10 @@ export const routes = {
 
 export type RouteProps = typeof routes;
 
-export const routesArr: Array<RouteItemProps & { $name: keyof RouteProps }> = Object.entries(routes).map(([key, value]) => ({ ...value, $name: key as keyof RouteProps }));
+export interface RouteItemWithNameProps extends RouteItemProps { $name: keyof RouteProps }
+
+export const routesArr: RouteItemWithNameProps[] = Object.entries(routes).map(([key, value]) => ({ ...value, $name: key as keyof RouteProps }));
+
+/** 以 url(全小写，带首/) 为 key，方便通过url查找查找 */
+export const routesMap: { [key: string]: RouteItemWithNameProps } = routesArr.reduce((p, c) => Array.isArray(c.path) ? { ...p, ...c.path.reduce((pp, cc) => ({ ...pp, [cc.toLowerCase()]: c }), {}) } : { ...p, [c.path.toLowerCase()]: c }, {});
 
