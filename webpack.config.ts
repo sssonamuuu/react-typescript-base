@@ -42,8 +42,7 @@ const lessVariable = Object.entries(config.theme).reduce((p, [key, value]) => ({
 const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Configuration} = {
   mode: MODE,
   target: 'web',
-  cache: MODE === 'development' ? { type: 'filesystem' } : void 0,
-  devtool: MODE === 'development' ? 'eval-cheap-module-source-map' : void 0,
+  devtool: MODE === 'development' ? 'source-map' : void 0,
   entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',

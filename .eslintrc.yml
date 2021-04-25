@@ -138,15 +138,15 @@ rules:
     - onlyEquality: true
   no-delete-var: 2
   #  格式   #
-  array-bracket-newline:
-    - 2
-    - multiline: true
+  # array-bracket-newline:
+  #   - 2
+  #   - multiline: true
   array-bracket-spacing:
     - 2
     - never
-  array-element-newline:
-    - 2
-    - multiline: true
+  # array-element-newline:
+  #   - 2
+  #   - multiline: true
   block-spacing:
     - 2
     - always

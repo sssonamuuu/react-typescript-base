@@ -1,49 +1,55 @@
 import { ComponentType } from 'react';
-import { RouteProps } from 'react-router-dom';
 import asyncLoadComponent from 'utils/asyncLoadComponent';
 import Layout from 'layouts/default';
+import { XxxDetailPageQuery } from 'pages/xxx/detail';
 
-interface RouteConfig {
+export interface RouteItemProps {
+  path: string | string[];
+
+  component?: ComponentType<any>;
+
+  /** 会更新document title */
+  title: string;
+
   layout?: ComponentType<any>;
-  routes: Array<RouteProps & {
-    title: string;
-    /** 当前路由的活跃菜单 path */
-    activeMenuPath?: string;
-  }>;
+
+  /** 用于指定部分不在菜单上的路由指定当前菜单 */
+  activeMenusPath?: string;
 }
 
-const routes: RouteConfig[] = [
-  {
-    layout: void 0,
-    routes: [
-      {
-        title: '登录',
-        path: '/login',
-        component: asyncLoadComponent(() => import(/* webpackChunkName: "page-login" */ 'pages/login')),
-      },
-    ],
-  },
-  {
-    layout: Layout,
-    routes: [
-      {
-        title: '首页',
-        path: '/',
-        component: asyncLoadComponent(() => import(/* webpackChunkName: "page-home" */ 'pages/home')),
-      },
-      {
-        title: 'xxx',
-        path: '/xxx',
-        component: asyncLoadComponent(() => import(/* webpackChunkName: "page-xxx-list" */ 'pages/xxx/list')),
-      },
-      {
-        title: 'xxx-detail',
-        path: '/xxx-detail',
-        component: asyncLoadComponent(() => import(/* webpackChunkName: "page-xxx-detail" */ 'pages/xxx/detail')),
-        activeMenuPath: '/xxx',
-      },
-    ],
-  },
-];
+/** $query 这里不使用，仅用于ts签名获取 */
+function generatorRoute <T> ({ ...params }: RouteItemProps): RouteItemProps & { $query: T } {
+  return { ...params, $query: {} as T };
+}
 
-export default routes;
+export const routes = {
+  login: generatorRoute({
+    title: '登录',
+    path: '/login',
+    component: asyncLoadComponent(() => import('pages/login')),
+  }),
+  index: generatorRoute({
+    layout: Layout,
+    title: '首页',
+    path: '/',
+    component: asyncLoadComponent(() => import('pages/home')),
+  }),
+  list: generatorRoute({
+    layout: Layout,
+    title: 'xxx',
+    path: '/xxx',
+    component: asyncLoadComponent(() => import('pages/xxx/list')),
+  }),
+  detail: generatorRoute<XxxDetailPageQuery>({
+    layout: Layout,
+    title: 'xxx-detail',
+    path: '/xxx-detail',
+    component: asyncLoadComponent(() => import('pages/xxx/detail')),
+    activeMenusPath: '/xxx',
+  }),
+};
+
+export type RouteProps = typeof routes;
+
+export const routesArr: Array<RouteItemProps & { $name: keyof RouteProps }> = Object.entries(routes).map(([key, value]) => ({ ...value, $name: key as keyof RouteProps }));
+

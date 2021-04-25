@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Layout, Menu as AntdMenu } from 'antd';
 import menus from './menus';
 import { Link } from 'react-router-dom';
-import useHistory from 'hooks/useHistory';
-import routes from 'routers';
+import { useLocationChange } from 'utils/navigation';
+import { routesArr } from 'routers';
 
 export default function Menu () {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  const { location } = useHistory();
-
-  useEffect(() => {
+  useLocationChange(() => {
     const pathname = location.pathname;
 
     /**
@@ -19,17 +17,15 @@ export default function Menu () {
      *
      * 默认取当前页面的地址 `location.pathname`
      *
-     * 如果对应的 `route` 设置有 `activeMenuPath`，取 `activeMenuPath`
+     * 如果对应的 `route` 设置有 `activeMenusPath`，取 `activeMenusPath`
      */
     let currentMenuActivePath: string = pathname;
 
-    /** 查找当前路由，如果有 `activeMenuPath` 配置，修改其值 */
-    for (const route of routes) {
-      for (const child of route.routes) {
-        if (Array.isArray(child.path) ? child.path.includes(pathname) : child.path === pathname) {
-          if (child.activeMenuPath) {
-            currentMenuActivePath = child.activeMenuPath;
-          }
+    /** 查找当前路由，如果有 `activeMenusPath` 配置，修改其值 */
+    for (const route of routesArr) {
+      if (Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname) {
+        if (route.activeMenusPath) {
+          currentMenuActivePath = route.activeMenusPath;
         }
       }
     }
@@ -48,7 +44,7 @@ export default function Menu () {
         break;
       }
     }
-  }, [location]);
+  });
 
   const onOpenChange = useCallback((values: string[]) => setOpenKeys(values.length ? [values[values.length - 1]] : []), []);
 
