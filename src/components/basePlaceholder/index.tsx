@@ -33,7 +33,6 @@ export default function BasePlaceholder ({ status, height }: BasePlaceholderProp
         return (
           <Fragment>
             <div className={style.errorIcon} />
-            <div className={style['error-icon']} />
             <span className={`${globalStyle.fcLabel} ${globalStyle.mt5}`}>{status.messge}</span>
             <div className={`${globalStyle.mt20}`}>
               <Button onClick={() => location.href = '/'}>返回首页</Button>
