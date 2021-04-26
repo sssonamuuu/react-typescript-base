@@ -73,7 +73,7 @@ export default function BaseDescriptions ({
             {label}
             <span className={`${globalStyle.pl2} ${globalStyle.pr8}`} style={{ visibility: itemColon ? 'visible' : 'hidden' }}>:</span>
           </span>
-          <span style={{ flex: 1, marginTop: itemLayout === 'horizontal' ? 0 : 10 }}>
+          <span className={`${globalStyle.wbBreakAll} ${globalStyle.flex1} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}>
             {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
           </span>
         </Col>
