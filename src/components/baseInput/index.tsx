@@ -82,6 +82,9 @@ export default function BaseInput ({
       case 'letter':
         value = value.match(/[a-z]*/i)?.[0] ?? '';
         break;
+      case 'letter-number':
+        value = value.match(/[a-z0-9]*/i)?.[0] ?? '';
+        break;
     }
 
     value = transform === 'upper' ? value.toUpperCase() : transform === 'lower' ? value.toLowerCase() : value;
