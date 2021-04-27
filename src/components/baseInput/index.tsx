@@ -5,24 +5,32 @@ import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { onKeyDownIfEnter } from 'utils/keyboardEvent';
 
 interface BaseInputProps extends Omit<InputProps, 'onChange'> {
+  /**
+   * number: 只能是数字
+   * letter: 只能是字母 不区分大小写
+   * letter-number: 数字和字母
+   * phone: 1开头的11位数字
+   * tel: 只能输入数字和中横线 最多输入20位
+   * idcard: 只能是数数字和X (小写x默认转大写)) 最多输入18位
+   */
+  valueType?: 'number' | 'phone' | 'tel' | 'idcard' | 'letter' | 'letter-number';
+  /**
+   * 仅 valueType === 'number' 生效, 表示小数精度
+   */
+  decimal?: number;
+  /** 仅 valueType === 'number' 生效， 是否可以使用负数 */
+  negative?: boolean;
+  /**
+   * number: 仅 valueType === 'number' 生效，使返回的内容为 number 类型而非 string， 但是前置0会被取消掉，如 001结果为 1;
+   * upper: 内容相关字母转大写
+   * lower: 内容相关字母小写
+   */
+  transform?: 'number' | 'upper' | 'lower';
+  /** 是否去掉首尾空格，默认：`true` */
+  trim?: boolean;
   /** 默认 off */
   autoComplete?: 'on' | 'off';
   value?: string;
-  /**
-   * numberText: number类型的字符串，仅作用于限制number类型文本输入
-   * number: onchange会转换成 number 类型的数据 如001会返回 1
-   */
-  valueType?: 'numberText' | 'number' | 'phone';
-  /**
-   * 是否去掉首尾空格，默认：`true`
-   */
-  /**
-   * 如果是 number decimal 表示小数精度
-   */
-  decimal?: number;
-  /** 是否可以使用负数 */
-  negative?: boolean;
-  trim?: boolean;
   search?: boolean;
   onEnter?(value?: string): void;
   onChange?(value?: string): void;
@@ -30,23 +38,25 @@ interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   loading?: boolean;
 }
 
-export default function BaseInput ({ value, onChange, valueType, decimal = 0, search = false, onEnter, autoComplete = 'off', loading = false, trim = true, negative, ...props }: BaseInputProps) {
+export default function BaseInput ({
+  valueType,
+  decimal = 0,
+  search = false,
+  onEnter,
+  loading = false,
+  trim = true,
+  transform,
+  negative,
+  value,
+  onChange,
+  autoComplete = 'off',
+  ...props
+}: BaseInputProps) {
   const ref = useRef<Input>(null);
   const lastValue = useRef(value);
   const [currentValue, setCurrentValue] = useState(lastValue.current);
 
   useEffect(() => setCurrentValue(value), [value]);
-
-  function calcValue (value: string = '') {
-    switch (valueType) {
-      case 'number':
-      case 'numberText':
-        return value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`))?.[0] ?? '';
-      case 'phone':
-        return value.match(/1\d{0,10}/)?.[0] ?? '';
-      default: return value;
-    }
-  }
 
   useEffect(() => {
     lastValue.current !== currentValue && onChange?.(currentValue);
@@ -54,13 +64,34 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
   }, [currentValue]);
 
   function onChangeHandle (e: ChangeEvent<HTMLInputElement>) {
-    setCurrentValue(calcValue(e.target.value));
+    let value = e.target.value || '';
+
+    switch (valueType) {
+      case 'number':
+        value = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`))?.[0] ?? '';
+        break;
+      case 'phone':
+        value = value.match(/1\d{0,10}/)?.[0] ?? '';
+        break;
+      case 'tel':
+        value = value.match(/[\d-]{0,20}/)?.[0] ?? '';
+        break;
+      case 'idcard':
+        value = value.toUpperCase().match(/[\dx]{0,18}/i)?.[0] ?? '';
+        break;
+      case 'letter':
+        value = value.match(/[a-z]*/i)?.[0] ?? '';
+        break;
+    }
+
+    value = transform === 'upper' ? value.toUpperCase() : transform === 'lower' ? value.toLowerCase() : value;
+    setCurrentValue(value);
   }
 
-  function resetValue (val: string) {
-    let value = trim ? val.trim() : val;
+  function transformValue (val: string = '') {
+    value = trim ? val.trim() : val;
 
-    if (valueType === 'number') {
+    if (valueType === 'number' && transform === 'number') {
       value = value && !isNaN(Number(value)) ? `${Number(value)}` : '';
     }
 
@@ -69,7 +100,7 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
 
   function onKeyDown () {
     ref.current?.blur();
-    const val = resetValue(currentValue || '');
+    const val = transformValue(currentValue);
     setCurrentValue(val);
     setTimeout(() => onEnter?.(val), 0);
   }
@@ -81,7 +112,7 @@ export default function BaseInput ({ value, onChange, valueType, decimal = 0, se
       spellCheck={false}
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
       onKeyDown={e => onKeyDownIfEnter(e, onKeyDown)}
-      onBlur={e => setCurrentValue(resetValue(e.target.value))}
+      onBlur={e => setCurrentValue(transformValue(e.target.value))}
       {...props}
       {...autoComplete === 'off' ? {
         /** 添加只读，在聚焦时再设置为可填 ，处理chrome自动填充问题 */
