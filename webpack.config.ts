@@ -43,6 +43,12 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
   mode: MODE,
   target: 'web',
   devtool: MODE === 'development' ? 'source-map' : void 0,
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
+  },
   entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',
@@ -173,6 +179,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
     overlay: { errors: true, warnings: false },
+    host: '0.0.0.0',
     disableHostCheck: true,
     historyApiFallback: true,
   },
