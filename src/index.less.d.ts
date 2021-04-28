@@ -5,8 +5,11 @@ declare namespace IndexLessNamespace {
     cup: string;
     dFlex: string;
     dFlexColumn: string;
+    fcError: string;
     fcLabel: string;
     fcPrimary: string;
+    fcSuccess: string;
+    fcWarning: string;
     fcWhite: string;
     flex1: string;
     flexShrink0: string;
@@ -680,6 +683,8 @@ declare namespace IndexLessNamespace {
     toe1: string;
     toe2: string;
     toe3: string;
+    wbBreakAll: string;
+    wsNowrap: string;
   }
 }
 
