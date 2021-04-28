@@ -4,4 +4,4 @@ dist
 package-lock.json
 yarn.lock
 $Recycle.Bin
-.vscode
+.webpack-cache

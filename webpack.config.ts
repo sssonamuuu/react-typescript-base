@@ -48,6 +48,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     buildDependencies: {
       config: [__filename],
     },
+    cacheDirectory: path.join(__dirname, '.webpack-cache', ENV),
   },
   entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
