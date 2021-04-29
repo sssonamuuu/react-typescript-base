@@ -1,6 +1,6 @@
 import React, { cloneElement, ReactElement, Children } from 'react';
 import BaseForm, { BaseFormProps } from 'components/baseForm';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Grid } from 'antd';
 import globalStyle from 'index.less';
 import style from './index.less';
 import { ButtonProps } from 'antd/es/button';
@@ -23,19 +23,27 @@ export default function BaseAdvancedSearch <T> ({
   onReset,
   ...props
 }: BaseAdvancedSearchProps<T>) {
+  const screen = Grid.useBreakpoint();
+
+  const itemCountePreLine = screen.xxl ? 4 : 3;
+  const childCount = Children.count(children) + 1;
+  const offset = (Math.ceil(childCount / itemCountePreLine) * itemCountePreLine - childCount) * (24 / itemCountePreLine);
+
   return (
     <BaseForm {...props} className={className}>
       <Row gutter={10}>
         {Children.map(children, child => child ? (
-          <Col span={6}>
+          <Col span={8} xxl={6}>
             {cloneElement(child)}
           </Col>
         ) : null)}
-        <Col span={6}>
-          <div className={style.searchCtrlBox}>
-            <Button {...resetBtnProps} onClick={onReset}>重置</Button>
-            <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={() => onSearch?.()}>查询</Button>
-          </div>
+        <Col span={8} xxl={6} offset={offset}>
+          <BaseForm.Item>
+            <div className={style.searchCtrlBox}>
+              <Button {...resetBtnProps} onClick={onReset}>重置</Button>
+              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={() => onSearch?.()}>查询</Button>
+            </div>
+          </BaseForm.Item>
         </Col>
       </Row>
     </BaseForm>
