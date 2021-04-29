@@ -11,6 +11,8 @@ interface BaseFileUploadProps {
   onChange?(value?: string[]): void;
   /** 最大文件数，0表示不限 */
   limit?: number;
+  /** 大小限制, 默认10M，单位 M */
+  size?: number;
   /** 每一项的宽度，默认 100 */
   width?: number;
   /** 每一项的高度，默认 100 */
@@ -33,6 +35,7 @@ export interface BaseFileUploadRef {
 const BaseFileUpload = forwardRef(({
   value,
   limit,
+  size = 10,
   width = 100,
   height = 100,
   errorMessage = '上传失败',
@@ -60,14 +63,22 @@ const BaseFileUpload = forwardRef(({
 
   function onSelectImage (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
     const files = e.target.files;
+
     if (files?.length) {
       const filesArr = [...files];
-      /** 如果有限制，裁剪多余的文件 */
-      limit && filesArr.splice(limit - datas.length + (index !== void 0 ? 1 : 0));
-      const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item }));
-      index === void 0 ? datas.push(...filesDatas) : datas.splice(index, 1, ...filesDatas);
-      setDatas([...datas]);
+      if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
+        message.error(`单个文件大小不能超过${size}M！`);
+      } else {
+        /** 如果有限制，裁剪多余的文件 */
+        limit && filesArr.splice(limit - datas.length + (index !== void 0 ? 1 : 0));
+        const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item }));
+        index === void 0 ? datas.push(...filesDatas) : datas.splice(index, 1, ...filesDatas);
+        setDatas([...datas]);
+      }
     }
+
+    /** 清空当前input，避免重选同一张图不触发onchange事件 */
+    e.target.value = '';
   }
 
   function onDelete (index: number) {
