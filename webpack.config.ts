@@ -76,11 +76,10 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
 
     ...MODE === 'development' ? [] : [
       new MiniCssExtractPlugin({
+        ignoreOrder: true,
         filename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
         chunkFilename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
       }),
-
-      new CssMinimizerPlugin({ cache: true }),
     ],
   ],
   externals: {},
@@ -173,9 +172,10 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       },
     ],
   },
-  optimization: {
+  optimization: MODE === 'development' ? {} : {
     splitChunks: { chunks: 'all' },
-    chunkIds: 'named',
+    minimize: true,
+    minimizer: [new CssMinimizerPlugin(), '...'],
   },
   devServer: {
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
