@@ -74,6 +74,8 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       templateParameters: { config },
     }),
 
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
+
     ...MODE === 'development' ? [] : [
       new MiniCssExtractPlugin({
         ignoreOrder: true,
