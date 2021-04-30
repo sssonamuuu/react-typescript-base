@@ -5,6 +5,8 @@ import { TableProps, ColumnType } from 'antd/lib/table';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;
+  /** 默认值，可以覆盖 table 上的设置 */
+  defalutValue?: string;
   /** 超出几行显示 ... */
   ellipsis?: boolean | {
     /** 默认 1 */
@@ -17,18 +19,19 @@ interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'
 
 interface BaseColumnGroupType<T> extends Omit<BaseColumnType<T>, 'dataIndex' | 'ellipsis'> {
   children: BaseColumnsType<T>[];
-  hidden?: boolean;
 }
 
 type BaseColumnsType<T> = (BaseColumnGroupType<T> | BaseColumnType<T>)[];
 
 interface BaseTableProps<T = unknown> extends Omit<TableProps<T>, 'children' | 'columns' | 'rowKey'> {
   rowKey?: keyof T;
+  /** 默认值，-- */
+  defalutValue?: string;
   columns?: BaseColumnsType<T>;
 }
 
-function formatColumns<T> (columns: BaseColumnsType<T> = []): BaseColumnsType<T> {
-  return columns.reduce<BaseColumnsType<T>>((p, { hidden, render, ...c }) => {
+function formatColumns<T> (columns: BaseColumnsType<T> = [], defalutValue: string = '--'): BaseColumnsType<T> {
+  return columns.reduce<BaseColumnsType<T>>((p, { hidden, render, defalutValue: itemDefalutValue = defalutValue, ...c }) => {
     let ellipsis: BaseColumnType<T>['ellipsis'] = false;
     if ('ellipsis' in c) {
       ellipsis = c.ellipsis;
@@ -40,6 +43,10 @@ function formatColumns<T> (columns: BaseColumnsType<T> = []): BaseColumnsType<T>
       /** 分组不处理 */
       render: 'children' in c ? render : (...args) => {
         const content = render ? render(...args) : c.dataIndex ? args[1][c.dataIndex] : '';
+
+        if (content === '' || content === void 0 || content === null) {
+          return itemDefalutValue;
+        }
 
         if (!ellipsis) {
           return content;
@@ -56,12 +63,12 @@ function formatColumns<T> (columns: BaseColumnsType<T> = []): BaseColumnsType<T>
 
         return <Tooltip placement="topLeft" overlay={showTooltips}>{contentEle}</Tooltip>;
       },
-      children: 'children' in c && c.children.length ? formatColumns(c.children as any) : void 0,
+      children: 'children' in c && c.children.length ? formatColumns(c.children as any, itemDefalutValue) : void 0,
     }];
   }, []);
 }
 
-export default function BaseTable<T> ({ columns, ...props }: BaseTableProps<T>) {
-  const _columns = useMemo(() => formatColumns(columns), [columns]);
+export default function BaseTable<T> ({ columns, defalutValue, ...props }: BaseTableProps<T>) {
+  const _columns = useMemo(() => formatColumns(columns, defalutValue), [columns]);
   return <Table {...props as any} columns={_columns} />;
 }
