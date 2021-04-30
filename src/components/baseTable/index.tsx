@@ -61,7 +61,7 @@ function formatColumns<T> (columns: BaseColumnsType<T> = [], defalutValue: strin
           return contentEle;
         }
 
-        return <Tooltip placement="topLeft" overlay={showTooltips}>{contentEle}</Tooltip>;
+        return <Tooltip placement="topLeft" overlay={showTooltips} overlayStyle={{ maxWidth: 450 }}>{contentEle}</Tooltip>;
       },
       children: 'children' in c && c.children.length ? formatColumns(c.children as any, itemDefalutValue) : void 0,
     }];
