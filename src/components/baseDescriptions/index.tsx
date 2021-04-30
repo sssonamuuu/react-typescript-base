@@ -1,3 +1,4 @@
+import style from './index.less';
 import React, { ReactNode } from 'react';
 import globalStyle from 'index.less';
 import { Row, Col } from 'antd';
@@ -7,6 +8,8 @@ type Align = 'left' | 'center' | 'right';
 
 interface BaseDescriptionsItem {
   className?: string;
+  labelClassName?: string;
+  contentClassName?: string;
   label?: ReactNode;
   value?: ReactNode;
   layout?: Layout;
@@ -21,6 +24,8 @@ interface BaseDescriptionsItem {
 
 interface BaseDescriptionsProps {
   className?: string;
+  labelClassName?: string;
+  contentClassName?: string;
   layout?: Layout;
   labelAlign?: Align;
   /** 垂直布局或者水平布局label居左不生效 */
@@ -39,12 +44,14 @@ export default function BaseDescriptions ({
   descriptions = [],
   layout = 'horizontal',
   className = '',
+  labelClassName = '',
+  contentClassName = '',
   labelAlign = 'left',
   labelWidth,
   span,
   defaultValue = '--',
   colon = true,
-  indent = true,
+  indent,
 }: BaseDescriptionsProps) {
   return (
     <Row gutter={[10, 20]} className={`${className} ${indent ? globalStyle.px10 : ''}`}>
@@ -52,6 +59,8 @@ export default function BaseDescriptions ({
         label,
         value,
         className: itemClassName = '',
+        labelClassName: itemLabelClassName = labelClassName,
+        contentClassName: itemContentClassName = contentClassName,
         span: itemSpan = span,
         labelAlign: itemLabelAlign = labelAlign,
         layout: itemLayout = layout,
@@ -61,19 +70,19 @@ export default function BaseDescriptions ({
       }) => (
         <Col
           style={{ flexDirection: itemLayout === 'horizontal' ? 'row' : 'column' }}
-          className={`${globalStyle.dFlex} ${itemClassName}`}
+          className={`${style.description} ${itemClassName}`}
           span={itemSpan}
           key={`${label}`}>
           <span
-            className={`${globalStyle.flexShrink0} ${globalStyle.fcLabel} c-base-description-label`}
+            className={`${style.label} c-base-description-label ${itemLabelClassName}`}
             style={{
               textAlign: itemLabelAlign,
               width: itemLabelAlign === 'left' ? 'auto' : itemLabelWidth,
             }}>
             {label}
-            <span className={`${globalStyle.pl2} ${globalStyle.pr8}`} style={{ visibility: itemColon ? 'visible' : 'hidden' }}>:</span>
+            <span className={style.colon} style={{ visibility: itemColon ? 'visible' : 'hidden' }}>:</span>
           </span>
-          <span className={`${globalStyle.wbBreakAll} ${globalStyle.flex1} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}>
+          <span className={`${style.content} ${itemContentClassName} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}>
             {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
           </span>
         </Col>
