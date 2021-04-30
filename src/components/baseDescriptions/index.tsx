@@ -10,6 +10,7 @@ interface BaseDescriptionsItem {
   className?: string;
   labelClassName?: string;
   contentClassName?: string;
+  hidden?: boolean;
   label?: ReactNode;
   value?: ReactNode;
   layout?: Layout;
@@ -58,6 +59,7 @@ export default function BaseDescriptions ({
       {descriptions.map(({
         label,
         value,
+        hidden,
         className: itemClassName = '',
         labelClassName: itemLabelClassName = labelClassName,
         contentClassName: itemContentClassName = contentClassName,
@@ -69,6 +71,7 @@ export default function BaseDescriptions ({
         colon: itemColon = colon,
       }) => (
         <Col
+          hidden={hidden}
           style={{ flexDirection: itemLayout === 'horizontal' ? 'row' : 'column' }}
           className={`${style.description} ${itemClassName}`}
           span={itemSpan}
