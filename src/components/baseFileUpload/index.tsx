@@ -47,19 +47,11 @@ const BaseFileUpload = forwardRef(({
   const [datas, setDatas] = useState<DataItem[]>([]);
 
   useEffect(() => {
-    if (`${datasRef.current.map(item => item.url)}` !== `${datas.map(item => item.url)}`) {
+    if (`${datasRef.current.map(item => item.url)}` !== `${value}`) {
       const urlFiles = datasRef.current.reduce((p, item) => ({ ...p, [item.url]: item.file }), {});
-      setDatas(value?.map(item => ({ url: item, file: urlFiles[item] })) || []);
+      setDatas(datasRef.current = value?.map(item => ({ url: item, file: urlFiles[item] })) || []);
     }
   }, [value]);
-
-  useEffect(() => {
-    if (`${datasRef.current.map(item => item.url)}` !== `${datas.map(item => item.url)}`) {
-      onChange?.(datas.map(item => item.url));
-    }
-    /** 重新生成一个，避免使用push改变了 datasRef.current 导致上述判断未生效 */
-    datasRef.current = [...datas];
-  }, [datas]);
 
   function onSelectImage (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
     const files = e.target.files;
@@ -69,11 +61,13 @@ const BaseFileUpload = forwardRef(({
       if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
         message.error(`单个文件大小不能超过${size}M！`);
       } else {
+        const currentData = datasRef.current;
         /** 如果有限制，裁剪多余的文件 */
-        limit && filesArr.splice(limit - datas.length + (index !== void 0 ? 1 : 0));
+        limit && filesArr.splice(limit - currentData.length + (index !== void 0 ? 1 : 0));
         const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item }));
-        index === void 0 ? datas.push(...filesDatas) : datas.splice(index, 1, ...filesDatas);
-        setDatas([...datas]);
+        index === void 0 ? currentData.push(...filesDatas) : currentData.splice(index, 1, ...filesDatas);
+        onChange?.(currentData.map(item => item.url));
+        setDatas([...currentData]);
       }
     }
 
@@ -82,8 +76,10 @@ const BaseFileUpload = forwardRef(({
   }
 
   function onDelete (index: number) {
-    datas.splice(index, 1);
-    setDatas([...datas]);
+    const currentData = datasRef.current;
+    currentData.splice(index, 1);
+    onChange?.(currentData.map(item => item.url));
+    setDatas([...currentData]);
   }
 
   async function upload () {
@@ -95,10 +91,10 @@ const BaseFileUpload = forwardRef(({
         }
         return Promise.resolve('TODO:图片上传接口')
           .then(url => {
-            /** 重新生成一个，避免使用push改变了 datasRef.current 导致上述判断未生效 */
-            const datasCopy = [...datasRef.current];
-            datasCopy[index] = { url };
-            setDatas([...datasCopy]);
+            const currentData = datasRef.current;
+            currentData[index] = { url };
+            onChange?.(currentData.map(item => item.url));
+            setDatas([...currentData]);
           });
       }));
     } catch (e) {
