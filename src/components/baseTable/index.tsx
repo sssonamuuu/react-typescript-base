@@ -1,74 +1,110 @@
 import globalStyle from 'index.less';
 import React, { useMemo } from 'react';
 import { Table, Tooltip } from 'antd';
-import { TableProps, ColumnType } from 'antd/lib/table';
+import { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;
-  /** 默认值，可以覆盖 table 上的设置 */
+  /**
+   * 默认值，可以覆盖 table 以及 group 上的配置
+   *
+   * @default '--'
+  */
   defalutValue?: string;
-  /** 超出几行显示 ... */
-  ellipsis?: boolean | {
-    /** 默认 1 */
-    lines?: 1 | 2 | 3;
-    /** 是否显示 tooltip的内容，默认和渲染内容一致，可以通过 string 变更 */
-    showTooltips?: boolean | ((_: any, item: T, index: number) => React.ReactNode);
-  };
+  /**
+   * 超出是否省略，可以覆盖 table 以及 group 上的配置
+   *
+   * @see {BaseTableProps<T>['ellipsis']}
+   */
+  ellipsis?: BaseTableProps<T>['ellipsis'];
+  /**
+   * 是否显示tooltips，如果有设置 ellipsis，默认 true，可以覆盖 table 以及 group 上的配置
+   *
+   * @see {BaseTableProps<T>['showTooltips']}
+   */
+  showTooltips?: boolean | ((_: any, item: T, index: number) => React.ReactNode);
   hidden?: boolean;
 }
 
-interface BaseColumnGroupType<T> extends Omit<BaseColumnType<T>, 'dataIndex' | 'ellipsis'> {
-  children: BaseColumnsType<T>[];
+interface BaseColumnGroupType<T> extends Omit<BaseColumnType<T>, 'dataIndex'> {
+  children: BaseColumnsType<T>;
 }
 
 type BaseColumnsType<T> = (BaseColumnGroupType<T> | BaseColumnType<T>)[];
 
 interface BaseTableProps<T = unknown> extends Omit<TableProps<T>, 'children' | 'columns' | 'rowKey'> {
   rowKey?: keyof T;
-  /** 默认值，-- */
+  /**
+   * 统一配置默认值，默认 --，可以通过 clomn 上的配置覆盖
+   *
+   * @default '--'
+   */
   defalutValue?: string;
+  /**
+   * 统一配置是否超出省略
+   *
+   * true 表示 1
+   *
+   * @default false
+   */
+  ellipsis?: boolean | 1 | 2 | 3;
+  /**
+   * 统一配置和是否显示tooltip的内容
+   *
+   * @default false/true(if ellipsis)
+   */
+  showTooltips?: boolean;
   columns?: BaseColumnsType<T>;
 }
 
-function formatColumns<T> (columns: BaseColumnsType<T> = [], defalutValue: string = '--'): BaseColumnsType<T> {
-  return columns.reduce<BaseColumnsType<T>>((p, { hidden, render, defalutValue: itemDefalutValue = defalutValue, ...c }) => {
-    let ellipsis: BaseColumnType<T>['ellipsis'] = false;
-    if ('ellipsis' in c) {
-      ellipsis = c.ellipsis;
-      delete c.ellipsis;
+function formatColumns<T> (
+  columns: BaseColumnsType<T> = [],
+  parentDefaultValue: string = '--',
+  parentEllipsis: BaseTableProps<T>['ellipsis'],
+  parentShowTooltips: BaseTableProps<T>['showTooltips'],
+): ColumnsType<T> {
+  return columns.reduce<ColumnsType<T>>((p, {
+    hidden,
+    ellipsis = parentEllipsis ?? false,
+    /** 如果 有 超出隐藏，默认 showTooltips=true */
+    showTooltips = parentShowTooltips ?? !!ellipsis,
+    defalutValue = parentDefaultValue,
+    ...c
+  }) => {
+    if (hidden) {
+      return p;
     }
 
-    return hidden ? p : [...p, {
-      ...c,
-      /** 分组不处理 */
-      render: 'children' in c ? render : (...args) => {
-        const content = render ? render(...args) : c.dataIndex ? args[1][c.dataIndex] : '';
+    if ('children' in c) {
+      return [...p, { ...c, children: c.children.length ? formatColumns(c.children, defalutValue, ellipsis, parentShowTooltips) : void 0 }];
+    }
 
-        if (content === '' || content === void 0 || content === null) {
-          return itemDefalutValue;
-        }
+    const { dataIndex, render, ...reset } = c;
 
-        if (!ellipsis) {
-          return content;
-        }
+    return [...p, { ...reset, dataIndex: `${dataIndex}`, render (...args) {
+      const content = render ? render(...args) : dataIndex ? args[1][dataIndex] : '';
 
-        const lines = ellipsis === true || !ellipsis.lines ? 1 : ellipsis.lines;
-        const showTooltips = ellipsis === true || ellipsis.showTooltips === void 0 || ellipsis.showTooltips === true ? content : ellipsis.showTooltips === false ? '' : ellipsis.showTooltips(...args);
+      if (!content) {
+        return defalutValue;
+      }
 
-        const contentEle = <div className={globalStyle[`toe${lines}`]}>{content}</div>;
+      const contentWithEllipsis = <div className={globalStyle[`toe${+ellipsis}`]}>{content}</div>;
+      const tooltipsOverlay: React.ReactNode = showTooltips === false ? null : showTooltips === true ? content : showTooltips(...args);
 
-        if (!showTooltips) {
-          return contentEle;
-        }
+      if (tooltipsOverlay) {
+        return (
+          <Tooltip placement="topLeft" overlay={tooltipsOverlay} overlayStyle={{ maxWidth: 450 }}>
+            {ellipsis ? contentWithEllipsis : content}
+          </Tooltip>
+        );
+      }
 
-        return <Tooltip placement="topLeft" overlay={showTooltips} overlayStyle={{ maxWidth: 450 }}>{contentEle}</Tooltip>;
-      },
-      children: 'children' in c && c.children.length ? formatColumns(c.children as any, itemDefalutValue) : void 0,
-    }];
+      return ellipsis ? contentWithEllipsis : content;
+    } }];
   }, []);
 }
 
-export default function BaseTable<T> ({ columns, defalutValue, ...props }: BaseTableProps<T>) {
-  const _columns = useMemo(() => formatColumns(columns, defalutValue), [columns]);
-  return <Table {...props as any} columns={_columns} />;
+export default function BaseTable<T extends object> ({ columns, defalutValue, rowKey, showTooltips, ellipsis, ...props }: BaseTableProps<T>) {
+  const _columns = useMemo(() => formatColumns(columns, defalutValue, ellipsis, showTooltips), [columns]);
+  return <Table<T> {...props} rowKey={`${rowKey}`} columns={_columns} />;
 }
