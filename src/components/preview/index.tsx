@@ -6,7 +6,7 @@ import keyboardEventUtils from 'utils/keyboardEventUtils';
 import { Spin } from 'antd';
 import { getFileIconType } from 'components/attachment';
 
-export type FileIconType = 'doc' | 'docx' | 'img' | 'ppt' | 'pptx' | 'zip' | 'unknown';
+export type FileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx' | 'pdf' | 'zip' | 'unknown';
 
 export interface PreviewItemProps {
   key: string;
@@ -157,7 +157,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
       },
     }}>
       {children}
-      {current ? (
+      {currentKey ? (
         <div hidden={!show} className={style.cover}>
           <ul
             className={`${style.list} ${isMouseDown ? style.mousedown : ''}`}
@@ -168,22 +168,25 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
             {orderedList.map(item => (
               <li key={item.key} className={style.item} onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
                 {(() => {
-                  const content: React.ReactNode[] = [];
+                  if (item.type === 'img') {
+                    return (
+                      <React.Fragment>
+                        {item.status === 'loading' ? <Spin /> : null}
 
-                  item.status === 'loading' && content.push(<Spin key="loading" />);
+                        <img
+                          onDragStart={e => e.preventDefault()}
+                          src={item.src}
+                          className={style.image}
+                          hidden={item.status !== 'loaded'}
+                          onLoad={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'loaded' : data.status })))}
+                          onError={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'error' : data.status })))} />
 
-                  item.type === 'img' && content.push(<img
-                    onDragStart={e => e.preventDefault()}
-                    key="img"
-                    src={item.src}
-                    className={style.image}
-                    hidden={item.status !== 'loaded'}
-                    onLoad={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'loaded' : data.status })))}
-                    onError={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'error' : data.status })))} />);
+                        {item.status === 'error' ? <img onDragStart={e => e.preventDefault()} src={require('../../images/file-icon/file-img-fill.svg')} width={150} /> : null}
+                      </React.Fragment>
+                    );
+                  }
 
-                  item.type === 'img' && item.status === 'error' && content.push(<img onDragStart={e => e.preventDefault()} src={require('../../images/file-icon/file-img-fill.svg')} width={150} />);
-
-                  item.type !== 'img' && content.push((
+                  return (
                     <div className={style.cantPreviewFile}>
                       <img onDragStart={e => e.preventDefault()} src={require(`../../images/file-icon/file-${item.type}-fill.svg`)} width={150} />
                       <p>
@@ -191,9 +194,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
                         <a target="_blank" href={item.src} download={item.desc}>点击下载</a>
                       </p>
                     </div>
-                  ));
-
-                  return content;
+                  );
                 })()}
               </li>
             ))}
