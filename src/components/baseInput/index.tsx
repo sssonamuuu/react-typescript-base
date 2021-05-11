@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { InputProps, TextAreaProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
-import { onKeyDownIfEnter } from 'utils/keyboardEvent';
+import keyboardEventUtils from 'utils/keyboardEventUtils';
 
 interface BaseInputProps extends Omit<InputProps, 'onChange'> {
   /**
@@ -114,7 +114,7 @@ export default function BaseInput ({
       autoComplete={autoComplete}
       spellCheck={false}
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
-      onKeyDown={e => onKeyDownIfEnter(e, onKeyDown)}
+      onKeyDown={e => keyboardEventUtils.isEnter(e) && onKeyDown}
       onBlur={e => setCurrentValue(transformValue(e.target.value))}
       {...props}
       {...autoComplete === 'off' ? {
