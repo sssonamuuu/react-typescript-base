@@ -1,9 +1,17 @@
 declare namespace IndexLessNamespace {
   export interface IIndexLess {
-    avatar: string;
-    img: string;
-    picture: string;
-    placeholder: string;
+    cantPreviewFile: string;
+    cover: string;
+    ctrlBox: string;
+    head: string;
+    icon: string;
+    image: string;
+    item: string;
+    leftBox: string;
+    list: string;
+    mousedown: string;
+    rightBox: string;
+    title: string;
   }
 }
 

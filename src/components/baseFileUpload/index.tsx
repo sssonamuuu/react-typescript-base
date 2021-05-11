@@ -1,10 +1,10 @@
 import globalStyle from 'index.less';
 import style from './index.less';
 import React, { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import BaseImage from 'components/baseImage';
 import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import Incorrect from 'classes/Incorrect';
+import Attachment from 'components/attachment';
 
 interface BaseFileUploadProps {
   value?: string[];
@@ -107,10 +107,10 @@ const BaseFileUpload = forwardRef(({
   useImperativeHandle(ref, () => ({ upload }));
 
   return (
-    <BaseImage.PhotoProvider>
+    <Attachment.PreviewProvider>
       <div className={style.box}>
         {datas.map((item, index) => (
-          <BaseImage className={style.item} key={item.url} width={width} height={height} src={item.url}>
+          <Attachment className={style.item} key={item.url} width={width} height={height} src={item.url} order={index} ext={item.file?.type.split('/')[1]}>
             <div className={style.ctrl}>
               <span onClick={() => onDelete(index)}>删除</span>
               <label>
@@ -118,7 +118,7 @@ const BaseFileUpload = forwardRef(({
                 <input accept={accept} multiple hidden type="file" onChange={e => onSelectImage(e, index)} />
               </label>
             </div>
-          </BaseImage>
+          </Attachment>
         ))}
         {/* 没有限制或者没有超过限制才能继续添加 */}
         {!limit || limit - datas.length > 0 ? (
@@ -128,7 +128,7 @@ const BaseFileUpload = forwardRef(({
           </label>
         ) : null}
       </div>
-    </BaseImage.PhotoProvider>
+    </Attachment.PreviewProvider>
   );
 });
 
