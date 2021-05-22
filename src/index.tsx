@@ -1,5 +1,3 @@
-window.Promise = Promise;
-
 import 'index.less';
 
 import React, { createElement, useMemo, useReducer } from 'react';
