@@ -58,7 +58,7 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   return (
     <Select
       {...props}
-      options={all ? [{ value: null, label: '全部' } as any].concat(remoteData) : options}
+      options={all ? [{ value: null, label: '全部' } as any].concat(remoteData) : remoteData}
       value={all && value === void 0 ? null : value as any} />
   );
 }
