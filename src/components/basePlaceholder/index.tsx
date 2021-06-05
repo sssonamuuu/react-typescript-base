@@ -7,7 +7,6 @@ import errorCode from 'enumerations/errorCode';
 
 interface BasePlaceholderProps {
   status: Incorrect;
-  /** page=true 无效 */
   height?: number | string;
 }
 
