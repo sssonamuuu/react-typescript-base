@@ -18,11 +18,11 @@ import webpack from 'webpack';
 import { GlobalConfigProps } from 'typings/config';
 import WebpackDevServer from 'webpack-dev-server';
 
-const MODE: 'production' | 'development' = yargs.argv.mode !== 'production' ? 'production' : 'development';
+const MODE: 'production' | 'development' = yargs.argv.mode !== 'production' ? 'development' : 'production';
 
+const STATIC = 'static';
 const SRC_ROOT_DIR = 'src';
 const DIST_ROOT_DIR = `dist`;
-const STATIC = 'static';
 const CONFIG_DIR = `${SRC_ROOT_DIR}/configs`;
 const DIST_SCRIPT_DIR = `${STATIC}/scripts`;
 const DIST_STYLE_DIR = `${STATIC}/styles`;
@@ -42,7 +42,6 @@ const lessVariable = Object.entries(config.theme).reduce((p, [key, value]) => ({
 const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Configuration} = {
   mode: MODE,
   target: 'web',
-  devtool: MODE === 'development' ? 'source-map' : void 0,
   cache: {
     type: 'filesystem',
     buildDependencies: {
@@ -50,6 +49,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     },
     cacheDirectory: path.join(__dirname, '.webpack-cache', ENV),
   },
+  devtool: MODE === 'development' ? 'source-map' : void 0,
   entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',
@@ -58,25 +58,37 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     filename: `${DIST_SCRIPT_DIR}/[name].[contenthash:5].js`,
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json'],
+    extensions: ['.ts', '.tsx', '.js'],
     plugins: [new TsconfigPathPlugin()],
   },
   plugins: [
     new CleanWebpackPlugin(),
 
-    new webpack.DefinePlugin({ __ENV__: JSON.stringify(ENV) }),
+    new webpack.DefinePlugin({
+      __ENV__: JSON.stringify(ENV),
+      __MODE__: JSON.stringify(MODE),
+    }),
 
-    new ESLintPlugin({ emitError: true, emitWarning: true, extensions: ['ts', 'tsx', 'js']}),
+    new ESLintPlugin({ emitError: true, emitWarning: false, extensions: ['ts', 'tsx', 'js']}),
 
     new HtmlWebpackPlugin({
       template: `./${SRC_ROOT_DIR}/index.html`,
-      filename: `index.html`,
+      filename: 'index.html',
       templateParameters: { config },
+      minify: {
+        minifyCSS: true,
+        minifyJS: true,
+        collapseInlineTagWhitespace: true,
+        collapseWhitespace: true,
+        removeComments: true,
+      },
     }),
 
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
 
-    ...MODE === 'development' ? [] : [
+    ...MODE === 'development' ? [
+      new webpack.HotModuleReplacementPlugin(),
+    ] : [
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename: `${DIST_STYLE_DIR}/[name].[contenthash:5].css`,
@@ -84,7 +96,11 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       }),
     ],
   ],
-  externals: {},
+  performance: {
+    hints: false,
+    maxEntrypointSize: 8 * 1024,
+    maxAssetSize: 8 * 1024,
+  },
   module: {
     rules: [
       {
@@ -102,7 +118,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       },
       {
         test: /\.less$/,
-        exclude: /node_modules/, // 非 第三方框架的采用 css-modules
+        exclude: /node_modules|filePreview/, // 非 第三方框架的采用 css-modules
         use: [
           MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
@@ -128,7 +144,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
       },
       {
         test: /\.less$/,
-        include: /node_modules/, // 第三方框架的采用 css-loader
+        include: /node_modules|filePreview/, // 第三方框架的采用 css-loader
         use: [
           MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
@@ -157,7 +173,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
           },
         },
         generator: {
-          filename: `${DIST_IMAGE_DIR}/[name].[contenthash:5].[ext]`,
+          filename: `${DIST_IMAGE_DIR}/[name].[contenthash:5][ext]`,
         },
       },
       {
@@ -169,7 +185,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
           },
         },
         generator: {
-          filename: `${DIST_FONT_DIR}/[name].[contenthash:5].[ext]`,
+          filename: `${DIST_FONT_DIR}/[name].[contenthash:5][ext]`,
         },
       },
     ],
@@ -180,11 +196,12 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     minimizer: [new CssMinimizerPlugin(), '...'],
   },
   devServer: {
+    hot: true,
+    open: true,
+    historyApiFallback: true,
     contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
     overlay: { errors: true, warnings: false },
-    host: '0.0.0.0',
     disableHostCheck: true,
-    historyApiFallback: true,
   },
 };
 
