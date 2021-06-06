@@ -1,4 +1,3 @@
 import React from 'react';
-import BasePage from 'components/basePage';
 
-export default () => <BasePage>Login</BasePage>;
+export default () => <div>Login</div>;

@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { Card } from 'antd';
-import BasePage from 'components/basePage';
 import usePlaceholder from 'hooks/usePlaceholder';
 import BasePlaceholder from 'components/basePlaceholder';
+import BaseCard from 'components/baseCard';
 
 export default () => {
   const [placeholder, setPlaceholder] = usePlaceholder();
@@ -18,12 +17,6 @@ export default () => {
   }
 
   return (
-    <BasePage
-      fullContent
-      header={(
-        <BasePage.Header title="首页" />
-      )}>
-      <Card>首页</Card>
-    </BasePage>
+    <BaseCard title="首页">首页</BaseCard>
   );
 };

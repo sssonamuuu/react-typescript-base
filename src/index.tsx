@@ -8,7 +8,6 @@ import 'moment/locale/zh-cn';
 
 import { Switch, Route, Router } from 'react-router-dom';
 import { ConfigProvider, message } from 'antd';
-import { ANTD_POPUP_CONTAINER } from 'components/basePage';
 import { RouteItemProps, routesArr } from 'routers';
 import globalConfig from 'configs';
 import moment from 'moment';
@@ -44,7 +43,7 @@ const App = () => {
     <ConfigProvider
       locale={zhCN}
       prefixCls={globalConfig.theme['ant-prefix']}
-      getPopupContainer={() => document.querySelector(`.${ANTD_POPUP_CONTAINER}`) || document.body}>
+      getPopupContainer={() => document.querySelector(`.${globalConfig.theme.scrollRootClassName}`) || document.body}>
       <StoreContext.Provider value={{ stores, reducer }}>
         <Router history={history}>
           <Switch>

@@ -10,6 +10,7 @@ export interface CommonConfigProps {
   theme: {
     /** 根节点ID */
     rootId: string;
+    scrollRootClassName: string;
     'ant-prefix': string;
     'primary-color': string;
     'label-color': string;
