@@ -3,14 +3,19 @@
  * 已知类型 使用 navigation.push/replace/link/open
  */
 
-import { RouteItemWithNameProps, RouteProps, routes, routesMap } from 'routers';
+import { isPathParamRoute, pathKeyRoutes, RouteItemWithNameProps, RouteProps, routes, routesMap } from 'routers';
 import { createBrowserHistory, History } from 'history';
 import qs from 'qs';
 import { useEffect } from 'react';
 
 /** 查找当前的路由配置 */
 function findCurrentRoute (pathname: string = location.pathname): RouteItemWithNameProps | undefined {
-  return routesMap[pathname.toLowerCase()];
+  const currentRoute = routesMap[pathname.toLowerCase()];
+  if (currentRoute) {
+    return currentRoute;
+  }
+
+  return pathKeyRoutes.find(route => new RegExp(`^${route.path.replace(/\/:[^/]+/g, '/([^/]+)')}$`, 'i').test(pathname));
 }
 
 export const history = createBrowserHistory() as (History & {
@@ -22,8 +27,13 @@ export const history = createBrowserHistory() as (History & {
 
 const { push: _push, replace: _replace } = history;
 
-export function formatUrl (path: string, query?: any) {
-  return `${path}${query ? '?' : ''}${qs.stringify(query)}`;
+export function formatUrl (path: string, query?: any): string {
+  const currentRoute = findCurrentRoute(path);
+  /** pathparam 都转换过，path必定是 string */
+  if (typeof currentRoute?.path === 'string' && isPathParamRoute(currentRoute.path)) {
+    return currentRoute.path.split('/').map(item => /^:(.+)$/.test(item) ? query?.[RegExp.$1] : item).join('/');
+  }
+  return `${path}${query && Object.keys(path).length ? '?' : ''}${qs.stringify(query)}`;
 }
 
 history.push = function (path: string, query?: any) {
@@ -72,7 +82,14 @@ export function useLocationChange (fn: () => void) {
 }
 
 function getQuery <T> (format?: Partial<Record<keyof T, 'string' | 'number' | 'boolean'>>): Partial<T> {
-  const query = qs.parse(history.location.search.replace(/^\?/, '')) as unknown as T;
+  const query = qs.parse(location.search.replace(/^\?/, '')) as unknown as T;
+  const currentRoute = findCurrentRoute();
+
+  /** pathparam 都转换过，path必定是 string */
+  if (typeof currentRoute?.path === 'string' && isPathParamRoute(currentRoute.path)) {
+    const localPathArr = location.pathname.split('/');
+    currentRoute.path.split('/').forEach((item, index) => /^:(.+)$/.test(item) && (query[RegExp.$1] = localPathArr[index]));
+  }
 
   /** 根据 param 类型 格式化 参数 */
   Object.entries(format || {}).forEach(([key, value]) => {
