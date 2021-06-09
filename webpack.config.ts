@@ -117,28 +117,19 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
         ],
       },
       {
-        test: /\.(le|c)ss$/,
+        test: /\.less$/,
+        exclude: /node_modules/, // 非 第三方框架的采用 css-modules
         use: [
           MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
-          /**
-           * 非 第三方框架的采用 css-modules
-           * 第三方框架直接使用 css
-           */
-          (data: any) => /node_modules/.test(data.resource) ? [
-            { loader: 'css-loader', ident: 'css' },
-          ] : [
-            {
-              ident: 'ts',
-              loader: '@teamsupercell/typings-for-css-modules-loader',
+          {
+            loader: '@teamsupercell/typings-for-css-modules-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
             },
-            {
-              ident: 'css-modules',
-              loader: 'css-loader',
-              options: {
-                modules: true,
-              },
-            },
-          ],
+          },
           { loader: 'postcss-loader' },
           {
             loader: 'less-loader',
@@ -150,6 +141,28 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
             },
           },
         ],
+      },
+      {
+        test: /\.less$/,
+        include: /node_modules/, // 第三方框架的采用 css-loader
+        use: [
+          MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+                modifyVars: lessVariable,
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.css$/,
+        use: [MODE === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
       },
       {
         test: /\.(?:png|jpg|jpeg|gif|ico|svg)$/,
