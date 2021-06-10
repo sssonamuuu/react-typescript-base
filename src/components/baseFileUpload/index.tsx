@@ -5,6 +5,17 @@ import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import Incorrect from 'classes/Incorrect';
 import Attachment from 'components/attachment';
+import { FileIconType } from 'components/preview';
+
+/** 通过mimetype的/截取，后半截无法判断FileIconType的文件 */
+const mimetype: { [key: string]: FileIconType } = {
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'application/vnd.ms-powerpoint': 'ppt',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+};
 
 interface BaseFileUploadProps {
   value?: string[];
@@ -60,6 +71,8 @@ const BaseFileUpload = forwardRef(({
       const filesArr = [...files];
       if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
         message.error(`单个文件大小不能超过${size}M！`);
+      } else if (accept && filesArr.some(file => !new RegExp(accept.replace(/\*/g, '.*').replace(/, */, '|')).test(file.type))) {
+        message.error(`仅支持文件格式为：${accept}`);
       } else {
         const currentData = datasRef.current;
         /** 如果有限制，裁剪多余的文件 */
@@ -110,7 +123,14 @@ const BaseFileUpload = forwardRef(({
     <Attachment.PreviewProvider>
       <div className={style.box}>
         {datas.map((item, index) => (
-          <Attachment className={style.item} key={item.url} width={width} height={height} src={item.url} order={index} ext={item.file?.type.split('/')[1]}>
+          <Attachment
+            className={style.item}
+            key={item.url}
+            width={width}
+            height={height}
+            src={item.url}
+            order={index}
+            ext={item.file ? mimetype[item.file.type] || item.file.type.split('/')[1] : void 0}>
             <div className={style.ctrl}>
               <span onClick={() => onDelete(index)}>删除</span>
               <label>
