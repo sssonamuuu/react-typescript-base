@@ -9,12 +9,12 @@
 
 .fsLoop (50);
 
-.fwLoop (@i) when (@i <=6) {
-  .fw@{i}00 {
-    font-weight:~'@{i}00' !important;
+.fwLoop (@i) when (@i <=600) {
+  .fw@{i} {
+    font-weight:~'@{i}px' !important;
   }
 
-  .fwLoop(@i + 1);
+  .fwLoop(@i + 100);
 }
 
 .fwLoop (1);
