@@ -1,5 +1,4 @@
 import enummapping from 'enummapping';
-console.log(enummapping);
 /**
  * 错误码
  *
