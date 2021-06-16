@@ -191,7 +191,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
                       <img onDragStart={e => e.preventDefault()} src={require(`../../images/file-icon/file-${item.type}-fill.svg`)} width={150} />
                       <p>
                         <span>当前文件不支持预览，您可以</span>
-                        <a target="_blank" href={item.src} download={item.desc}>点击下载</a>
+                        <a target="_blank" href={item.src}>点击下载</a>
                       </p>
                     </div>
                   );

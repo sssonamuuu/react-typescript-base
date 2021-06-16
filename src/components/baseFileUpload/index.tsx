@@ -35,12 +35,14 @@ interface BaseFileUploadProps {
 
 interface DataItem {
   url: string;
+  name: string;
   /** 如果没有 file 表示为回显数据，不需要上传 */
   file?: File;
 }
 
 export interface BaseFileUploadRef {
-  upload(): Promise<void>;
+  /** 上传完成后会自动更新 `form` 中的值，会触发 `onChange` 事件，不需要手动接受返回值，仅在需要 names 时使用  */
+  upload(): Promise<[urls: string[], names: string[]]>;
 }
 
 const BaseFileUpload = forwardRef(({
@@ -59,12 +61,19 @@ const BaseFileUpload = forwardRef(({
 
   useEffect(() => {
     if (`${datasRef.current.map(item => item.url)}` !== `${value}`) {
-      const urlFiles = datasRef.current.reduce((p, item) => ({ ...p, [item.url]: item.file }), {});
-      setDatas(datasRef.current = value?.map(item => ({ url: item, file: urlFiles[item] })) || []);
+      const urlFiles = datasRef.current.reduce<{ [url: string]: DataItem }>((p, item) => ({ ...p, [item.url]: item }), {});
+      setDatas(datasRef.current = value?.map(url => {
+        const item = urlFiles[url];
+        return {
+          url,
+          file: item?.file,
+          name: item?.name || url.split('?')[0].match(/(?:^|\/)[^/]*$/)?.[0].replace(/\//, '')!,
+        };
+      }) || []);
     }
   }, [value]);
 
-  function onSelectImage (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
+  function onSelectFile (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
     const files = e.target.files;
 
     if (files?.length) {
@@ -77,7 +86,7 @@ const BaseFileUpload = forwardRef(({
         const currentData = datasRef.current;
         /** 如果有限制，裁剪多余的文件 */
         limit && filesArr.splice(limit - currentData.length + (index !== void 0 ? 1 : 0));
-        const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item }));
+        const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item, name: item.name }));
         index === void 0 ? currentData.push(...filesDatas) : currentData.splice(index, 1, ...filesDatas);
         onChange?.(currentData.map(item => item.url));
         setDatas([...currentData]);
@@ -105,11 +114,13 @@ const BaseFileUpload = forwardRef(({
         return Promise.resolve('TODO:图片上传接口')
           .then(url => {
             const currentData = datasRef.current;
-            currentData[index] = { url };
+            currentData[index] = { name: currentData[index].name, url };
             onChange?.(currentData.map(item => item.url));
             setDatas([...currentData]);
           });
       }));
+
+      return datasRef.current.reduce<[string[], string[]]>((p, c) => [p[0].concat(c.url), p[1].concat(c.name)], [[], []]);
     } catch (e) {
       errorMessage && message.error(errorMessage);
       /** 抛出错误，让后续操作终止 */
@@ -135,7 +146,7 @@ const BaseFileUpload = forwardRef(({
               <span onClick={() => onDelete(index)}>删除</span>
               <label>
                 <span>替换</span>
-                <input accept={accept} multiple hidden type="file" onChange={e => onSelectImage(e, index)} />
+                <input accept={accept} multiple hidden type="file" onChange={e => onSelectFile(e, index)} />
               </label>
             </div>
           </Attachment>
@@ -144,7 +155,7 @@ const BaseFileUpload = forwardRef(({
         {!limit || limit - datas.length > 0 ? (
           <label className={`${style.item} ${style.upload}`} style={{ width, height }}>
             <PlusOutlined className={globalStyle.fs30} />
-            <input accept={accept} multiple hidden type="file" onChange={onSelectImage} />
+            <input accept={accept} multiple hidden type="file" onChange={onSelectFile} />
           </label>
         ) : null}
       </div>
