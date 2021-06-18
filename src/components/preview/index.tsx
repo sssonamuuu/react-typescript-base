@@ -57,9 +57,12 @@ export function PreviewConsumer ({ children, ...props }: PreviewConsumerProps) {
 
 interface PreviewProviderProps {}
 
+/** 点击如果在当前class包含内容内，不进行关闭 */
+const CONTENT_CLASSNAME = 'preview-content-classname-not-close';
+
 export function PreviewProvider ({ children }: PropsWithChildren<PreviewProviderProps>) {
   const { disablePageScroll, enablePageScroll } = usePageConfig({});
-  const [showDesc, setShowDesc] = useState(true);
+  const [showDesc, setShowDesc] = useState(false);
   const [show, setShow] = useState(false);
   const [list, setList] = useState<PreviewItemWithInfoProps[]>([]);
   const [currentKey, setCurrentKey] = useState<string>();
@@ -121,11 +124,19 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
     }
   }
 
-  function onMouseUp () {
+  function onClick (e: React.MouseEvent<HTMLLIElement>) {
+    if ([...document.querySelectorAll(`.${CONTENT_CLASSNAME}`)].some(element => element.contains(e.target as any))) {
+      setShowDesc(!showDesc);
+    } else {
+      setShow(false);
+    }
+  }
+
+  function onMouseUp (e: React.MouseEvent<HTMLLIElement>) {
     if (isMouseDown) {
       const dx = currentMouseX - mouseDownX;
       if (Math.abs(dx) <= 10) {
-        setShowDesc(!showDesc);
+        onClick(e);
       } else {
         dx < 0 ? onNext() : onPrev();
       }
@@ -171,27 +182,27 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
                   if (item.type === 'img') {
                     return (
                       <React.Fragment>
-                        {item.status === 'loading' ? <Spin /> : null}
+                        {item.status === 'loading' ? <Spin className={CONTENT_CLASSNAME} /> : null}
 
                         <img
                           onDragStart={e => e.preventDefault()}
                           src={item.src}
-                          className={style.image}
+                          className={`${style.image} ${CONTENT_CLASSNAME}`}
                           hidden={item.status !== 'loaded'}
                           onLoad={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'loaded' : data.status })))}
                           onError={() => setList(orderedList.map(data => ({ ...data, status: data.key === item.key ? 'error' : data.status })))} />
 
-                        {item.status === 'error' ? <img onDragStart={e => e.preventDefault()} src={require('../../images/file-icon/file-img-fill.svg')} width={150} /> : null}
+                        {item.status === 'error' ? <img className={CONTENT_CLASSNAME} onDragStart={e => e.preventDefault()} src={require('../../images/file-icon/file-img-fill.svg')} width={150} /> : null}
                       </React.Fragment>
                     );
                   }
 
                   return (
-                    <div className={style.cantPreviewFile}>
+                    <div className={`${style.cantPreviewFile} ${CONTENT_CLASSNAME}`}>
                       <img onDragStart={e => e.preventDefault()} src={require(`../../images/file-icon/file-${item.type}-fill.svg`)} width={150} />
                       <p>
                         <span>当前文件不支持预览，您可以</span>
-                        <a target="_blank" href={item.src}>点击下载</a>
+                        <a target="_blank" href={item.src} download>点击下载</a>
                       </p>
                     </div>
                   );

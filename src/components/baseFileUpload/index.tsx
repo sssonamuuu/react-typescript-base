@@ -81,7 +81,7 @@ const BaseFileUpload = forwardRef(({
       if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
         message.error(`单个文件大小不能超过${size}M！`);
       } else if (accept && filesArr.some(file => !new RegExp(accept.replace(/\*/g, '.*').replace(/, */, '|')).test(file.type))) {
-        message.error(`仅支持文件格式为：${accept}`);
+        message.error(`文件格式不对！`);
       } else {
         const currentData = datasRef.current;
         /** 如果有限制，裁剪多余的文件 */
