@@ -45,7 +45,7 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   useEffect(loadData, []);
 
   useEffect(() => {
-    !remoteData && setRemoteData(options);
+    !remoteLoadData && setRemoteData(options);
   }, [options]);
 
   if (status !== 'loaded') {
