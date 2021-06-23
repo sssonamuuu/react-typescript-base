@@ -4,11 +4,15 @@ import { Input, Select, SelectProps } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import React, { useEffect, useState } from 'react';
 
-type OptionType<T> = SelectProps<T>['options'];
+export type OptionType<T> = SelectProps<T>['options'];
 
-interface BaseSelectProps<T> extends Omit<SelectProps<T>, 'children'> {
-  /** 是否有全部选项，默认有， undefined | null 都认为是选中全部，如果选择全部返回值为 null */
-  all?: boolean;
+export interface BaseSelectProps<T> extends Omit<SelectProps<T>, 'children'> {
+  /**
+   * 是否有全部选项，默认有， undefined | null 都认为是选中全部，如果选择全部返回值为 null
+   *
+   * string 指定 全部的默认文本， 默认全部
+   */
+  all?: boolean | string;
   /** 加载异步数据，如果存在该字段，忽略 `options` */
   remoteLoadData?(): Promise<OptionType<T>>;
   /** 加载异步数据的文本提示 */
@@ -62,7 +66,7 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   return (
     <Select
       {...props}
-      options={all ? [{ value: null, label: '全部' } as any].concat(remoteData) : remoteData}
+      options={all ? [{ value: null, label: typeof all === 'string' ? all : '全部' } as any].concat(remoteData) : remoteData}
       value={all && value === void 0 ? null : value as any} />
   );
 }
