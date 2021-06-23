@@ -5,8 +5,9 @@ import globalStyle from 'index.less';
 import style from './index.less';
 import { ButtonProps } from 'antd/es/button';
 import BaseCard, { BaseCardProps } from 'components/baseCard';
+import { BaseFormItemProps } from 'components/baseForm/baseFormItem';
 
-type BaseAdvancedSearchItem<T> = ReactElement<BaseFormProps<T> & {label?: string}>;
+type BaseAdvancedSearchItem<T> = ReactElement<BaseFormItemProps<T> & {label?: string}>;
 
 interface BaseAdvancedSearchProps<T> extends BaseFormProps<T> {
   children?: BaseAdvancedSearchItem<T> | BaseAdvancedSearchItem<T>[];

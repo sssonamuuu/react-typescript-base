@@ -21,7 +21,7 @@ export interface BaseFormInstance<T> {
   validateFields: <K extends keyof T>(names?: K[]) => Promise<T>;
 }
 
-interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdate' | 'dependencies' | 'rules'> {
+export interface BaseFormItemProps<T> extends Omit<FormItemProps, 'name' | 'shouldUpdate' | 'dependencies' | 'rules'> {
   name?: keyof T;
   children?: ReactNode | ((form: BaseFormInstance<T>) => ReactNode);
   shouldUpdate?: boolean | ((prev: T, next: T) => boolean);
