@@ -1,4 +1,4 @@
-import React, { cloneElement, ReactElement, Children, useState } from 'react';
+import React, { cloneElement, ReactElement, Children } from 'react';
 import BaseForm, { BaseFormProps } from 'components/baseForm';
 import { Row, Col, Button, Grid } from 'antd';
 import globalStyle from 'index.less';
@@ -25,20 +25,10 @@ export default function BaseAdvancedSearch <T> ({
   onReset,
   ...props
 }: BaseAdvancedSearchProps<T>) {
-  const [loading, setLoading] = useState(false);
   const screen = Grid.useBreakpoint();
-
   const itemCountePreLine = screen.xxl ? 4 : 3;
   const childCount = Children.count(children) + 1;
   const offset = (Math.ceil(childCount / itemCountePreLine) * itemCountePreLine - childCount) * (24 / itemCountePreLine);
-
-  async function _onSearch () {
-    setLoading(true);
-    try {
-      await onSearch?.();
-    } catch {}
-    setLoading(false);
-  }
 
   return (
     <BaseForm {...props} className={className}>
@@ -51,8 +41,8 @@ export default function BaseAdvancedSearch <T> ({
         <Col span={8} xxl={6} offset={offset}>
           <BaseForm.Item>
             <div className={style.searchCtrlBox}>
-              <Button {...resetBtnProps} onClick={onReset} disabled={loading}>重置</Button>
-              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} loading={loading} onClick={_onSearch}>查询</Button>
+              <Button {...resetBtnProps} onClick={onReset}>重置</Button>
+              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={onSearch}>查询</Button>
             </div>
           </BaseForm.Item>
         </Col>
