@@ -7,7 +7,7 @@ import { ButtonProps } from 'antd/es/button';
 import BaseCard, { BaseCardProps } from 'components/baseCard';
 import { BaseFormItemProps } from 'components/baseForm/baseFormItem';
 
-type BaseAdvancedSearchItem<T> = ReactElement<BaseFormItemProps<T> & {label?: string}>;
+type BaseAdvancedSearchItem<T> = ReactElement<BaseFormItemProps<T>>;
 
 interface BaseAdvancedSearchProps<T> extends BaseFormProps<T> {
   children?: BaseAdvancedSearchItem<T> | BaseAdvancedSearchItem<T>[];
