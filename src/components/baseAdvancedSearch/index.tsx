@@ -12,6 +12,7 @@ interface BaseAdvancedSearchProps<T> extends BaseFormProps<T> {
   children?: BaseAdvancedSearchItem<T> | BaseAdvancedSearchItem<T>[];
   resetBtnProps?: Omit<ButtonProps, 'onClick'>;
   searchBtnProps?: Omit<ButtonProps, 'onClick'>;
+  loading?: boolean;
   onSearch?(): void;
   onReset?(): void;
 }
@@ -21,6 +22,7 @@ export default function BaseAdvancedSearch <T> ({
   className = '',
   resetBtnProps: { ...resetBtnProps } = {},
   searchBtnProps: { className: searchBtnClassName = '', ...searchBtnProps } = {},
+  loading,
   onSearch,
   onReset,
   ...props
@@ -41,8 +43,8 @@ export default function BaseAdvancedSearch <T> ({
         <Col span={8} xxl={6} offset={offset}>
           <BaseForm.Item>
             <div className={style.searchCtrlBox}>
-              <Button {...resetBtnProps} onClick={onReset}>重置</Button>
-              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={onSearch}>查询</Button>
+              <Button {...resetBtnProps} onClick={onReset} disabled={loading ?? resetBtnProps.disabled}>重置</Button>
+              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={() => onSearch?.()} loading={loading ?? searchBtnProps.loading}>查询</Button>
             </div>
           </BaseForm.Item>
         </Col>
