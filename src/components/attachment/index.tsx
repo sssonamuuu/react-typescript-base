@@ -17,15 +17,17 @@ export interface AttachmentProps extends Pick<PreviewItemProps, 'ext' | 'order' 
   size?: CSSProperties['width'];
   width?: CSSProperties['width'];
   height?: CSSProperties['height'];
+  /** 是否显示标题，默认不显示 */
+  showTitle?: 'all' | 'not-image';
   className?: string;
 }
 
-function getAbsoluteSrc (src?: string) {
-  return !src ? '' : /^(https?|blob|data):/.test(src) ? src : `TODO://绝对地址${src}`;
+export function getAbsoluteSrc (src?: string) {
+  return !src ? '' : /^(https?|blob|data):/.test(src) ? src : `TODO://绝对地址/${src}`;
 }
 
 export function getFileIconType (src: string = ''): FileIconType {
-  const ext = src.match(/(?<=\.)\w+(?=$|\?)/)?.[0] || '';
+  const ext = (src.match(/\.\w+(?=$|\?)/)?.[0] || '').replace(/^\./, '');
 
   if (/jpe?g|png|gif|tiff|pjp|jfif|svgz|bmp|webp|ico|xbm|dib|tif|pjpeg|avif/.test(ext)) {
     return 'img';
@@ -49,6 +51,7 @@ export default function Attachment ({
   height = size,
   order,
   ext,
+  showTitle,
   type = ext ? getFileIconType(`.${ext}`) : getFileIconType(src) || 'unknow',
   className = '',
   children,
@@ -62,8 +65,10 @@ export default function Attachment ({
 
   return (
     <div className={`${style.attachment} ${className}`} style={{ width, height }}>
-      <PreviewConsumer src={absolutePreviewSrc} order={order} desc={title} type={type}>
-        <div className={style.attachmentInner} style={{ borderRadius: radius }}>
+      <PreviewConsumer src={absolutePreviewSrc} order={order} type={type}>
+        <div className={style.attachmentInner} style={{ borderRadius: radius }} title={title}>
+          {title && (showTitle === 'all' || showTitle === 'not-image' && !isImg) ? <div className={style.title} onClick={e => e.stopPropagation()}>{title}</div> : null}
+
           {isImg ? <img src={absoluteSrc} alt={title} className={style.image} onLoad={() => setStatus('loaded')} onError={() => setStatus('error')} /> : null}
 
           {status === 'loaded' && isImg ? null : (

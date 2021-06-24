@@ -5,6 +5,7 @@ declare namespace IndexLessNamespace {
     avatar: string;
     image: string;
     placeholder: string;
+    title: string;
   }
 }
 

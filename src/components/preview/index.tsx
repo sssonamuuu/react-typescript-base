@@ -11,7 +11,7 @@ export type FileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xl
 export interface PreviewItemProps {
   key: string;
   order?: number;
-  desc?: React.ReactNode;
+  title?: string;
   src: string;
   /** 扩展名，用于部分无法确定fileIcon的地方传入，如：文件上传 */
   ext?: string;
@@ -62,7 +62,7 @@ const CONTENT_CLASSNAME = 'preview-content-classname-not-close';
 
 export function PreviewProvider ({ children }: PropsWithChildren<PreviewProviderProps>) {
   const { disablePageScroll, enablePageScroll } = usePageConfig({});
-  const [showDesc, setShowDesc] = useState(false);
+  const [showDesc, setShowDesc] = useState(true);
   const [show, setShow] = useState(false);
   const [list, setList] = useState<PreviewItemWithInfoProps[]>([]);
   const [currentKey, setCurrentKey] = useState<string>();
@@ -78,7 +78,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
     return ~index ? index : 0;
   }, [orderedList, currentKey]);
 
-  const current = useMemo(() => orderedList[currentIndex], [orderedList, currentIndex]);
+  const current = useMemo<PreviewItemWithInfoProps | void>(() => orderedList[currentIndex], [orderedList, currentIndex]);
 
   function onClose () {
     setShow(false);
@@ -112,14 +112,16 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
   }, [show, isMouseDown, orderedList, currentIndex]);
 
   function onMouseDown (e: React.MouseEvent) {
-    setIsMouseDown(true);
-    const x = e.clientX || e.pageX || e.screenX;
-    setMouseDownX(x);
-    setCurrentMouseX(x);
+    if (e.button === 0) {
+      setIsMouseDown(true);
+      const x = e.clientX || e.pageX || e.screenX;
+      setMouseDownX(x);
+      setCurrentMouseX(x);
+    }
   }
 
   function onMouseMove (e: React.MouseEvent) {
-    if (isMouseDown) {
+    if (isMouseDown && e.button === 0) {
       setCurrentMouseX(e.clientX || e.pageX || e.screenX);
     }
   }
@@ -129,11 +131,12 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
       setShowDesc(!showDesc);
     } else {
       setShow(false);
+      setShowDesc(true);
     }
   }
 
   function onMouseUp (e: React.MouseEvent<HTMLLIElement>) {
-    if (isMouseDown) {
+    if (isMouseDown && e.button === 0) {
       const dx = currentMouseX - mouseDownX;
       if (Math.abs(dx) <= 10) {
         onClick(e);
@@ -213,7 +216,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
 
           <div className={style.head} hidden={!showDesc}>
             <span>{`${currentIndex + 1}/${orderedList.length}`}</span>
-            <div className={style.title}>{current.desc}</div>
+            <div className={style.title}>{current ? current.title : null}</div>
             <CloseOutlined className={style.icon} onClick={onClose} />
           </div>
           <div className={style.leftBox} onClick={onPrev} hidden={!showDesc || currentIndex === 0}>

@@ -141,6 +141,8 @@ const BaseFileUpload = forwardRef(({
             height={height}
             src={item.url}
             order={index}
+            showTitle="not-image"
+            title={item.name}
             ext={item.file ? mimetype[item.file.type] || item.file.type.split('/')[1] : void 0}>
             <div className={style.ctrl}>
               <span onClick={() => onDelete(index)}>删除</span>

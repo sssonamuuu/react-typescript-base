@@ -1,5 +1,28 @@
 .attachment {
   position: relative;
+  &:hover .title{
+    display: block;
+  }
+}
+
+
+.title {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  background: red;
+  z-index: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 5px;
+  left: 0;
+  background: rgba(0,0,0,0.6);
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  line-height: 20px;
 }
 
 .attachmentInner {
@@ -24,8 +47,8 @@
   width: 100%;
   height: 100%;
   color: #e1e1e1;
-  overflow: hidden;
   background-color: #f5f5f5;
+  overflow: hidden;
   > img {
     max-width: 45%;
     max-height: 45%;
