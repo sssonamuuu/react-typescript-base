@@ -65,7 +65,7 @@ export default function Attachment ({
 
   return (
     <div className={`${style.attachment} ${className}`} style={{ width, height }}>
-      <PreviewConsumer src={absolutePreviewSrc} order={order} type={type}>
+      <PreviewConsumer src={absolutePreviewSrc} order={order} type={type} title={title}>
         <div className={style.attachmentInner} style={{ borderRadius: radius }} title={title}>
           {title && (showTitle === 'all' || showTitle === 'not-image' && !isImg) ? <div className={style.title} onClick={e => e.stopPropagation()}>{title}</div> : null}
 
