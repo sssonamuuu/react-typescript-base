@@ -12,7 +12,7 @@ interface BaseFormPlaceholderProps {
 }
 
 export default function BaseFormPlaceholder ({ status, onReload, style }: BaseFormPlaceholderProps) {
-  if (errorCode[status.code]?.is('loading')) {
+  if (errorCode[status.code]?.$is('loading')) {
     return <Input disabled value="正在加载努力数据" style={style} />;
   }
 
