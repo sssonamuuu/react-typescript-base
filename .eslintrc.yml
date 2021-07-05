@@ -15,6 +15,7 @@ plugins:
   - react-hooks
 globals:
   __ENV__: true
+  NodeJS: true
 parserOptions:
   ecmaVersion: 10
   sourceType: module
