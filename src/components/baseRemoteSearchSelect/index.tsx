@@ -35,7 +35,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
         setSearching(false);
       }
     });
-  }, 800), []);
+  }, 800), [remoteLoadData]);
 
   useEffect(() => {
     setSearching(false);
