@@ -15,6 +15,7 @@ const mimetype: { [key: string]: FileIconType } = {
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
   'application/vnd.ms-powerpoint': 'ppt',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+  'application/x-zip-compressed': 'zip',
 };
 
 interface BaseFileUploadProps {
