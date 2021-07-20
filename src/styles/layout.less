@@ -1,0 +1,120 @@
+.full {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.fullWidth {
+  width: 100% !important;
+}
+
+.fullHeight {
+  height: 100% !important;
+}
+
+/* 间距样式 */
+.mpLoop (@i) when (@i >=0) {
+
+  // margin
+  .ml@{i} {
+    margin-left:~"@{i}px" !important;
+  }
+
+  .mr@{i} {
+    margin-right:~"@{i}px" !important;
+  }
+
+  .mt@{i} {
+    margin-top:~"@{i}px" !important;
+  }
+
+  .mb@{i} {
+    margin-bottom:~"@{i}px" !important;
+  }
+
+  .mx@{i} {
+    margin-right:~"@{i}px" !important;
+    margin-left:~"@{i}px" !important;
+  }
+
+  .my@{i} {
+    margin-top:~"@{i}px" !important;
+    margin-bottom:~"@{i}px" !important;
+  }
+
+  // padding
+  .pl@{i} {
+    padding-left:~"@{i}px" !important;
+  }
+
+  .pr@{i} {
+    padding-right:~"@{i}px" !important;
+  }
+
+  .pt@{i} {
+    padding-top:~"@{i}px" !important;
+  }
+
+  .pb@{i} {
+    padding-bottom:~"@{i}px" !important;
+  }
+
+  .px@{i} {
+    padding-right:~"@{i}px" !important;
+    padding-left:~"@{i}px" !important;
+  }
+
+  .py@{i} {
+    padding-top:~"@{i}px" !important;
+    padding-bottom:~"@{i}px" !important;
+  }
+
+  .mpLoop(@i - 1);
+}
+
+.mpLoop (50);
+
+.dFlex {
+  display: flex !important;
+}
+
+.dFlexColumn {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.flexShrink0 {
+  flex-shrink: 0;
+}
+
+
+.toeLoop (@i) when (@i <=3) {
+  .toe@{i} {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: break-all !important;
+    -webkit-line-clamp: @i  !important;
+    -webkit-box-orient: vertical !important;
+  }
+  .toeLoop(@i + 1);
+}
+
+.toeLoop (1);
+
+
+.scrollX {
+  overflow-x: auto;
+}
+
+.scrollY {
+  overflow-y: auto;
+}
+
+
+.bgWhite {
+  background: #fff;
+}

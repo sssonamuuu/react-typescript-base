@@ -1,0 +1,71 @@
+/* 字体大小 */
+.fsLoop (@i) when (@i >=12) {
+  .fs@{i} {
+    font-size:~'@{i}px' !important;
+  }
+
+  .fsLoop(@i - 1);
+}
+
+.fsLoop (50);
+
+.fwLoop (@i) when (@i <=600) {
+  .fw@{i} {
+    font-weight:~'@{i}px' !important;
+  }
+
+  .fwLoop(@i + 100);
+}
+
+.fwLoop (100);
+
+.fwNormal {
+  font-weight: normal;
+}
+
+.fwLighter {
+  font-weight: lighter;
+}
+
+.fwBold {
+  font-weight: bold;
+}
+
+.fcPrimary {
+  color: @primary-color  !important;
+}
+
+
+.fcLabel {
+  color: @label-color  !important;
+}
+
+.fcWhite {
+  color: #fff !important;
+}
+
+
+.fcPrimary {
+  color: @primary-color  !important;
+}
+
+.fcError {
+  color: @error-color  !important;
+}
+
+.fcSuccess {
+  color: @success-color  !important;
+}
+
+.fcWarning {
+  color: @warning-color  !important;
+}
+
+
+.wsNowrap {
+  white-space: nowrap;
+}
+
+.wbBreakAll {
+  word-break: break-all;
+}

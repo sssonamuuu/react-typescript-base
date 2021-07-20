@@ -1,0 +1,19 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ],
+    ["@babel/preset-react"],
+    ["@babel/preset-typescript"]
+  ],
+  "plugins": [
+    ["@babel/plugin-transform-runtime"], // polyfill 按需引入
+    ["import", { "libraryName": "antd",  "style": true }], // antd 按需引入
+    ["@babel/plugin-proposal-class-properties"] // 支持class私有属性
+  ]
+}

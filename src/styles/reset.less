@@ -1,0 +1,62 @@
+:global {
+  html {
+    font-family: 'Open Sans', 'Segoe UI';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  ul,
+  ol,
+  li {
+    overflow: 0;
+    margin: 0;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  #@{rootId} {
+    width: 100%;
+    height: 100%;
+  }
+
+  /** select value 过长，form inline 自动换行问题 */
+  .@{ant-prefix}-form-item-control {
+    overflow: hidden;
+  }
+
+  .@{ant-prefix}-form-item-extra {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  .@{ant-prefix}-form-item-with-help .@{ant-prefix}-form-item-extra {
+    margin-top: -2px;
+  }
+
+
+  th.@{ant-prefix}-table-cell {
+    white-space: nowrap;
+  }
+
+  td.@{ant-prefix}-table-cell {
+    word-break: break-all;
+  }
+
+  .@{ant-prefix}-form-item-control {
+    .@{ant-prefix}-picker {
+      width: 100%;
+    }
+  }
+
+
+  .@{ant-prefix}-card-head-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+}

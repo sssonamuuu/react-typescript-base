@@ -1,0 +1,47 @@
+.box {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.item {
+  margin-top: 10px;
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
+  &:hover .ctrl {
+    display: flex;
+  }
+}
+
+.ctrl {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  height: 20px;
+  align-items: center;
+  background: rgba(#000000, 0.6);
+  color: #fff;
+  font-size: 12px;
+  > span, > label {
+    &:hover {
+      color: @primary-color;
+    }
+    flex: 1;
+    cursor: pointer;
+    text-align: center;
+    > input {
+      display: none;
+    }
+  }
+}
+
+.upload {
+  border: 1px dotted @normal-color;
+  cursor: pointer;
+  color: @normal-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
