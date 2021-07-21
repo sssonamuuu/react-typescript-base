@@ -16,20 +16,22 @@ export const storeDefaultValue: StoreProps = {
 };
 
 export const storeReducer: StoreReducer = (state, action): StoreProps => {
-  switch (action.type) {
-    case 'userinfo':
-      return { ...state, userinfo: { ...state.userinfo, ...action.payload } as any };
-    default:
-      return state;
-  }
+  const nextState = { ...state };
+  nextState[action.type] = action.payload as any;
+  return nextState;
 };
 
 export function useStore () {
   const { stores, reducer } = useContext(StoreContext);
-  return {
+  const result = {
     stores,
-    setStoreUserinfo (userinfo: Partial<StoreProps['userinfo']>) {
-      reducer({ type: 'userinfo', payload: userinfo });
-    },
   };
+
+  Object.keys(storeDefaultValue).forEach(key => {
+    result[`set${key.replace(/^([a-z])(.*)$/, (_, $1, $2) => $1.toUpperCase() + $2)}`] = function (value: any) {
+      reducer({ type: key as any, payload: value });
+    };
+  });
+
+  return result;
 }
