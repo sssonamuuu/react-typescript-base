@@ -2,6 +2,7 @@ import globalStyle from 'index.less';
 import React, { useMemo } from 'react';
 import { Table, Tooltip } from 'antd';
 import { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
+import { isNullOrUndefined } from 'utils/dataTypeTools';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;
@@ -84,7 +85,7 @@ function formatColumns<T> (
     return [...p, { ...reset, dataIndex: `${dataIndex}`, render (...args) {
       const content = render ? render(...args) : dataIndex ? args[1][dataIndex] : '';
 
-      if (!content) {
+      if (isNullOrUndefined(content) || content === '') {
         return defalutValue;
       }
 
