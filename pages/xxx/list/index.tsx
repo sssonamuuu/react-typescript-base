@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from 'antd';
-import BaseLink from 'components/BaseLink';
-import BaseCard from 'components/baseCard';
+import BaseLink from 'base/BaseLink';
+import BaseCard from 'base/baseCard';
 
 export default function XxxListPage () {
   return (

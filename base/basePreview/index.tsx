@@ -4,11 +4,11 @@ import usePageConfig from 'hooks/usePageConfig';
 import { ArrowLeftOutlined, ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
 import keyboardEventUtils from 'utils/keyboardEventUtils';
 import { Spin } from 'antd';
-import { getFileIconType } from 'components/attachment';
+import { getFileIconType } from 'base/baseAttachment';
 
-export type FileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx' | 'pdf' | 'zip' | 'unknown';
+export type BaseFileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx' | 'pdf' | 'zip' | 'unknown';
 
-export interface PreviewItemProps {
+export interface BasePreviewItemProps {
   key: string;
   order?: number;
   title?: string;
@@ -16,29 +16,29 @@ export interface PreviewItemProps {
   /** 扩展名，用于部分无法确定fileIcon的地方传入，如：文件上传 */
   ext?: string;
   /** 如果不传入该字段，如果有 ext 通过 ext 获取，如果无通过 src 获取，最后 unknown， */
-  type?: FileIconType;
+  type?: BaseFileIconType;
 }
 
-interface PreviewItemWithInfoProps extends PreviewItemProps {
+interface BasePreviewItemWithInfoProps extends BasePreviewItemProps {
   status: 'loading' | 'loaded' | 'error';
-  type: FileIconType;
+  type: BaseFileIconType;
 }
 
-interface PreviewContextProps {
-  add(item: PreviewItemProps): void;
+interface BasePreviewContextProps {
+  add(item: BasePreviewItemProps): void;
   remove(key: string): void;
   show(key: string): void;
 }
 
-const PreviewContext = React.createContext<PreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0 });
+const BasePreviewContext = React.createContext<BasePreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0 });
 
-interface PreviewConsumerProps extends Omit<PreviewItemProps, 'key'> {
+interface BasePreviewConsumerProps extends Omit<BasePreviewItemProps, 'key'> {
   children: React.ReactElement;
 }
 
-export function PreviewConsumer ({ children, ...props }: PreviewConsumerProps) {
+export function BasePreviewConsumer ({ children, ...props }: BasePreviewConsumerProps) {
   const key = useMemo(() => Math.random().toString(16), []);
-  const context = useContext(PreviewContext);
+  const context = useContext(BasePreviewContext);
 
   useEffect(() => {
     context.add({ ...props, key });
@@ -60,11 +60,11 @@ interface PreviewProviderProps {}
 /** 点击如果在当前class包含内容内，不进行关闭 */
 const CONTENT_CLASSNAME = 'preview-content-classname-not-close';
 
-export function PreviewProvider ({ children }: PropsWithChildren<PreviewProviderProps>) {
+export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProviderProps>) {
   const { disablePageScroll, enablePageScroll } = usePageConfig({});
   const [showDesc, setShowDesc] = useState(true);
   const [show, setShow] = useState(false);
-  const [list, setList] = useState<PreviewItemWithInfoProps[]>([]);
+  const [list, setList] = useState<BasePreviewItemWithInfoProps[]>([]);
   const [currentKey, setCurrentKey] = useState<string>();
 
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -78,7 +78,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
     return ~index ? index : 0;
   }, [orderedList, currentKey]);
 
-  const current = useMemo<PreviewItemWithInfoProps | void>(() => orderedList[currentIndex], [orderedList, currentIndex]);
+  const current = useMemo<BasePreviewItemWithInfoProps | void>(() => orderedList[currentIndex], [orderedList, currentIndex]);
 
   function onClose () {
     setShow(false);
@@ -158,7 +158,7 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
   }
 
   return (
-    <PreviewContext.Provider value={{
+    <BasePreviewContext.Provider value={{
       add: item => {
         const type = item.type || (item.ext ? getFileIconType(item.ext) : getFileIconType(item.src));
         setList(prev => [...prev, { ...item, status: type === 'img' ? 'loading' : 'loaded', type }]);
@@ -227,6 +227,6 @@ export function PreviewProvider ({ children }: PropsWithChildren<PreviewProvider
           </div>
         </div>
       ) : null}
-    </PreviewContext.Provider>
+    </BasePreviewContext.Provider>
   );
 }

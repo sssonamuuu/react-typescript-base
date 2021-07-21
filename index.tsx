@@ -11,7 +11,7 @@ import { ConfigProvider, message } from 'antd';
 import { RouteItemProps, routesArr } from 'routers';
 import globalConfig from 'configs';
 import moment from 'moment';
-import { StoreContext, storeDefaultValue, storeReducer } from 'stores';
+import { StoreContext, storeDefaultValue, storeReducer } from 'hooks/useStore';
 import { history, navigation, useLocationChange } from 'utils/navigation';
 import { singleOrArrayToArray } from 'utils/dataTypeTools';
 

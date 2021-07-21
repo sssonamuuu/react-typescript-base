@@ -1,11 +1,12 @@
 import React, { cloneElement, ReactElement, Children } from 'react';
-import BaseForm, { BaseFormProps } from 'components/baseForm';
+import BaseForm, { BaseFormProps } from 'base/baseForm';
 import { Row, Col, Button, Grid } from 'antd';
 import globalStyle from 'index.less';
 import style from './index.less';
 import { ButtonProps } from 'antd/es/button';
-import BaseCard, { BaseCardProps } from 'components/baseCard';
-import { BaseFormItemProps } from 'components/baseForm/baseFormItem';
+import BaseCard, { BaseCardProps } from 'base/baseCard';
+import { BaseFormItemProps } from 'base/baseForm/baseFormItem';
+import { MULTI_COLS_FORMGRID } from 'datas/const';
 
 type BaseAdvancedSearchItem<T> = ReactElement<BaseFormItemProps<T>>;
 
@@ -37,11 +38,11 @@ export default function BaseAdvancedSearch <T> ({
     <BaseForm {...props} className={className}>
       <Row gutter={10}>
         {Children.map(children, child => child ? (
-          <Col span={8} xxl={6}>
+          <Col {...MULTI_COLS_FORMGRID}>
             {cloneElement(child)}
           </Col>
         ) : null)}
-        <Col span={8} xxl={6} offset={offset}>
+        <Col {...MULTI_COLS_FORMGRID} offset={offset}>
           <BaseForm.Item>
             <div className={style.searchCtrlBox}>
               <Button {...resetBtnProps} onClick={onReset} disabled={loading ?? resetBtnProps.disabled}>重置</Button>

@@ -4,11 +4,11 @@ import React, { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useStat
 import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import Incorrect from 'classes/Incorrect';
-import Attachment from 'components/attachment';
-import { FileIconType } from 'components/preview';
+import Attachment from 'base/baseAttachment';
+import { BaseFileIconType } from 'base/basePreview';
 
 /** 通过mimetype的/截取，后半截无法判断FileIconType的文件 */
-const mimetype: { [key: string]: FileIconType } = {
+const mimetype: { [key: string]: BaseFileIconType } = {
   'application/msword': 'doc',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
   'application/vnd.ms-excel': 'xls',

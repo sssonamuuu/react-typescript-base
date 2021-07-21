@@ -1,4 +1,4 @@
-import BaseCard from 'components/baseCard';
+import BaseCard from 'base/baseCard';
 import React, { useMemo } from 'react';
 import { navigation } from 'utils/navigation';
 

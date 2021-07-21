@@ -21,7 +21,7 @@ import WebpackDevServer from 'webpack-dev-server';
 const MODE: 'production' | 'development' = yargs.argv.mode !== 'production' ? 'development' : 'production';
 
 const STATIC = 'static';
-const SRC_ROOT_DIR = 'src';
+const SRC_ROOT_DIR = '.';
 const DIST_ROOT_DIR = `dist`;
 const CONFIG_DIR = `${SRC_ROOT_DIR}/configs`;
 const DIST_SCRIPT_DIR = `${STATIC}/scripts`;
@@ -50,7 +50,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     cacheDirectory: path.join(__dirname, '.webpack-cache', ENV),
   },
   devtool: MODE === 'development' ? 'source-map' : void 0,
-  entry: { index: `./${SRC_ROOT_DIR}/index.tsx` },
+  entry: { index: `${SRC_ROOT_DIR}/index.tsx` },
   output: {
     publicPath: '/',
     path: path.join(__dirname, DIST_ROOT_DIR),
@@ -72,7 +72,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     new ESLintPlugin({ emitError: true, emitWarning: false, extensions: ['ts', 'tsx', 'js']}),
 
     new HtmlWebpackPlugin({
-      template: `./${SRC_ROOT_DIR}/index.html`,
+      template: `${SRC_ROOT_DIR}/index.html`,
       filename: 'index.html',
       templateParameters: { config },
       minify: {

@@ -1,8 +1,8 @@
 import style from './index.less';
-import { PreviewConsumer, PreviewProvider, FileIconType, PreviewItemProps } from 'components/preview';
+import { BasePreviewConsumer, BasePreviewProvider, BaseFileIconType, BasePreviewItemProps } from 'base/basePreview';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 
-export interface AttachmentProps extends Pick<PreviewItemProps, 'ext' | 'order' | 'type'> {
+export interface AttachmentProps extends Pick<BasePreviewItemProps, 'ext' | 'order' | 'type'> {
   /** 文件地址 */
   src?: string;
   /** 预览地址，默认同 src */
@@ -26,7 +26,7 @@ export function getAbsoluteSrc (src?: string) {
   return !src ? '' : /^(https?|blob|data):/.test(src) ? src : `TODO://绝对地址/${src}`;
 }
 
-export function getFileIconType (src: string = ''): FileIconType {
+export function getFileIconType (src: string = ''): BaseFileIconType {
   const ext = (src.match(/\.\w+(?=$|\?)/)?.[0] || '').replace(/^\./, '');
 
   if (/jpe?g|png|gif|tiff|pjp|jfif|svgz?|bmp|webp|ico|xbm|dib|tif|pjpeg|avif/.test(ext)) {
@@ -34,7 +34,7 @@ export function getFileIconType (src: string = ''): FileIconType {
   }
 
   if (/docx?|pptx?|xlsx?|pdf|zip/.test(ext)) {
-    return ext as FileIconType;
+    return ext as BaseFileIconType;
   }
 
   return 'unknown';
@@ -65,7 +65,7 @@ export default function Attachment ({
 
   return (
     <div className={`${style.attachment} ${className}`} style={{ width, height }}>
-      <PreviewConsumer src={absolutePreviewSrc} order={order} type={type} title={title}>
+      <BasePreviewConsumer src={absolutePreviewSrc} order={order} type={type} title={title}>
         <div className={style.attachmentInner} style={{ borderRadius: radius }} title={title}>
           {title && (showTitle === 'all' || showTitle === 'not-image' && !isImg) ? <div className={style.title} onClick={e => e.stopPropagation()}>{title}</div> : null}
 
@@ -77,10 +77,10 @@ export default function Attachment ({
             </div>
           )}
         </div>
-      </PreviewConsumer>
+      </BasePreviewConsumer>
       {children}
     </div>
   );
 }
 
-Attachment.PreviewProvider = PreviewProvider;
+Attachment.PreviewProvider = BasePreviewProvider;

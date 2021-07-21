@@ -1,5 +1,5 @@
 import React, { ComponentType, createElement, useEffect, useState } from 'react';
-import BasePlaceholder from 'components/basePlaceholder';
+import BasePlaceholder from 'base/basePlaceholder';
 import Incorrect from 'classes/Incorrect';
 import errorCode from 'enumerations/errorCode';
 

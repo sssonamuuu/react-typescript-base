@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import usePlaceholder from 'hooks/usePlaceholder';
-import BasePlaceholder from 'components/basePlaceholder';
-import BaseCard from 'components/baseCard';
+import BasePlaceholder from 'base/basePlaceholder';
+import BaseCard from 'base/baseCard';
 
 export default () => {
   const [placeholder, setPlaceholder] = usePlaceholder();

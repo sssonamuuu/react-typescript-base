@@ -19,9 +19,9 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["./src/*"]
+      "*": ["./*"]
     },
     "types": ["webpack-env"]
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".webpack-cache", "dist"]
 }
