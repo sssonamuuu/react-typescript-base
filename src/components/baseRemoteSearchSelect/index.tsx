@@ -36,6 +36,8 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
         setOptions(res);
         setSearching(false);
       }
+    }).catch(() => {
+      setSearching(false);
     });
   }, 800), [remoteLoadData]);
 
@@ -70,7 +72,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
       filterOption={false}
       showSearch
       suffixIcon={searching ? <LoadingOutlined /> : void 0}
-      notFoundContent={searching ? <Spin size="small" /> : void 0}
+      notFoundContent={searching ? <Spin size="small" style={{ margin: '10px auto', display: 'block' }} /> : void 0}
       options={options}
       onSearch={onSearch}
       {...props}
