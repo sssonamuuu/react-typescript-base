@@ -7,6 +7,7 @@ import { isPathParamRoute, pathKeyRoutes, RouteItemWithNameProps, RouteProps, ro
 import { createBrowserHistory, History } from 'history';
 import qs from 'qs';
 import { useEffect } from 'react';
+import { getSingleOrArrayFirst } from './dataTypeTools';
 
 /** 查找当前的路由配置 */
 function findCurrentRoute (pathname: string = location.pathname): RouteItemWithNameProps | undefined {
@@ -55,7 +56,7 @@ history.open = function (path: string, query?: any) {
 };
 
 export function getRoutePath <K extends keyof RouteProps> (name: K): string {
-  return Array.isArray(routes[name]?.path) ? routes[name].path[0] : routes[name]?.path as string;
+  return getSingleOrArrayFirst(routes[name]?.path)!;
 }
 
 function link <K extends keyof RouteProps> (name: K, query?: RouteProps[K]['$query']) {

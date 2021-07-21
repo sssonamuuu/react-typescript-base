@@ -1,5 +1,6 @@
 import configs from 'configs';
 import { useEffect, useMemo, useCallback } from 'react';
+import { singleOrArrayToArray } from 'utils/dataTypeTools';
 
 interface UsePageConfigProps {
   /** 添加根节点的 class， 离开页面后移除 */
@@ -16,12 +17,12 @@ export default function usePageConfig ({
 
   useEffect(() => {
     /** 兼容ie，classList.add/remove 只能是单个参数 */
-    (Array.isArray(rootClassName) ? rootClassName : [rootClassName]).forEach(className => {
+    singleOrArrayToArray(rootClassName).forEach(className => {
       root?.classList.add(className);
     });
 
     return () => {
-      (Array.isArray(rootClassName) ? rootClassName : [rootClassName]).forEach(className => root?.classList.remove(className));
+      singleOrArrayToArray(rootClassName).forEach(className => root?.classList.remove(className));
     };
   }, []);
 

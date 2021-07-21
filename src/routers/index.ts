@@ -2,6 +2,7 @@ import { ComponentType } from 'react';
 import asyncLoadComponent from 'utils/asyncLoadComponent';
 import Layout from 'layouts/default';
 import { XxxDetailPageQuery } from 'pages/xxx/detail';
+import { singleOrArrayToArray } from 'utils/dataTypeTools';
 
 export interface RouteItemProps {
   path: string | string[];
@@ -62,9 +63,7 @@ export const routesMap: { [key: string]: RouteItemWithNameProps } = {};
 export const pathKeyRoutes: (RouteItemWithNameProps & { path: string })[] = [];
 
 routesArr.forEach(route => {
-  const paths = Array.isArray(route.path) ? route.path : [route.path];
-
-  paths.forEach(path => {
+  singleOrArrayToArray(route.path).forEach(path => {
     isPathParamRoute(path) ? pathKeyRoutes.push({ ...route, path }) : routesMap[path.toLowerCase()] = route;
   });
 });

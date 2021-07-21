@@ -2,6 +2,7 @@ import style from './index.less';
 import React, { ReactNode } from 'react';
 import globalStyle from 'index.less';
 import { Row, Col } from 'antd';
+import { isNullOrUndefined } from 'utils/dataTypeTools';
 
 type Layout = 'vertial' | 'horizontal';
 type Align = 'left' | 'center' | 'right';
@@ -86,7 +87,7 @@ export default function BaseDescriptions ({
             <span className={style.colon} style={{ visibility: itemColon ? 'visible' : 'hidden' }}>:</span>
           </span>
           <span className={`${style.content} ${itemContentClassName} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}>
-            {value === '' || value === void 0 || value === null ? itemDefaultValue : value}
+            {value === '' || isNullOrUndefined(value) ? itemDefaultValue : value}
           </span>
         </Col>
       ))}

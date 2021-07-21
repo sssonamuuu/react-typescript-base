@@ -13,6 +13,7 @@ import globalConfig from 'configs';
 import moment from 'moment';
 import { StoreContext, storeDefaultValue, storeReducer } from 'stores';
 import { history, navigation, useLocationChange } from 'utils/navigation';
+import { singleOrArrayToArray } from 'utils/dataTypeTools';
 
 moment.locale('zh-cn');
 
@@ -49,7 +50,7 @@ const App = () => {
           <Switch>
             {[...mapRoutes.keys()].map(layout => {
               const routes = mapRoutes.get(layout) || [];
-              const paths = routes.reduce<string[]>((p, c) => [...p, ...Array.isArray(c.path) ? c.path : c.path ? [c.path] : []], []);
+              const paths = routes.reduce<string[]>((p, c) => [...p, ...singleOrArrayToArray(c.path)], []);
               const children = routes.map(child => <Route key={`${child.path}`} exact path={child.path} component={child.component} />);
 
               return layout === DEFAULT_LAYOUT_MAP_KEY ? children : (

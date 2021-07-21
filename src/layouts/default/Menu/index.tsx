@@ -4,6 +4,7 @@ import menus from './menus';
 import { Link } from 'react-router-dom';
 import { useLocationChange } from 'utils/navigation';
 import { routesArr } from 'routers';
+import { singleOrArrayToArray } from 'utils/dataTypeTools';
 
 export default function Menu () {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
@@ -23,10 +24,8 @@ export default function Menu () {
 
     /** 查找当前路由，如果有 `activeMenusPath` 配置，修改其值 */
     for (const route of routesArr) {
-      if (Array.isArray(route.path) ? route.path.includes(pathname) : route.path === pathname) {
-        if (route.activeMenusPath) {
-          currentMenuActivePath = route.activeMenusPath;
-        }
+      if (singleOrArrayToArray(route.path).includes(pathname) && route.activeMenusPath) {
+        currentMenuActivePath = route.activeMenusPath;
       }
     }
 
