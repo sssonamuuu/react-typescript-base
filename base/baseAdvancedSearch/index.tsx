@@ -1,19 +1,25 @@
 import React, { cloneElement, ReactElement, Children } from 'react';
-import BaseForm, { BaseFormProps } from 'base/baseForm';
-import { Row, Col, Button, Grid } from 'antd';
-import globalStyle from 'index.less';
-import style from './index.less';
+import { Row, Col, Button } from 'antd';
+import globalStyle from 'index.module.less';
+import style from './index.module.less';
 import { ButtonProps } from 'antd/es/button';
-import BaseCard, { BaseCardProps } from 'base/baseCard';
-import { BaseFormItemProps } from 'base/baseForm/baseFormItem';
-import { MULTI_COLS_FORMGRID } from 'datas/const';
+import BaseCard, { BaseCardProps } from '../baseCard';
+import { BaseFormItemProps } from '../baseForm/baseFormItem';
+import BaseForm, { BaseFormProps } from '../baseForm';
+import { ColProps } from 'antd/es/grid/col';
 
-type BaseAdvancedSearchItem<T> = ReactElement<BaseFormItemProps<T>>;
+interface GridProps extends ColProps {}
+
+type BaseAdvancedSearchItemProps<T> = BaseFormItemProps<T> & {
+  grid?: GridProps;
+};
 
 interface BaseAdvancedSearchProps<T> extends BaseFormProps<T> {
-  children?: BaseAdvancedSearchItem<T> | BaseAdvancedSearchItem<T>[];
+  children?: ReactElement<BaseAdvancedSearchItemProps<T>> | ReactElement<BaseAdvancedSearchItemProps<T>>[];
   resetBtnProps?: Omit<ButtonProps, 'onClick'>;
   searchBtnProps?: Omit<ButtonProps, 'onClick'>;
+  grid?: GridProps;
+  operateGrid?: GridProps;
   loading?: boolean;
   onSearch?(): void;
   onReset?(): void;
@@ -27,22 +33,19 @@ export default function BaseAdvancedSearch <T> ({
   loading,
   onSearch,
   onReset,
+  grid = { span: 8, xxl: 6 },
+  operateGrid = grid,
   ...props
 }: BaseAdvancedSearchProps<T>) {
-  const screen = Grid.useBreakpoint();
-  const itemCountePreLine = screen.xxl ? 4 : 3;
-  const childCount = Children.count(children) + 1;
-  const offset = (Math.ceil(childCount / itemCountePreLine) * itemCountePreLine - childCount) * (24 / itemCountePreLine);
-
   return (
     <BaseForm {...props} className={className}>
       <Row gutter={10}>
         {Children.map(children, child => child ? (
-          <Col {...MULTI_COLS_FORMGRID}>
+          <Col {...child.props.grid || grid}>
             {cloneElement(child)}
           </Col>
         ) : null)}
-        <Col {...MULTI_COLS_FORMGRID} offset={offset}>
+        <Col style={{ marginLeft: 'auto', ...operateGrid.style }} {...operateGrid}>
           <BaseForm.Item>
             <div className={style.searchCtrlBox}>
               <Button {...resetBtnProps} onClick={onReset} disabled={loading ?? resetBtnProps.disabled}>重置</Button>
@@ -55,6 +58,6 @@ export default function BaseAdvancedSearch <T> ({
   );
 }
 
-BaseAdvancedSearch.Item = BaseForm.Item;
+BaseAdvancedSearch.Item = BaseForm.Item as <T> (props: BaseAdvancedSearchItemProps<T>) => ReactElement<BaseAdvancedSearchItemProps<T>>;
 BaseAdvancedSearch.useForm = BaseForm.useForm;
 BaseAdvancedSearch.Wrap = (props: BaseCardProps) => <BaseCard {...props} bodyStyle={{ ...props.bodyStyle, paddingBottom: 0 }} />;
