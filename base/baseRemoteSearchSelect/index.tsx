@@ -41,11 +41,18 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     });
   }, 800), [remoteLoadData]);
 
+  function _onChange (value?: T) {
+    if (value !== currentValue) {
+      setCurrentValue(value);
+      onChange?.(value);
+    }
+  }
+
   useEffect(() => {
     setSearching(false);
     fetchId.current = 0;
     setCurrentValue(void 0);
-    onChange?.(void 0);
+    _onChange?.(void 0);
     search.current = '';
     !remotePendding && loadData();
     return () => {
@@ -56,11 +63,6 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
   function onSearch (value: string) {
     search.current = value;
     loadData();
-  }
-
-  function _onChange (value: T) {
-    setCurrentValue(value);
-    onChange?.(value);
   }
 
   if (remotePendding) {
