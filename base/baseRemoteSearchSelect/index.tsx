@@ -4,18 +4,31 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { SelectValue } from 'antd/lib/select';
 import debounce from 'lodash/debounce';
 
-export interface BaseRemoteSearchSelectProps<T> extends
+export interface BaseRemoteSearchSelectProps<T, R> extends
   Omit<SelectProps<T>, 'children' | 'options' | 'filterOption' | 'showSearch' | 'onSearch' | 'onChange'> {
-  remoteLoadData?(search?: string): Promise<SelectProps<T>['options']>;
+  remoteLoadData?(search?: string): Promise<R[]>;
+  /** 默认 label */
+  remoteDataLabel?: keyof R;
+  /** 默认 value */
+  remoteDataValue?: keyof R;
   /** 异步加载数据在条件不足时，禁用显示文案 */
   remotePendding?: string;
-  onChange? (value?: T): void;
+  onChange?(value: T, item: R): void;
+  onChange? (value?: T, item?: R): void;
 }
 
-export default function BaseRemoteSearchSelect <T extends SelectValue = SelectValue> ({ remoteLoadData, remotePendding, value, onChange, ...props }: BaseRemoteSearchSelectProps<T>) {
+export default function BaseRemoteSearchSelect <T extends SelectValue = SelectValue, R extends object = {}> ({
+  remoteLoadData,
+  remotePendding,
+  remoteDataLabel = 'label' as any,
+  remoteDataValue = 'value' as any,
+  value,
+  onChange,
+  ...props
+}: BaseRemoteSearchSelectProps<T, R>) {
   const [searching, setSearching] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
-  const [options, setOptions] = useState<SelectProps<T>['options']>([]);
+  const [options, setOptions] = useState<{ label: string; value: string; props: R }[]>([]);
   const timmer = useRef<NodeJS.Timeout>();
   const search = useRef('');
   const fetchId = useRef(0);
@@ -33,7 +46,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
 
     remoteLoadData?.(search.current).then(res => {
       if (current === fetchId.current) {
-        setOptions(res);
+        setOptions(res.map(item => ({ label: item[remoteDataLabel] as any, value: item[remoteDataValue] as any, props: item })));
         setSearching(false);
       }
     }).catch(() => {
@@ -41,10 +54,10 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     });
   }, 800), [remoteLoadData]);
 
-  function _onChange (value?: T) {
+  function _onChange (value?: T, option?: any) {
     if (value !== currentValue) {
       setCurrentValue(value);
-      onChange?.(value);
+      onChange?.(value, option?.props);
     }
   }
 
@@ -80,6 +93,5 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
       {...props}
       value={currentValue}
       onChange={_onChange} />
-
   );
 }
