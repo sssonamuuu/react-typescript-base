@@ -1,10 +1,10 @@
-import globalStyle from 'index.less';
-import style from './index.less';
+import globalStyle from 'index.module.less';
+import style from './index.module.less';
 import React, { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import Incorrect from 'classes/Incorrect';
-import Attachment from 'base/baseAttachment';
+import BaseAttachment from 'base/baseAttachment';
 import { BaseFileIconType } from 'base/basePreview';
 
 /** 通过mimetype的/截取，后半截无法判断FileIconType的文件 */
@@ -18,8 +18,15 @@ const mimetype: { [key: string]: BaseFileIconType } = {
   'application/x-zip-compressed': 'zip',
 };
 
+export interface DataItem {
+  url: string;
+  name: string;
+  /** 如果没有 file 表示为回显数据，不需要上传 */
+  file?: File;
+}
+
 interface BaseFileUploadProps {
-  value?: string[];
+  value?: (DataItem | string)[];
   onChange?(value?: string[]): void;
   /** 最大文件数，0表示不限 */
   limit?: number;
@@ -32,13 +39,8 @@ interface BaseFileUploadProps {
   /** 默认错误会进行 `message.error` 提示，false 表示不提示 */
   errorMessage?: false | string;
   accept?: string;
-}
-
-interface DataItem {
-  url: string;
-  name: string;
-  /** 如果没有 file 表示为回显数据，不需要上传 */
-  file?: File;
+  /** 禁用，仅作为展示 */
+  disabled?: boolean;
 }
 
 export interface BaseFileUploadRef {
@@ -55,20 +57,24 @@ const BaseFileUpload = forwardRef(({
   errorMessage = '上传失败',
   accept = '*',
   onChange,
+  disabled,
 }: BaseFileUploadProps, ref: Ref<BaseFileUploadRef>) => {
   /** 在上传的回调中 无法获取到最新的 datas */
   const datasRef = useRef<DataItem[]>([]);
   const [datas, setDatas] = useState<DataItem[]>([]);
 
   useEffect(() => {
-    if (`${datasRef.current.map(item => item.url)}` !== `${value}`) {
+    if (`${datasRef.current.map(item => item.url)}` !== `${value?.map(item => typeof item === 'string' ? item : item.url)}`) {
       const urlFiles = datasRef.current.reduce<{ [url: string]: DataItem }>((p, item) => ({ ...p, [item.url]: item }), {});
-      setDatas(datasRef.current = value?.map(url => {
-        const item = urlFiles[url];
+      setDatas(datasRef.current = value?.map<DataItem>(item => {
+        if (typeof item !== 'string') {
+          return item;
+        }
+        const cache = urlFiles[item];
         return {
-          url,
-          file: item?.file,
-          name: item?.name || url.split('?')[0].match(/(?:^|\/)[^/]*$/)?.[0].replace(/\//, '')!,
+          url: item,
+          file: cache?.file,
+          name: cache?.name || item.split('?')[0].match(/(?:^|\/)[^/]*$/)?.[0].replace(/\//, '')!,
         };
       }) || []);
     }
@@ -76,7 +82,6 @@ const BaseFileUpload = forwardRef(({
 
   function onSelectFile (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
     const files = e.target.files;
-
     if (files?.length) {
       const filesArr = [...files];
       if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
@@ -93,7 +98,6 @@ const BaseFileUpload = forwardRef(({
         setDatas([...currentData]);
       }
     }
-
     /** 清空当前input，避免重选同一张图不触发onchange事件 */
     e.target.value = '';
   }
@@ -132,37 +136,38 @@ const BaseFileUpload = forwardRef(({
   useImperativeHandle(ref, () => ({ upload }));
 
   return (
-    <Attachment.PreviewProvider>
+    <BaseAttachment.PreviewProvider>
       <div className={style.box}>
         {datas.map((item, index) => (
-          <Attachment
-            className={style.item}
+          <BaseAttachment
             key={item.url}
+            className={style.item}
             width={width}
             height={height}
             src={item.url}
             order={index}
-            showTitle="not-image"
             title={item.name}
             ext={item.file ? mimetype[item.file.type] || item.file.type.split('/')[1] : void 0}>
-            <div className={style.ctrl}>
-              <span onClick={() => onDelete(index)}>删除</span>
-              <label>
-                <span>替换</span>
-                <input accept={accept} multiple hidden type="file" onChange={e => onSelectFile(e, index)} />
-              </label>
-            </div>
-          </Attachment>
+            {!disabled ? (
+              <div className={style.ctrl}>
+                <span onClick={() => onDelete(index)}>删除</span>
+                <label>
+                  <span>替换</span>
+                  <input accept={accept} multiple hidden type="file" onChange={e => onSelectFile(e, index)} />
+                </label>
+              </div>
+            ) : null}
+          </BaseAttachment>
         ))}
         {/* 没有限制或者没有超过限制才能继续添加 */}
-        {!limit || limit - datas.length > 0 ? (
+        {!disabled && (!limit || limit - datas.length > 0) ? (
           <label className={`${style.item} ${style.upload}`} style={{ width, height }}>
             <PlusOutlined className={globalStyle.fs30} />
             <input accept={accept} multiple hidden type="file" onChange={onSelectFile} />
           </label>
         ) : null}
       </div>
-    </Attachment.PreviewProvider>
+    </BaseAttachment.PreviewProvider>
   );
 });
 

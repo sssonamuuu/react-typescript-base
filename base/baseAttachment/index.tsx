@@ -17,8 +17,8 @@ export interface AttachmentProps extends Pick<BasePreviewItemProps, 'ext' | 'ord
   size?: CSSProperties['width'];
   width?: CSSProperties['width'];
   height?: CSSProperties['height'];
-  /** 是否显示标题，默认不显示 */
-  showTitle?: 'all' | 'not-image';
+  /** 是否显示标题，默认显示 */
+  showTitle?: boolean;
   className?: string;
 }
 
@@ -67,7 +67,7 @@ export default function Attachment ({
     <div className={`${style.attachment} ${className}`} style={{ width, height }}>
       <BasePreviewConsumer src={absolutePreviewSrc} order={order} type={type} title={title}>
         <div className={style.attachmentInner} style={{ borderRadius: radius }} title={title}>
-          {title && (showTitle === 'all' || showTitle === 'not-image' && !isImg) ? <div className={style.title} onClick={e => e.stopPropagation()}>{title}</div> : null}
+          {title && showTitle ? <div className={style.title} onClick={e => e.stopPropagation()}>{title}</div> : null}
 
           {isImg ? <img src={absoluteSrc} alt={title} className={style.image} onLoad={() => setStatus('loaded')} onError={() => setStatus('error')} /> : null}
 
