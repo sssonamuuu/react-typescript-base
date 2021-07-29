@@ -82,6 +82,7 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
 
   function onClose () {
     setShow(false);
+    setShowDesc(true);
     enablePageScroll();
   }
 
@@ -130,8 +131,7 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
     if ([...document.querySelectorAll(`.${CONTENT_CLASSNAME}`)].some(element => element.contains(e.target as any))) {
       setShowDesc(!showDesc);
     } else {
-      setShow(false);
-      setShowDesc(true);
+      onClose();
     }
   }
 
