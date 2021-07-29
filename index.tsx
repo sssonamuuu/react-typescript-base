@@ -12,7 +12,7 @@ import { RouteItemProps, routesArr } from 'routers';
 import globalConfig from 'configs';
 import moment from 'moment';
 import { StoreContext, storeDefaultValue, storeReducer } from 'hooks/useStore';
-import { history, navigation, useLocationChange } from 'utils/navigation';
+import { navigation, useLocationChange } from 'utils/navigation';
 import { singleOrArrayToArray } from 'utils/dataTypeTools';
 
 moment.locale('zh-cn');
@@ -46,7 +46,7 @@ const App = () => {
       prefixCls={globalConfig.theme['ant-prefix']}
       getPopupContainer={() => document.querySelector(`.${globalConfig.theme.scrollRootClassName}`) || document.body}>
       <StoreContext.Provider value={{ stores, reducer }}>
-        <Router history={history}>
+        <Router history={navigation.history}>
           <Switch>
             {[...mapRoutes.keys()].map(layout => {
               const routes = mapRoutes.get(layout) || [];
