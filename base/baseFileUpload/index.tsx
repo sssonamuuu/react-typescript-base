@@ -80,26 +80,39 @@ const BaseFileUpload = forwardRef(({
     }
   }, [value]);
 
-  function onSelectFile (e: React.ChangeEvent<HTMLInputElement>, index?: number) {
-    const files = e.target.files;
-    if (files?.length) {
-      const filesArr = [...files];
-      if (size && filesArr.some(file => file.size > size * 1024 * 1024)) {
-        message.error(`单个文件大小不能超过${size}M！`);
-      } else if (accept && filesArr.some(file => !new RegExp(accept.replace(/\*/g, '.*').replace(/, */, '|')).test(file.type))) {
-        message.error(`文件格式不对！`);
-      } else {
-        const currentData = datasRef.current;
-        /** 如果有限制，裁剪多余的文件 */
-        limit && filesArr.splice(limit - currentData.length + (index !== void 0 ? 1 : 0));
-        const filesDatas: DataItem[] = filesArr.map(item => ({ url: URL.createObjectURL(item), file: item, name: item.name }));
-        index === void 0 ? currentData.push(...filesDatas) : currentData.splice(index, 1, ...filesDatas);
-        onChange?.(currentData.map(item => item.url));
-        setDatas([...currentData]);
-      }
-    }
+  function onSelectFile (e: React.ChangeEvent<HTMLInputElement>, index?: number): void {
+    const files = [...e.target.files || []];
+
     /** 清空当前input，避免重选同一张图不触发onchange事件 */
     e.target.value = '';
+
+    if (size && files.some(file => file.size > size * 1024 * 1024)) {
+      message.error(`单个文件大小不能超过${size}M！`);
+      return;
+    }
+
+    if (accept) {
+      const accArr = accept.split(',').map(item => item.trim());
+      for (const file of files) {
+        const ext = file.name.split('.').pop();
+        const type = file.type;
+
+        if (accArr.some(acc => acc.startsWith('.') ? ext === acc.slice(1) : new RegExp(accept.replace(/\*/g, '.*')).test(type))) {
+          continue;
+        }
+
+        message.error(`文件格式不对！`);
+        return;
+      }
+    }
+
+    const currentData = datasRef.current;
+    /** 如果有限制，裁剪多余的文件 */
+    limit && files.splice(limit - currentData.length + (index !== void 0 ? 1 : 0));
+    const filesDatas: DataItem[] = files.map(item => ({ url: URL.createObjectURL(item), file: item, name: item.name }));
+    index === void 0 ? currentData.push(...filesDatas) : currentData.splice(index, 1, ...filesDatas);
+    onChange?.(currentData.map(item => item.url));
+    setDatas([...currentData]);
   }
 
   function onDelete (index: number) {
