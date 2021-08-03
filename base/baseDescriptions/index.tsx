@@ -92,7 +92,9 @@ export default function BaseDescriptions ({
         const content = value === '' || isNullOrUndefined(value) ? itemDefaultValue : value;
 
         const contentEl = (
-          <span className={`${style.content} ${itemEllipsis ? globalStyle[`toe${+itemEllipsis}`] : ''} ${itemContentClassName} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}>
+          <span
+            className={`${style.content} ${itemEllipsis ? globalStyle[`toe${+itemEllipsis}`] : ''} ${itemContentClassName} ${itemLayout === 'horizontal' ? globalStyle.mt0 : globalStyle.mt10}`}
+            style={itemShowTooltips ? void 0 : { flex: 1 }}>
             {content}
           </span>
         );
