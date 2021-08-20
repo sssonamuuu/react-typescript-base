@@ -33,5 +33,7 @@ export function useStore () {
     };
   });
 
-  return result;
+  return result as (typeof result) & {
+    [P in `set${Capitalize<keyof StoreProps>}`]: (params: StoreProps[P extends `set${infer A}` ? Uncapitalize<A> : never]) => void
+  };
 }
