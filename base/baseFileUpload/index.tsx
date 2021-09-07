@@ -1,5 +1,5 @@
-import globalStyle from 'index.module.less';
-import style from './index.module.less';
+import globalStyle from 'index.less';
+import style from './index.less';
 import React, { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';

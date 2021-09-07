@@ -1,4 +1,4 @@
-import globalStyle from 'index.module.less';
+import globalStyle from 'index.less';
 import { ColProps } from 'antd/es/grid/col';
 
 /** 多列表单的栅格布局  */

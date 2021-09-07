@@ -1,6 +1,6 @@
-import style from './index.module.less';
+import style from './index.less';
 import React, { ReactNode } from 'react';
-import globalStyle from 'index.module.less';
+import globalStyle from 'index.less';
 import { Row, Col, Tooltip } from 'antd';
 import { isNullOrUndefined } from 'utils/dataTypeTools';
 

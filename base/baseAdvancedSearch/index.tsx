@@ -1,7 +1,7 @@
 import React, { cloneElement, ReactElement, Children } from 'react';
 import { Row, Col, Button } from 'antd';
-import globalStyle from 'index.module.less';
-import style from './index.module.less';
+import globalStyle from 'index.less';
+import style from './index.less';
 import { ButtonProps } from 'antd/es/button';
 import BaseCard, { BaseCardProps } from '../baseCard';
 import { BaseFormItemProps } from '../baseForm/baseFormItem';
