@@ -18,6 +18,7 @@ export interface CommonConfigProps {
     'success-color': string;
     'warning-color': string;
     'error-color': string;
+    'normal-color': string;
   };
 }
 

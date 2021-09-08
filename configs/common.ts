@@ -12,6 +12,7 @@ const common: CommonConfigProps = {
     'success-color': '#52c41a',
     'warning-color': '#faad14',
     'error-color': '#f5222d',
+    'normal-color': '#d9d9d9',
   },
 };
 
