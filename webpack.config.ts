@@ -14,6 +14,8 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ESLintPlugin from 'eslint-webpack-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+// import ReactRefreshTypeScript from 'react-refresh-typescript';
 import webpack from 'webpack';
 import { GlobalConfigProps } from 'typings/config';
 import WebpackDevServer from 'webpack-dev-server';
@@ -88,6 +90,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
 
     ...MODE === 'development' ? [
       new webpack.HotModuleReplacementPlugin(),
+      new ReactRefreshWebpackPlugin(),
     ] : [
       new MiniCssExtractPlugin({
         ignoreOrder: true,
@@ -111,6 +114,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
+              plugins: [require.resolve('react-refresh/babel')],
             },
           },
           { loader: 'ts-loader' },
