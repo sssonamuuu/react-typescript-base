@@ -90,7 +90,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
 
     ...MODE === 'development' ? [
       new webpack.HotModuleReplacementPlugin(),
-      new ReactRefreshWebpackPlugin(),
+      new ReactRefreshWebpackPlugin({ overlay: false }),
     ] : [
       new MiniCssExtractPlugin({
         ignoreOrder: true,
