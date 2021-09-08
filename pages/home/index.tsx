@@ -3,7 +3,7 @@ import usePlaceholder from 'hooks/usePlaceholder';
 import BasePlaceholder from 'base/basePlaceholder';
 import BaseCard from 'base/baseCard';
 
-export default () => {
+export default function HomePage () {
   const [placeholder, setPlaceholder] = usePlaceholder();
 
   useEffect(() => {
@@ -19,4 +19,4 @@ export default () => {
   return (
     <BaseCard title="首页">首页</BaseCard>
   );
-};
+}
