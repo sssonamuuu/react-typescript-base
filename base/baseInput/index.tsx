@@ -114,7 +114,7 @@ export default function BaseInput ({
       autoComplete={autoComplete}
       spellCheck={false}
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
-      onKeyDown={e => keyboardEventUtils.isEnter(e) && onKeyDown}
+      onKeyDown={e => keyboardEventUtils.isEnter(e) && onKeyDown()}
       onBlur={e => setCurrentValue(transformValue(e.target.value))}
       {...props}
       {...autoComplete === 'off' ? {
