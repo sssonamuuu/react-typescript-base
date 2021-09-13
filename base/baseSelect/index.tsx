@@ -30,7 +30,7 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   remoteErrorText = '加载失败，请重试',
   ...props
 }: BaseSelectProps<T>) {
-  const [status, setStatus] = useState<'loading'| 'loaded'| 'error'>('loading');
+  const [status, setStatus] = useState<'loading'| 'loaded'| 'error'>(remoteLoadData ? 'loading' : 'loaded');
   const [remoteData, setRemoteData] = useState<OptionType<T>>([]);
 
   function loadData () {
