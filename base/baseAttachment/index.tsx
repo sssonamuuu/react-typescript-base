@@ -2,7 +2,7 @@ import style from './index.less';
 import { BasePreviewConsumer, BasePreviewProvider, BaseFileIconType, BasePreviewItemProps } from 'base/basePreview';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 
-export interface AttachmentProps extends Pick<BasePreviewItemProps, 'ext' | 'order' | 'type'> {
+export interface BaseAttachmentProps extends Pick<BasePreviewItemProps, 'ext' | 'order' | 'type'> {
   /** 文件地址 */
   src?: string;
   /** 预览地址，默认同 src */
@@ -40,7 +40,7 @@ export function getFileIconType (src: string = ''): BaseFileIconType {
   return 'unknown';
 }
 
-export default function Attachment ({
+export default function BaseAttachment ({
   src,
   previewSrc = src,
   avatar,
@@ -55,7 +55,7 @@ export default function Attachment ({
   type = ext ? getFileIconType(`.${ext}`) : getFileIconType(src) || 'unknow',
   className = '',
   children,
-}: React.PropsWithChildren<AttachmentProps>) {
+}: React.PropsWithChildren<BaseAttachmentProps>) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
   const absoluteSrc = useMemo(() => getAbsoluteSrc(src), [src]);
   const absolutePreviewSrc = useMemo(() => getAbsoluteSrc(previewSrc), [previewSrc]);
@@ -83,4 +83,4 @@ export default function Attachment ({
   );
 }
 
-Attachment.PreviewProvider = BasePreviewProvider;
+BaseAttachment.PreviewProvider = BasePreviewProvider;
