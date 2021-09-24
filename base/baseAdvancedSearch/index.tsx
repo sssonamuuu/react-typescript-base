@@ -21,6 +21,8 @@ interface BaseAdvancedSearchProps<T> extends BaseFormProps<T> {
   grid?: GridProps;
   operateGrid?: GridProps;
   loading?: boolean;
+  /** 是否显示操作项 */
+  operate?: boolean;
   onSearch?(): void;
   onReset?(): void;
 }
@@ -35,24 +37,38 @@ export default function BaseAdvancedSearch <T> ({
   onReset,
   grid = { span: 8, xxl: 6 },
   operateGrid = grid,
+  operate = true,
   ...props
 }: BaseAdvancedSearchProps<T>) {
   return (
     <BaseForm {...props} className={className}>
       <Row gutter={10}>
         {Children.map(children, child => child ? (
-          <Col {...child.props.grid || grid}>
+          <Col {...child.props.grid || grid} hidden={child.props.hidden}>
             {cloneElement(child)}
           </Col>
         ) : null)}
-        <Col style={{ marginLeft: 'auto', ...operateGrid.style }} {...operateGrid}>
-          <BaseForm.Item>
-            <div className={style.searchCtrlBox}>
-              <Button {...resetBtnProps} onClick={onReset} disabled={loading ?? resetBtnProps.disabled}>重置</Button>
-              <Button type="primary" className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps} onClick={() => onSearch?.()} loading={loading ?? searchBtnProps.loading}>查询</Button>
-            </div>
-          </BaseForm.Item>
-        </Col>
+        {operate ? (
+          <Col style={{ marginLeft: 'auto', ...operateGrid.style }} {...operateGrid}>
+            <BaseForm.Item>
+              <div className={style.searchCtrlBox}>
+                <Button
+                  {...resetBtnProps} onClick={() => {
+                    props.form?.resetFields();
+                    onReset?.();
+                  }} disabled={loading ?? resetBtnProps.disabled}>
+                  {'重置'}
+                </Button>
+                <Button
+                  type="primary"
+                  className={`${globalStyle.ml10} ${searchBtnClassName}`} {...searchBtnProps}
+                  onClick={() => onSearch?.()} loading={loading ?? searchBtnProps.loading}>
+                  {'查询'}
+                </Button>
+              </div>
+            </BaseForm.Item>
+          </Col>
+        ) : null}
       </Row>
     </BaseForm>
   );
