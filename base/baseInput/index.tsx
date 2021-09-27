@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { InputProps, TextAreaProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
@@ -53,6 +53,7 @@ export default function BaseInput ({
   ...props
 }: BaseInputProps) {
   const ref = useRef<Input>(null);
+  const isComposition = useRef(false);
   const lastValue = useRef(value);
   const [currentValue, setCurrentValue] = useState(lastValue.current);
 
@@ -63,31 +64,31 @@ export default function BaseInput ({
     lastValue.current = currentValue;
   }, [currentValue]);
 
-  function onChangeHandle (e: ChangeEvent<HTMLInputElement>) {
-    let value = e.target.value || '';
-
-    switch (valueType) {
-      case 'number':
-        value = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`))?.[0] ?? '';
-        break;
-      case 'phone':
-        value = value.match(/1\d{0,10}/)?.[0] ?? '';
-        break;
-      case 'tel':
-        value = value.match(/[\d-]{0,20}/)?.[0] ?? '';
-        break;
-      case 'idcard':
-        value = value.toUpperCase().match(/[\dx]{0,18}/i)?.[0] ?? '';
-        break;
-      case 'letter':
-        value = value.match(/[a-z]*/i)?.[0] ?? '';
-        break;
-      case 'letter-number':
-        value = value.match(/[a-z0-9]*/i)?.[0] ?? '';
-        break;
+  function onChangeHandle (value: string = '') {
+    if (!isComposition.current) {
+      switch (valueType) {
+        case 'number':
+          value = value.match(new RegExp(`${negative ? '-?\\d*' : '\\d+'}${decimal ? `(\\.\\d{0,${decimal}})?` : ''}`))?.[0] ?? '';
+          break;
+        case 'phone':
+          value = value.match(/1\d{0,10}/)?.[0] ?? '';
+          break;
+        case 'tel':
+          value = value.match(/[\d-]{0,20}/)?.[0] ?? '';
+          break;
+        case 'idcard':
+          value = value.toUpperCase().match(/[\dx]{0,18}/i)?.[0] ?? '';
+          break;
+        case 'letter':
+          value = value.match(/[a-z]*/i)?.[0] ?? '';
+          break;
+        case 'letter-number':
+          value = value.match(/[a-z0-9]*/i)?.[0] ?? '';
+          break;
+      }
+      value = transform === 'upper' ? value.toUpperCase() : transform === 'lower' ? value.toLowerCase() : value;
     }
 
-    value = transform === 'upper' ? value.toUpperCase() : transform === 'lower' ? value.toLowerCase() : value;
     setCurrentValue(value);
   }
 
@@ -113,6 +114,11 @@ export default function BaseInput ({
       ref={ref}
       autoComplete={autoComplete}
       spellCheck={false}
+      onCompositionStart={() => isComposition.current = true}
+      onCompositionEnd={() => {
+        isComposition.current = false;
+        onChangeHandle(currentValue);
+      }}
       suffix={search ? loading ? <LoadingOutlined /> : <SearchOutlined onClick={() => onEnter?.(currentValue)} /> : void 0}
       onKeyDown={e => keyboardEventUtils.isEnter(e) && onKeyDown()}
       onBlur={e => setCurrentValue(transformValue(e.target.value))}
@@ -124,7 +130,7 @@ export default function BaseInput ({
         onFocus: e => e.target.readOnly = props.readOnly ?? false,
       } : {}}
       value={currentValue}
-      onChange={onChangeHandle} />
+      onChange={e => onChangeHandle(e.target.value)} />
   );
 }
 
