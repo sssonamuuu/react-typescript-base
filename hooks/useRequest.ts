@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Incorrect from 'classes/Incorrect';
-import errorCode from 'enumerations/errorCode';
+import { errorCode } from 'datas/enums';
 
 interface UseRequestOption<U, T> {
   /** 请求参数 */
@@ -14,7 +14,7 @@ interface UseRequestOption<U, T> {
   defaultValue?: T;
 }
 
-interface FetchesItemProps<T> {
+export interface FetchesItemProps<T> {
   data: T;
   /** 多个带 `key` 请求，只要有一个 `loading` 即为 `loading` */
   loading: boolean;

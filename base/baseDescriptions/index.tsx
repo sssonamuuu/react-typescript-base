@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 import globalStyle from 'index.less';
 import { Row, Col, Tooltip } from 'antd';
 import { isNullOrUndefined } from 'utils/dataTypeTools';
+import { DEFAULT_STRING } from 'datas/consts';
 
 type Layout = 'vertial' | 'horizontal';
 type Align = 'left' | 'center' | 'right';
@@ -65,7 +66,7 @@ export default function BaseDescriptions ({
   labelAlign = 'left',
   labelWidth,
   span,
-  defaultValue = '--',
+  defaultValue = DEFAULT_STRING,
   colon = true,
   indent,
   ellipsis,

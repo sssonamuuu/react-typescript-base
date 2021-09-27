@@ -2,7 +2,9 @@ import globalStyle from 'index.less';
 import React, { useMemo } from 'react';
 import { Table, Tooltip } from 'antd';
 import { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
+import { FetchesItemProps } from 'hooks/useRequest';
 import { isNullOrUndefined } from 'utils/dataTypeTools';
+import { DEFAULT_PAGESIZE, DEFAULT_STRING } from 'datas/consts';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;
@@ -15,13 +17,13 @@ interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'
   /**
    * 超出是否省略，可以覆盖 table 以及 group 上的配置
    *
-   * @see {BaseTableProps<T>['ellipsis']}
+   * @see {@link BaseTableProps.ellipsis}
    */
   ellipsis?: BaseTableProps<T>['ellipsis'];
   /**
    * 是否显示tooltips，如果有设置 ellipsis，默认 true，可以覆盖 table 以及 group 上的配置
    *
-   * @see {BaseTableProps<T>['showTooltips']}
+   * @see {@link BaseTableProps.showTooltips}
    */
   showTooltips?: boolean | ((_: any, item: T, index: number) => React.ReactNode);
   hidden?: boolean;
@@ -56,11 +58,19 @@ interface BaseTableProps<T = unknown> extends Omit<TableProps<T>, 'children' | '
    */
   showTooltips?: boolean;
   columns?: BaseColumnsType<T>;
+  /**
+   * 替代 loading dataSource pagination
+   *
+   * 如果存在：
+   *  loading dataSource 无效
+   *  pagination 回合并原有字段
+   */
+  request?: [request: FetchesItemProps<PaginationRes<T>>, onPaginationChange: ((pagination: PaginationReq<{}>) => void)];
 }
 
 function formatColumns<T> (
   columns: BaseColumnsType<T> = [],
-  parentDefaultValue: string = '--',
+  parentDefaultValue: string = DEFAULT_STRING,
   parentEllipsis: BaseTableProps<T>['ellipsis'],
   parentShowTooltips: BaseTableProps<T>['showTooltips'],
 ): ColumnsType<T> {
@@ -105,7 +115,25 @@ function formatColumns<T> (
   }, []);
 }
 
-export default function BaseTable<T extends object> ({ columns, defalutValue, rowKey, showTooltips, ellipsis, ...props }: BaseTableProps<T>) {
+export default function BaseTable<T extends object> ({ columns, defalutValue, rowKey, showTooltips, ellipsis, request, ...props }: BaseTableProps<T>) {
   const _columns = useMemo(() => formatColumns(columns, defalutValue, ellipsis, showTooltips), [columns]);
-  return <Table<T> {...props} rowKey={`${rowKey}`} columns={_columns} />;
+  return (
+    <Table<T>
+      {...props}
+      rowKey={`${rowKey}`}
+      columns={_columns}
+      loading={request ? request[0].loading : props.loading}
+      dataSource={request && request[0].data ? request[0].data.list : props.dataSource}
+      pagination={props.pagination !== false && request && request[0].data ? {
+        current: request[0].data.current,
+        pageSize: request[0].data.pageSize,
+        total: request[0].data.total,
+        onChange: (pageNum, pageSize) => request[1]({ pageNum, pageSize }),
+        pageSizeOptions: [`${DEFAULT_PAGESIZE}`, '25', '50', '100'],
+        showSizeChanger: true,
+        showTotal: total => `共${total}条`,
+        showQuickJumper: true,
+        ...props.pagination,
+      } : props.pagination} />
+  );
 }

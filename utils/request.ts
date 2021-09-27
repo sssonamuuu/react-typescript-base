@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import Incorrect from 'classes/Incorrect';
-import errorCode from 'enumerations/errorCode';
+import { errorCode } from 'datas/enums';
 import { message } from 'antd';
 import qs from 'qs';
+import { DEFAULT_PAGESIZE } from 'datas/consts';
 
 interface RequestModel extends AxiosRequestConfig {
   /** 默认错误会进行 `message.error` 提示，是否禁用 */
@@ -74,5 +75,12 @@ export default {
   post<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
     return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: D })) =>
       request<R>(mergeParam({ url, method: 'POST' }, option, param));
+  },
+  pagination<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
+    return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: PaginationReq<D> })) => {
+      const _data = mergeParam({ url, method: 'POST' }, option, param);
+      _data.data.pageSize ??= DEFAULT_PAGESIZE;
+      return request<PaginationRes<R>>(_data);
+    };
   },
 };

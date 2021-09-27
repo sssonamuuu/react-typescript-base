@@ -16,6 +16,8 @@ plugins:
 globals:
   __ENV__: true
   NodeJS: true
+  PaginationRes: true
+  PaginationReq: true
 parserOptions:
   ecmaVersion: 10
   sourceType: module
