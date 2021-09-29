@@ -5,6 +5,7 @@ import { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
 import { FetchesItemProps } from 'hooks/useRequest';
 import { isNullOrUndefined } from 'utils/dataTypeTools';
 import { DEFAULT_PAGESIZE, DEFAULT_STRING } from 'datas/consts';
+import { GetRowKey } from 'rc-table/lib/interface';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;
@@ -36,7 +37,7 @@ interface BaseColumnGroupType<T> extends Omit<BaseColumnType<T>, 'dataIndex'> {
 type BaseColumnsType<T> = (BaseColumnGroupType<T> | BaseColumnType<T>)[];
 
 interface BaseTableProps<T = unknown> extends Omit<TableProps<T>, 'children' | 'columns' | 'rowKey'> {
-  rowKey?: keyof T;
+  rowKey?: keyof T | GetRowKey<T>;
   /**
    * 统一配置默认值，默认 --，可以通过 clomn 上的配置覆盖
    *
@@ -120,7 +121,7 @@ export default function BaseTable<T extends object> ({ columns, defalutValue, ro
   return (
     <Table<T>
       {...props}
-      rowKey={`${rowKey}`}
+      rowKey={typeof rowKey === 'function' ? rowKey : `${rowKey}`}
       columns={_columns}
       loading={request ? request[0].loading : props.loading}
       dataSource={request && request[0].data ? request[0].data.list : props.dataSource}
