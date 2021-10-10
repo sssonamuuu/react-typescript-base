@@ -17,7 +17,7 @@ export default function LayoutPage ({ children }: PropsWithChildren<{}>) {
       <Header />
       <Layout>
         <Menu />
-        <Layout.Content className={globalConfig.theme.scrollRootClassName} style={{ padding: 16, overflow: 'auto' }}>
+        <Layout.Content className={globalConfig.theme.scrollRootClassName} style={{ padding: 16, overflow: 'auto', position: 'relative' }}>
           {children}
         </Layout.Content>
       </Layout>
