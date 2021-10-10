@@ -13,7 +13,7 @@ declare type PaginationReq<T> = {
   pageNum: number;
 } & T;
 
-declare type PaginationRes<T> = {
+declare type PaginationRes<T, O = {}> = {
   list: T[];
   /** 总条数 */
   total: number;
@@ -25,5 +25,5 @@ declare type PaginationRes<T> = {
   pages: number;
   /** 是否最后一页 */
   isLastPage: boolean;
-};
+} & O;
 

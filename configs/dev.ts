@@ -3,7 +3,7 @@ import common from './common';
 
 const dev: GlobalConfigProps = {
   ...common,
-  testEnv: 'dev',
+  baseUrl: 'TODO:// dev/',
 };
 
 export default dev;

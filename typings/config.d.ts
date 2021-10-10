@@ -23,7 +23,8 @@ export interface CommonConfigProps {
 }
 
 export interface EvnConfigProps {
-  testEnv: string;
+  /** 接口地址 */
+  baseUrl: string;
 }
 
 export interface GlobalConfigProps extends CommonConfigProps, EvnConfigProps {}
