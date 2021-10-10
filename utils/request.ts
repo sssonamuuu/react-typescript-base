@@ -78,7 +78,7 @@ export default {
   },
   pagination<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
     return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: PaginationReq<D> })) => {
-      const _data = mergeParam({ url, method: 'POST' }, option, param);
+      const _data = mergeParam({ url, method: 'POST', data: {} }, option, param);
       _data.data.pageSize ??= DEFAULT_PAGESIZE;
       return request<PaginationRes<R>>(_data);
     };
