@@ -98,6 +98,7 @@ export const navigation = {
   replace,
   open,
   formatUrl,
+  back: history.goBack,
   findCurrentRoute,
 };
 
