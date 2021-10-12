@@ -45,7 +45,6 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     const current = fetchId.current;
     setOptions([]);
     setSearching(true);
-    console.log(11111, search);
     remoteLoadData?.(search).then(res => {
       if (current === fetchId.current) {
         setOptions(res.map(item => ({ label: item[remoteDataLabel] ?? item[remoteDataValue] as any, value: item[remoteDataValue] as any, props: item })));
