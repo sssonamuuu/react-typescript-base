@@ -54,7 +54,7 @@ export default function useRequest<U, T> (
       cancelled: false,
       data: defaultValue,
       error: null,
-      placeholder: manual ? null : new Incorrect(errorCode.loading.code),
+      placeholder: !manual || defaultLoading ? new Incorrect(errorCode.loading.code) : null,
     },
   });
   const [fetches, setFetches] = useState({ ...fetchesRef.current });
