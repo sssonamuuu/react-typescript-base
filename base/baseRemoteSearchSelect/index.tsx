@@ -15,6 +15,8 @@ export interface BaseRemoteSearchSelectProps<T, R> extends
   remotePendding?: string;
   onChange?(value: T, item: R): void;
   onChange? (value?: T, item?: R): void;
+  /** 默认查询字符串，用于回显查询 */
+  defaultSearchString?: string;
 }
 
 export default function BaseRemoteSearchSelect <T extends SelectValue = SelectValue, R extends object = {}> ({
@@ -24,29 +26,29 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
   remoteDataValue = 'value' as any,
   value,
   onChange,
+  defaultSearchString = '',
   ...props
 }: BaseRemoteSearchSelectProps<T, R>) {
   const [searching, setSearching] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
   const [options, setOptions] = useState<{ label: string; value: string; props: R }[]>([]);
   const timmer = useRef<NodeJS.Timeout>();
-  const search = useRef('');
+  const isFirst = useRef(true);
   const fetchId = useRef(0);
 
   useEffect(() => {
-    search.current = '';
     setCurrentValue(value);
   }, [value]);
 
-  const loadData = useMemo(() => debounce(() => {
+  const loadData = useMemo(() => debounce((search: string) => {
     fetchId.current += 1;
     const current = fetchId.current;
     setOptions([]);
     setSearching(true);
-
-    remoteLoadData?.(search.current).then(res => {
+    console.log(11111, search);
+    remoteLoadData?.(search).then(res => {
       if (current === fetchId.current) {
-        setOptions(res.map(item => ({ label: item[remoteDataLabel] as any, value: item[remoteDataValue] as any, props: item })));
+        setOptions(res.map(item => ({ label: item[remoteDataLabel] ?? item[remoteDataValue] as any, value: item[remoteDataValue] as any, props: item })));
         setSearching(false);
       }
     }).catch(() => {
@@ -66,17 +68,12 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     fetchId.current = 0;
     setCurrentValue(void 0);
     _onChange?.(void 0);
-    search.current = '';
-    !remotePendding && loadData();
+    !remotePendding && loadData(isFirst.current ? defaultSearchString : '');
+    isFirst.current = false;
     return () => {
       clearTimeout(timmer.current!);
     };
   }, [remotePendding, remoteLoadData]);
-
-  function onSearch (value: string) {
-    search.current = value;
-    loadData();
-  }
 
   if (remotePendding) {
     return <Select<any> {...props} value={remotePendding} disabled />;
@@ -89,7 +86,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
       suffixIcon={searching ? <LoadingOutlined /> : void 0}
       notFoundContent={searching ? <Spin size="small" style={{ margin: '10px auto', display: 'block' }} /> : void 0}
       options={options}
-      onSearch={onSearch}
+      onSearch={loadData}
       {...props}
       value={currentValue}
       onChange={_onChange} />
