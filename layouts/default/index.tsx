@@ -4,12 +4,15 @@ import globalStyle from 'index.less';
 import Header from './Header';
 import Menu from './Menu';
 import globalConfig from 'configs';
+import usePageConfig from 'hooks/usePageConfig';
 
 export default function LayoutPage ({ children }: PropsWithChildren<{}>) {
+  const { disablePageScroll, enablePageScroll } = usePageConfig({});
+
   /** 使用了 layout 使用局部滚动，隐藏全局滚动 */
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    () => document.body.style.overflow = 'auto';
+    disablePageScroll();
+    () => enablePageScroll();
   }, []);
 
   return (
@@ -17,7 +20,7 @@ export default function LayoutPage ({ children }: PropsWithChildren<{}>) {
       <Header />
       <Layout>
         <Menu />
-        <Layout.Content className={globalConfig.theme.scrollRootClassName} style={{ padding: 16, overflow: 'auto' }}>
+        <Layout.Content className={globalConfig.theme.scrollRootClassName} style={{ padding: 16, overflow: 'auto', position: 'relative' }}>
           {children}
         </Layout.Content>
       </Layout>

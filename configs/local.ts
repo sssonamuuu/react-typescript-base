@@ -3,7 +3,7 @@ import common from './common';
 
 const local: GlobalConfigProps = {
   ...common,
-  testEnv: 'local',
+  baseUrl: 'TODO:// local/',
 };
 
 export default local;

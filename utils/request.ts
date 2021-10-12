@@ -4,6 +4,7 @@ import { errorCode } from 'datas/enums';
 import { message } from 'antd';
 import qs from 'qs';
 import { DEFAULT_PAGESIZE } from 'datas/consts';
+import config from 'configs';
 
 interface RequestModel extends AxiosRequestConfig {
   /** 默认错误会进行 `message.error` 提示，是否禁用 */
@@ -17,8 +18,9 @@ interface ResponseModel<T> {
   code: number;
   data: T;
   message: string;
-  success: boolean;
 }
+
+axios.defaults.baseURL = config.baseUrl;
 
 function request <T> ({
   disableErrorMessage,
@@ -41,12 +43,15 @@ function request <T> ({
     option.data = qs.stringify(option.data);
   }
 
+  option.headers = { ...option.headers };
+
   return axios
     .request<ResponseModel<T>>(option)
     .then(({ data }) => {
+      /** 拦截处理数据 */
       data = intercept ? intercept(data) : data;
 
-      if (data.success) {
+      if (data.code === 20000) {
         return data.data;
       }
 
@@ -54,6 +59,7 @@ function request <T> ({
     }).catch(e => {
       const error = Incorrect.formatTryCatchError(e);
       !disableErrorMessage && message.error(error.messge);
+      // TODO 部分特殊 `code` 处理
       throw error;
     });
 }
@@ -76,11 +82,11 @@ export default {
     return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: D })) =>
       request<R>(mergeParam({ url, method: 'POST' }, option, param));
   },
-  pagination<R = void, D = void, P = void>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
+  pagination<R = void, D = void, P = void, O = {}>(url: string, option: Omit<RequestModel, OPTION_DISABLED_KEYS> = {}) {
     return (param: Omit<RequestModel, PARAMS_DISABLED_KEYS> & (P extends null | void | undefined ? {} : { params: P }) & (D extends null | void | undefined ? {} : { data: PaginationReq<D> })) => {
-      const _data = mergeParam({ url, method: 'POST' }, option, param);
+      const _data = mergeParam({ url, method: 'POST', data: {} }, option, param);
       _data.data.pageSize ??= DEFAULT_PAGESIZE;
-      return request<PaginationRes<R>>(_data);
+      return request<PaginationRes<R, O>>(_data);
     };
   },
 };

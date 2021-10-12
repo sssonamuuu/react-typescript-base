@@ -3,7 +3,7 @@ import common from './common';
 
 const pro: GlobalConfigProps = {
   ...common,
-  testEnv: 'pro',
+  baseUrl: 'TODO:// pro/',
 };
 
 export default pro;

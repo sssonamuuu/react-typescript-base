@@ -13,6 +13,18 @@ declare namespace IndexLessNamespace {
     fcWhite: string;
     flex1: string;
     flexShrink0: string;
+    formLabelFontMaxLen10: string;
+    formLabelFontMaxLen2: string;
+    formLabelFontMaxLen3: string;
+    formLabelFontMaxLen4: string;
+    formLabelFontMaxLen5: string;
+    formLabelFontMaxLen6: string;
+    formLabelFontMaxLen7: string;
+    formLabelFontMaxLen8: string;
+    formLabelFontMaxLen9: string;
+    formModal: string;
+    formOffsetBox: string;
+    formPageCenter: string;
     fs12: string;
     fs13: string;
     fs14: string;
