@@ -7,7 +7,7 @@ interface UseRequestOption<U, T> {
   params?: U;
   /** 是否手动触发run */
   manual?: boolean;
-  /** 如果是 manual，默认 false， 否则 默认 true */
+  /** 默认 true */
   defaultLoading?: boolean;
   /** 同于同个请求不同参数的情况 */
   fetchKey?(param: U): string | number;
@@ -46,15 +46,15 @@ const DEFALUT_KEY = '__FETCH_DEFAULT__';
  */
 export default function useRequest<U, T> (
   fn: (param: U) => Promise<T>,
-  { params, manual = false, fetchKey, defaultLoading, defaultValue = {} as T }: UseRequestOption<U, T> = {},
+  { params, manual = false, fetchKey, defaultLoading = true, defaultValue = {} as T }: UseRequestOption<U, T> = {},
 ) {
   const fetchesRef = useRef<FetchesProps<T>>({
     [DEFALUT_KEY]: {
-      loading: defaultLoading ?? !manual,
+      loading: defaultLoading,
       cancelled: false,
       data: defaultValue,
       error: null,
-      placeholder: !manual || defaultLoading ? new Incorrect(errorCode.loading.code) : null,
+      placeholder: defaultLoading ? new Incorrect(errorCode.loading.code) : null,
     },
   });
   const [fetches, setFetches] = useState({ ...fetchesRef.current });
