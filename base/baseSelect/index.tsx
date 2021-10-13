@@ -1,4 +1,4 @@
-import globalStyle from 'index.less';
+import globalStyle from 'index.module.less';
 import { LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import { Input, Select, SelectProps } from 'antd';
 import { SelectValue } from 'antd/lib/select';
@@ -19,6 +19,8 @@ export interface BaseSelectProps<T> extends Omit<SelectProps<T>, 'children'> {
   remoteLoadingText?: string;
   /** 加载异步数据失败的文本提示 */
   remoteErrorText?: string;
+  /** 异步加载数据在条件不足时，禁用显示文案 */
+  remotePendding?: string;
 }
 
 export default function BaseSelect <T extends SelectValue = SelectValue> ({
@@ -26,6 +28,7 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   all = true,
   options = [],
   remoteLoadData,
+  remotePendding,
   remoteLoadingText = '数据加载中，请稍后...',
   remoteErrorText = '加载失败，请重试',
   ...props
@@ -46,18 +49,24 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
     }
   }
 
-  useEffect(loadData, []);
+  useEffect(() => {
+    !remotePendding && loadData();
+  }, [remotePendding]);
 
   useEffect(() => {
     !remoteLoadData && `${options}` !== `${remoteData}` && setRemoteData(options);
   }, [options]);
+
+  if (remotePendding) {
+    return <Select<any> {...props} value={remotePendding} disabled />;
+  }
 
   if (status !== 'loaded') {
     return (
       <Input
         disabled
         placeholder={status === 'loading' ? remoteLoadingText : remoteErrorText}
-        style={{ width: 'auto', ...props.style }}
+        style={props.style}
         addonAfter={status === 'error' ? <SyncOutlined className={globalStyle.cup} onClick={loadData} /> : void 0}
         suffix={status === 'loading' ? <LoadingOutlined /> : void 0} />
     );
