@@ -2,7 +2,7 @@ import globalStyle from 'index.module.less';
 import { LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import { Input, Select, SelectProps } from 'antd';
 import { SelectValue } from 'antd/lib/select';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export type OptionType<T> = SelectProps<T>['options'];
 
@@ -21,6 +21,8 @@ export interface BaseSelectProps<T> extends Omit<SelectProps<T>, 'children'> {
   remoteErrorText?: string;
   /** 异步加载数据在条件不足时，禁用显示文案 */
   remotePendding?: string;
+  /** 异步加载的依赖，如果变化需要重新加载 */
+  remoteDepends?: any;
 }
 
 export default function BaseSelect <T extends SelectValue = SelectValue> ({
@@ -31,10 +33,12 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
   remotePendding,
   remoteLoadingText = '数据加载中，请稍后...',
   remoteErrorText = '加载失败，请重试',
+  remoteDepends,
   ...props
 }: BaseSelectProps<T>) {
   const [status, setStatus] = useState<'loading'| 'loaded'| 'error'>(remoteLoadData ? 'loading' : 'loaded');
   const [remoteData, setRemoteData] = useState<OptionType<T>>([]);
+  const remoteDependsRef = useRef(remoteDepends);
 
   function loadData () {
     if (remoteLoadData) {
@@ -51,7 +55,15 @@ export default function BaseSelect <T extends SelectValue = SelectValue> ({
 
   useEffect(() => {
     !remotePendding && loadData();
-  }, [remotePendding]);
+  }, []);
+
+  useEffect(() => {
+    if (JSON.stringify(remoteDependsRef.current) !== JSON.stringify(remoteDepends)) {
+      remoteDependsRef.current = remoteDepends;
+      props.onChange?.(void 0 as any, void 0 as any);
+      !remotePendding && loadData();
+    }
+  }, [remotePendding, remoteDepends]);
 
   useEffect(() => {
     !remoteLoadData && `${options}` !== `${remoteData}` && setRemoteData(options);
