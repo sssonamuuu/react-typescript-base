@@ -1,4 +1,4 @@
-import globalStyle from 'index.module.less';
+import globalStyle from 'index.less';
 import { LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import { Input, Select, SelectProps } from 'antd';
 import { SelectValue } from 'antd/lib/select';
