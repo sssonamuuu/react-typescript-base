@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SelectProps, Spin, Select } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SelectValue } from 'antd/lib/select';
 import debounce from 'lodash/debounce';
-
 export interface BaseRemoteSearchSelectProps<T, R> extends
-  Omit<SelectProps<T>, 'children' | 'options' | 'filterOption' | 'showSearch' | 'onSearch' | 'onChange'> {
+  Omit<SelectProps<T>, 'children' | 'options' | 'filterOption' | 'suffixIcon' | 'showSearch' | 'onSearch' | 'onChange' | 'notFoundContent'> {
   remoteLoadData?(search?: string): Promise<R[]>;
   /** 默认 label */
   remoteDataLabel?: keyof R;
@@ -15,6 +14,8 @@ export interface BaseRemoteSearchSelectProps<T, R> extends
   remotePendding?: string;
   onChange?(value: T, item: R): void;
   onChange? (value?: T, item?: R): void;
+  /** 异步加载的依赖，如果变化需要重新加载 */
+  remoteDepends?: any;
   /** 默认查询字符串，用于回显查询 */
   defaultSearchString?: string;
 }
@@ -24,6 +25,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
   remotePendding,
   remoteDataLabel = 'label' as any,
   remoteDataValue = 'value' as any,
+  remoteDepends,
   value,
   onChange,
   defaultSearchString = '',
@@ -33,6 +35,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
   const [currentValue, setCurrentValue] = useState(value);
   const [options, setOptions] = useState<{ label: string; value: string; props: R }[]>([]);
   const timmer = useRef<NodeJS.Timeout>();
+  const remoteDependsRef = useRef(remoteDepends);
   const isFirst = useRef(true);
   const fetchId = useRef(0);
 
@@ -40,7 +43,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     setCurrentValue(value);
   }, [value]);
 
-  const loadData = useMemo(() => debounce((search: string) => {
+  const loadData = debounce((search: string) => {
     fetchId.current += 1;
     const current = fetchId.current;
     setOptions([]);
@@ -53,7 +56,7 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
     }).catch(() => {
       setSearching(false);
     });
-  }, 800), [remoteLoadData]);
+  }, 800);
 
   function _onChange (value?: T, option?: any) {
     if (value !== currentValue) {
@@ -63,16 +66,19 @@ export default function BaseRemoteSearchSelect <T extends SelectValue = SelectVa
   }
 
   useEffect(() => {
-    setSearching(false);
-    fetchId.current = 0;
-    setCurrentValue(void 0);
-    _onChange?.(void 0);
-    !remotePendding && loadData(isFirst.current ? defaultSearchString : '');
-    isFirst.current = false;
+    if (isFirst.current || JSON.stringify(remoteDependsRef.current) !== JSON.stringify(remoteDepends)) {
+      isFirst.current = false;
+      remoteDependsRef.current = remoteDepends;
+      setSearching(false);
+      fetchId.current = 0;
+      setCurrentValue(void 0);
+      _onChange?.(void 0);
+      !remotePendding && loadData(isFirst.current ? defaultSearchString : '');
+    }
     return () => {
       clearTimeout(timmer.current!);
     };
-  }, [remotePendding, remoteLoadData]);
+  }, [remotePendding, remoteDepends]);
 
   if (remotePendding) {
     return <Select<any> {...props} value={remotePendding} disabled />;
