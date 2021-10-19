@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { SelectValue } from 'antd/lib/select';
 import debounce from 'lodash/debounce';
 export interface BaseRemoteSearchSelectProps<T, R> extends
-  Omit<SelectProps<T>, 'children' | 'options' | 'filterOption' | 'suffixIcon' | 'showSearch' | 'onSearch' | 'onChange' | 'notFoundContent'> {
+  Omit<SelectProps<T>, 'children' | 'options' | 'filterOption' | 'onClear' | 'suffixIcon' | 'showSearch' | 'onSearch' | 'onChange' | 'notFoundContent'> {
   remoteLoadData?(search?: string): Promise<R[]>;
   /** 默认 label */
   remoteDataLabel?: keyof R;
@@ -88,6 +88,7 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
     <Select
       filterOption={false}
       showSearch
+      onClear={() => loadData('')}
       suffixIcon={searching ? <LoadingOutlined /> : void 0}
       notFoundContent={searching ? <Spin size="small" style={{ margin: '10px auto', display: 'block' }} /> : void 0}
       options={options}
