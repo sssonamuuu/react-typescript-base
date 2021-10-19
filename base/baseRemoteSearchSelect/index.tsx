@@ -20,7 +20,7 @@ export interface BaseRemoteSearchSelectProps<T, R> extends
   defaultSearchString?: string;
 }
 
-export default function BaseRemoteSearchSelect <T extends SelectValue = SelectValue, R extends object = {}> ({
+export default function BaseRemoteSearchSelect <R extends object = {}, T extends SelectValue = SelectValue> ({
   remoteLoadData,
   remotePendding,
   remoteDataLabel = 'label' as any,
