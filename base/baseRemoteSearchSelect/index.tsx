@@ -67,13 +67,13 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
 
   useEffect(() => {
     if (isFirst.current || JSON.stringify(remoteDependsRef.current) !== JSON.stringify(remoteDepends)) {
-      isFirst.current = false;
-      remoteDependsRef.current = remoteDepends;
       setSearching(false);
       fetchId.current = 0;
       setCurrentValue(void 0);
       _onChange?.(void 0);
       !remotePendding && loadData(isFirst.current ? defaultSearchString : '');
+      isFirst.current = false;
+      remoteDependsRef.current = remoteDepends;
     }
     return () => {
       clearTimeout(timmer.current!);
