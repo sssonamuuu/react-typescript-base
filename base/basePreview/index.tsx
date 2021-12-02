@@ -6,7 +6,7 @@ import keyboardEventUtils from 'utils/keyboardEventUtils';
 import { Spin } from 'antd';
 import { getFileIconType } from 'base/baseAttachment';
 
-export type BaseFileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx' | 'pdf' | 'zip' | 'unknown';
+export type BaseFileIconType = 'img' | 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx' | 'pdf' | 'zip' | 'video' | 'audio' | 'unknown';
 
 export interface BasePreviewItemProps {
   key: string;
@@ -19,7 +19,7 @@ export interface BasePreviewItemProps {
   type?: BaseFileIconType;
 }
 
-interface BasePreviewItemWithInfoProps extends BasePreviewItemProps {
+interface PreviewItemWithInfoProps extends BasePreviewItemProps {
   status: 'loading' | 'loaded' | 'error';
   type: BaseFileIconType;
 }
@@ -30,7 +30,7 @@ interface BasePreviewContextProps {
   show(key: string): void;
 }
 
-const BasePreviewContext = React.createContext<BasePreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0 });
+const PreviewContext = React.createContext<BasePreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0 });
 
 interface BasePreviewConsumerProps extends Omit<BasePreviewItemProps, 'key'> {
   children: React.ReactElement;
@@ -38,7 +38,7 @@ interface BasePreviewConsumerProps extends Omit<BasePreviewItemProps, 'key'> {
 
 export function BasePreviewConsumer ({ children, ...props }: BasePreviewConsumerProps) {
   const key = useMemo(() => Math.random().toString(16), []);
-  const context = useContext(BasePreviewContext);
+  const context = useContext(PreviewContext);
 
   useEffect(() => {
     context.add({ ...props, key });
@@ -55,16 +55,16 @@ export function BasePreviewConsumer ({ children, ...props }: BasePreviewConsumer
   });
 }
 
-interface PreviewProviderProps {}
+interface BasePreviewProviderProps {}
 
 /** 点击如果在当前class包含内容内，不进行关闭 */
 const CONTENT_CLASSNAME = 'preview-content-classname-not-close';
 
-export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProviderProps>) {
+export function BasePreviewProvider ({ children }: PropsWithChildren<BasePreviewProviderProps>) {
   const { disablePageScroll, enablePageScroll } = usePageConfig({});
   const [showDesc, setShowDesc] = useState(true);
   const [show, setShow] = useState(false);
-  const [list, setList] = useState<BasePreviewItemWithInfoProps[]>([]);
+  const [list, setList] = useState<PreviewItemWithInfoProps[]>([]);
   const [currentKey, setCurrentKey] = useState<string>();
 
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -78,9 +78,10 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
     return ~index ? index : 0;
   }, [orderedList, currentKey]);
 
-  const current = useMemo<BasePreviewItemWithInfoProps | void>(() => orderedList[currentIndex], [orderedList, currentIndex]);
+  const current = useMemo<PreviewItemWithInfoProps | void>(() => orderedList[currentIndex], [orderedList, currentIndex]);
 
   function onClose () {
+    [...document.querySelectorAll<HTMLVideoElement>('.js-base-preview-video')].forEach(item => item.pause());
     setShow(false);
     setShowDesc(true);
     enablePageScroll();
@@ -88,12 +89,14 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
 
   function onPrev () {
     if (currentIndex > 0) {
+      document.querySelector<HTMLVideoElement>(`.js-base-preview-video-${currentIndex}`)?.pause();
       setCurrentKey(orderedList[currentIndex - 1].key);
     }
   }
 
   function onNext () {
     if (currentIndex < orderedList.length - 1) {
+      document.querySelector<HTMLVideoElement>(`.js-base-preview-video-${currentIndex}`)?.pause();
       setCurrentKey(orderedList[currentIndex + 1].key);
     }
   }
@@ -158,7 +161,7 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
   }
 
   return (
-    <BasePreviewContext.Provider value={{
+    <PreviewContext.Provider value={{
       add: item => {
         const type = item.type || (item.ext ? getFileIconType(item.ext) : getFileIconType(item.src));
         setList(prev => [...prev, { ...item, status: type === 'img' ? 'loading' : 'loaded', type }]);
@@ -179,7 +182,7 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
               width: `${orderedList.length * 100}%`,
               marginLeft: currentMarginLeft,
             }}>
-            {orderedList.map(item => (
+            {orderedList.map((item, index) => (
               <li key={item.key} className={style.item} onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
                 {(() => {
                   if (item.type === 'img') {
@@ -197,6 +200,14 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
 
                         {item.status === 'error' ? <img className={CONTENT_CLASSNAME} onDragStart={e => e.preventDefault()} src={require('../../images/file-icon/file-img-fill.svg')} width={150} /> : null}
                       </React.Fragment>
+                    );
+                  }
+
+                  if (item.type === 'video' || item.type === 'audio') {
+                    return (
+                      <video className={`${CONTENT_CLASSNAME} js-base-preview-video js-base-preview-video-${index}`} style={{ maxWidth: '100%', maxHeight: '100%' }} controls autoPlay>
+                        <source src={item.src} />
+                      </video>
                     );
                   }
 
@@ -227,6 +238,6 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<PreviewProv
           </div>
         </div>
       ) : null}
-    </BasePreviewContext.Provider>
+    </PreviewContext.Provider>
   );
 }

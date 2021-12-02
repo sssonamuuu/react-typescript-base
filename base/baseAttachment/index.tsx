@@ -23,14 +23,22 @@ export interface BaseAttachmentProps extends Pick<BasePreviewItemProps, 'ext' | 
 }
 
 export function getAbsoluteSrc (src?: string) {
-  return !src ? '' : /^(https?|blob|data):/.test(src) ? src : `TODO://绝对地址/${src}`;
+  return !src ? '' : /^(https?|blob|data):/.test(src) ? src : `TODO:// 图片绝对地址${src.replace(/^\//g, '')}`;
 }
 
 export function getFileIconType (src: string = ''): BaseFileIconType {
-  const ext = (src.match(/\.\w+(?=$|\?)/)?.[0] || '').replace(/^\./, '');
+  const ext = (src.match(/\.[\w\d]+(?=$|\?)/)?.[0] || '').slice(1);
 
   if (/jpe?g|png|gif|tiff|pjp|jfif|svgz?|bmp|webp|ico|xbm|dib|tif|pjpeg|avif/.test(ext)) {
     return 'img';
+  }
+
+  if (/ogm|wmv|mpg|webm|ogv|mov|asx|mpeg|mp4|avi|m4v/.test(ext)) {
+    return 'video';
+  }
+
+  if (/opus|flac|webm|weba|wav|ogg|m4a|mp3|oga|mid|amr|aiff|au|aac|wma/.test(ext)) {
+    return 'audio';
   }
 
   if (/docx?|pptx?|xlsx?|pdf|zip/.test(ext)) {
@@ -51,7 +59,7 @@ export default function BaseAttachment ({
   height = size,
   order,
   ext,
-  showTitle,
+  showTitle = true,
   type = ext ? getFileIconType(`.${ext}`) : getFileIconType(src) || 'unknow',
   className = '',
   children,
