@@ -1,5 +1,5 @@
 import style from './index.less';
-import React, { PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import usePageConfig from 'hooks/usePageConfig';
 import { ArrowLeftOutlined, ArrowRightOutlined, CloseOutlined } from '@ant-design/icons';
 import keyboardEventUtils from 'utils/keyboardEventUtils';
@@ -28,15 +28,17 @@ interface BasePreviewContextProps {
   add(item: BasePreviewItemProps): void;
   remove(key: string): void;
   show(key: string): void;
+  update(key: string, item: BasePreviewItemProps): void;
 }
 
-const PreviewContext = React.createContext<BasePreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0 });
+const PreviewContext = React.createContext<BasePreviewContextProps>({ add: () => void 0, remove: () => void 0, show: () => void 0, update: () => void 0 });
 
 interface BasePreviewConsumerProps extends Omit<BasePreviewItemProps, 'key'> {
   children: React.ReactElement;
 }
 
 export function BasePreviewConsumer ({ children, ...props }: BasePreviewConsumerProps) {
+  const lastProps = useRef(props);
   const key = useMemo(() => Math.random().toString(16), []);
   const context = useContext(PreviewContext);
 
@@ -46,6 +48,13 @@ export function BasePreviewConsumer ({ children, ...props }: BasePreviewConsumer
       context.remove(key);
     };
   }, []);
+
+  useEffect(() => {
+    if (JSON.stringify(lastProps.current) !== JSON.stringify(props)) {
+      context.update(key, { ...props, key });
+      lastProps.current = props;
+    }
+  }, [props]);
 
   return React.cloneElement(children, {
     onClick: () => {
@@ -171,6 +180,13 @@ export function BasePreviewProvider ({ children }: PropsWithChildren<BasePreview
         disablePageScroll();
         setCurrentKey(key);
         setShow(true);
+      },
+      update: (key, val) => {
+        setList(list.map(item => item.key === key ? {
+          ...item,
+          ...val,
+          type: val.type || (val.ext ? getFileIconType(val.ext) : getFileIconType(val.src)),
+        } : item));
       },
     }}>
       {children}
