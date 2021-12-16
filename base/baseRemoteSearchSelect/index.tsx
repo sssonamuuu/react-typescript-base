@@ -73,6 +73,7 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
       setSearching(false);
       fetchId.current = 0;
       setCurrentValue(void 0);
+      setOptions([]);
       _onChange?.(void 0);
       !remotePendding && loadData('');
       remoteDependsRef.current = remoteDepends;
