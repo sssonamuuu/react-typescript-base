@@ -4,6 +4,7 @@ declare namespace IndexLessNamespace {
     ctrl: string;
     item: string;
     upload: string;
+    uploadProcess: string;
   }
 }
 

@@ -2,6 +2,7 @@ import globalStyle from 'index.less';
 import style from './index.less';
 import React, { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
+import fileServices from 'services/fileServices';
 import { message } from 'antd';
 import Incorrect from 'classes/Incorrect';
 import BaseAttachment from 'base/baseAttachment';
@@ -9,6 +10,8 @@ import BaseAttachment from 'base/baseAttachment';
 export interface DataItem {
   url: string;
   name: string;
+  /** 上传进度，百分比的进度条 */
+  uploadProcess?: string;
   /** 如果没有 file 表示为回显数据，不需要上传 */
   file?: File;
 }
@@ -21,9 +24,9 @@ interface BaseFileUploadProps {
   /** 大小限制, 默认10M，单位 M */
   size?: number;
   /** 每一项的宽度，默认 100 */
-  width?: number;
+  width?: number | string;
   /** 每一项的高度，默认 100 */
-  height?: number;
+  height?: number | string;
   /** 默认错误会进行 `message.error` 提示，false 表示不提示 */
   errorMessage?: false | string;
   accept?: string;
@@ -50,6 +53,8 @@ const BaseFileUpload = forwardRef(({
   /** 在上传的回调中 无法获取到最新的 datas */
   const datasRef = useRef<DataItem[]>([]);
   const [datas, setDatas] = useState<DataItem[]>([]);
+  /** 仅上传中显示上传进度 */
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (`${datasRef.current.map(item => item.url)}` !== `${value?.map(item => typeof item === 'string' ? item : item.url)}`) {
@@ -108,22 +113,39 @@ const BaseFileUpload = forwardRef(({
   }
 
   async function upload () {
+    setUploading(true);
     try {
       /** 仅针对有file字段的进行上传 */
       await Promise.all(datas.map((item, index) => {
         if (!item.file) {
+          const currentData = datasRef.current;
+          currentData[index].uploadProcess = '100%';
+          setDatas([...currentData]);
           return Promise.resolve();
         }
-        return Promise.resolve('TODO:// 图片上传')
+        return fileServices.uploadFile({
+          disableErrorMessage: true,
+          data: {
+            file: item.file,
+          },
+          onUploadProgress (res) {
+            const currentData = datasRef.current;
+            const pre = res.loaded / res.total * 100;
+            currentData[index].uploadProcess = `${pre.toFixed(2)}%`;
+            setDatas([...currentData]);
+          },
+        })
           .then(res => {
             const currentData = datasRef.current;
-            currentData[index] = { name: res, url: res };
+            currentData[index] = { name: res.name, url: res.url, uploadProcess: '100%' };
             onChange?.(currentData.map(item => item.url));
             setDatas([...currentData]);
           });
       }));
+      setUploading(false);
       return datasRef.current.reduce<[string[], string[]]>((p, c) => [p[0].concat(c.url), p[1].concat(c.name)], [[], []]);
     } catch (e) {
+      setUploading(false);
       errorMessage && message.error(errorMessage);
       /** 抛出错误，让后续操作终止 */
       throw Incorrect.formatTryCatchError(e);
@@ -141,11 +163,13 @@ const BaseFileUpload = forwardRef(({
             className={style.item}
             width={width}
             height={height}
+            showTitle={!uploading}
             src={item.url}
             order={index}
             title={item.name}
             ext={item.file?.name.split('.').pop()}>
-            {!disabled ? (
+            {uploading ? <div className={style.uploadProcess}>{item.uploadProcess || '0%'}</div> : null}
+            {!disabled && !uploading ? (
               <div className={style.ctrl}>
                 <span onClick={() => onDelete(index)}>删除</span>
                 <label>
