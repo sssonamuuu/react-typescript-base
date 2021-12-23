@@ -66,7 +66,7 @@ interface BaseTableProps<T = unknown> extends Omit<TableProps<T>, 'children' | '
    *  loading dataSource 无效
    *  pagination 回合并原有字段
    */
-  request?: [request: FetchesItemProps<PaginationRes<T>>, onPaginationChange: ((pagination: PaginationReq<{}>) => void)];
+  request?: [request: FetchesItemProps<any, PaginationRes<T>>, onPaginationChange: ((pagination: PaginationReq<{}>) => void)];
 }
 
 function formatColumns<T> (

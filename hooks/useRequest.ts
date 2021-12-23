@@ -14,8 +14,9 @@ interface UseRequestOption<U, T> {
   defaultValue?: T;
 }
 
-export interface FetchesItemProps<T> {
+export interface FetchesItemProps<U, T> {
   data: T;
+  params: U;
   /** 多个带 `key` 请求，只要有一个 `loading` 即为 `loading` */
   loading: boolean;
   /** 多个带 `key` 请求，无效，请使用 `fetches[key].loading` */
@@ -31,8 +32,8 @@ export interface FetchesItemProps<T> {
   placeholder: Incorrect | null;
 }
 
-interface FetchesProps<T> {
-  [key: string]: undefined | FetchesItemProps<T>;
+interface FetchesProps<U, T> {
+  [key: string]: undefined | FetchesItemProps<U, T>;
 }
 
 const DEFALUT_KEY = '__FETCH_DEFAULT__';
@@ -48,12 +49,13 @@ export default function useRequest<U, T> (
   fn: (param: U) => Promise<T>,
   { params, manual = false, fetchKey, defaultLoading = true, defaultValue = {} as T }: UseRequestOption<U, T> = {},
 ) {
-  const fetchesRef = useRef<FetchesProps<T>>({
+  const fetchesRef = useRef<FetchesProps<U, T>>({
     [DEFALUT_KEY]: {
       loading: defaultLoading,
       cancelled: false,
       data: defaultValue,
       error: null,
+      params: {} as U,
       placeholder: defaultLoading ? new Incorrect(errorCode.loading.code) : null,
     },
   });
@@ -63,6 +65,7 @@ export default function useRequest<U, T> (
     fetchesRef.current[key] = {
       loading: false,
       cancelled: true,
+      params: fetchesRef.current[key]?.params ?? {} as U,
       error: fetchesRef.current[key]?.error ?? null,
       data: fetchesRef.current[key]?.data ?? {} as T,
       placeholder: fetchesRef.current[key]?.placeholder ?? null,
@@ -95,6 +98,7 @@ export default function useRequest<U, T> (
       loading: true,
       cancelled: false,
       error: null,
+      params: currentParams,
       data: fetchesRef.current[key]?.data ?? {} as T,
       placeholder: new Incorrect(errorCode.loading.code),
     };
@@ -106,10 +110,12 @@ export default function useRequest<U, T> (
             data,
             loading: false,
             error: null,
+            params: currentParams,
             cancelled: fetchesRef.current[key]?.cancelled ?? false,
             placeholder: null,
           };
-          setFetches({ ...fetchesRef.current });
+          /** 延迟执行，避免外部的 promise 后执行 */
+          setTimeout(() => setFetches({ ...fetchesRef.current }), 0);
         }
         return data;
       }).catch(e => {
@@ -119,10 +125,12 @@ export default function useRequest<U, T> (
             data: fetchesRef.current[key]?.data ?? {} as T,
             loading: false,
             cancelled: false,
+            params: currentParams,
             error,
             placeholder: error,
           };
-          setFetches({ ...fetchesRef.current });
+          /** 延迟执行，避免外部的 promise 后执行 */
+          setTimeout(() => setFetches({ ...fetchesRef.current }), 0);
         }
         throw e;
       });
