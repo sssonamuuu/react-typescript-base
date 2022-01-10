@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SelectProps, Spin, Select } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SelectValue } from 'antd/lib/select';
@@ -33,24 +33,46 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
 }: BaseRemoteSearchSelectProps<T, R>) {
   const [searching, setSearching] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
-  const [options, setOptions] = useState<{ label: string; value: string; props: R }[]>([]);
+  const [options, setOptions] = useState<R[]>([]);
   const timmer = useRef<NodeJS.Timeout>();
   const remoteDependsRef = useRef(remoteDepends);
+  const [defaultOptions, setDefaultOptions] = useState<R[]>([]);
+  const searchRef = useRef('');
   const isFirst = useRef(true);
   const fetchId = useRef(0);
+  const showOptions = useMemo<{ label: string; value: string; props: R }[]>(() => {
+    if (searching) {
+      return [];
+    }
+    const optionsMap = options.reduce<{ [key: string]: boolean }>((p, c) => ({ ...p, [c[remoteDataValue] as any]: true }), {});
+    const res: R[] = [...options];
+    defaultOptions.forEach(item => {
+      if (
+        !optionsMap[item[remoteDataValue] as any] &&
+        (
+          !searchRef.current && item[remoteDataValue as any] === value ||
+          `${item[remoteDataLabel as any] || ''}`.includes(searchRef.current)
+        )
+      ) {
+        res.push(item);
+      }
+    });
+    return res.map(item => ({ label: item[remoteDataLabel] ?? item[remoteDataValue] as any, value: item[remoteDataValue] as any, props: item }));
+  }, [searching, defaultOptions, options, value]);
 
   useEffect(() => {
     setCurrentValue(value);
   }, [value]);
 
   const loadData = debounce((search: string) => {
+    searchRef.current = search;
     fetchId.current += 1;
     const current = fetchId.current;
     setOptions([]);
     setSearching(true);
     remoteLoadData?.(search).then(res => {
       if (current === fetchId.current) {
-        setOptions(res.map(item => ({ label: item[remoteDataLabel] ?? item[remoteDataValue] as any, value: item[remoteDataValue] as any, props: item })));
+        setOptions(res);
         setSearching(false);
       }
     }).catch(() => {
@@ -67,7 +89,8 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
 
   useEffect(() => {
     if (isFirst.current) {
-      !remotePendding && loadData(defaultSearchString);
+      !remotePendding && loadData('');
+      defaultSearchString && remoteLoadData?.(defaultSearchString).then(res => setDefaultOptions(res));
       isFirst.current = false;
     } else if (JSON.stringify(remoteDependsRef.current) !== JSON.stringify(remoteDepends)) {
       setSearching(false);
@@ -94,7 +117,7 @@ export default function BaseRemoteSearchSelect <R extends object = {}, T extends
       onClear={() => loadData('')}
       suffixIcon={searching ? <LoadingOutlined /> : void 0}
       notFoundContent={searching ? <Spin size="small" style={{ margin: '10px auto', display: 'block' }} /> : void 0}
-      options={options}
+      options={showOptions}
       onSearch={loadData}
       {...props}
       value={currentValue}
