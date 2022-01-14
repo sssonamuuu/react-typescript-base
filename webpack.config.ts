@@ -52,7 +52,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     cacheDirectory: path.join(__dirname, '.webpack-cache', ENV),
   },
   devtool: MODE === 'development' ? 'source-map' : void 0,
-  entry: { index: `${SRC_ROOT_DIR}/index.tsx` },
+  entry: { index: [`${SRC_ROOT_DIR}/index.tsx`].concat(MODE === 'development' ? 'antd/dist/antd.less' : []) },
   output: {
     publicPath: '/',
     path: path.join(__dirname, DIST_ROOT_DIR),
@@ -106,7 +106,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
   },
   module: {
     rules: [
-      {
+      MODE === 'development' ? {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
@@ -119,6 +119,13 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
           },
           { loader: 'ts-loader' },
         ],
+      } : {
+        test: /\.tsx?$/,
+        loader: 'esbuild-loader',
+        options: {
+          loader: 'tsx',
+          target: 'es2015',
+        },
       },
       {
         test: /\.less$/,
