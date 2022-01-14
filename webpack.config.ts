@@ -108,24 +108,24 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     rules: [
       MODE === 'development' ? {
         test: /\.tsx?$/,
+        loader: 'esbuild-loader',
+        options: {
+          loader: 'tsx',
+          target: 'es2015',
+        },
+      } : {
+        test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
-              plugins: MODE === 'development' ? [require.resolve('react-refresh/babel')] : [],
+              plugins: [require.resolve('react-refresh/babel')],
             },
           },
           { loader: 'ts-loader' },
         ],
-      } : {
-        test: /\.tsx?$/,
-        loader: 'esbuild-loader',
-        options: {
-          loader: 'tsx',
-          target: 'es2015',
-        },
       },
       {
         test: /\.less$/,
