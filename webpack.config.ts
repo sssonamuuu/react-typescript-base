@@ -121,7 +121,7 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
-              plugins: [require.resolve('react-refresh/babel')],
+              // plugins: [require.resolve('react-refresh/babel')],
             },
           },
           { loader: 'ts-loader' },
