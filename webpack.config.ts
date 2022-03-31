@@ -208,9 +208,6 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     hot: true,
     open: true,
     historyApiFallback: true,
-    contentBase: path.resolve(__dirname, DIST_ROOT_DIR),
-    overlay: { errors: true, warnings: false },
-    disableHostCheck: true,
   },
 };
 
