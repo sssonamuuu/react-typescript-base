@@ -5,7 +5,7 @@ import { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
 import { FetchesItemProps } from 'hooks/useRequest';
 import { isNullOrUndefined } from 'utils/dataTypeTools';
 import { DEFAULT_PAGESIZE, DEFAULT_STRING } from 'datas/consts';
-import { GetRowKey } from 'rc-table/lib/interface';
+import { GetRowKey } from 'antd/es/table/interface';
 
 interface BaseColumnType<T> extends Omit<ColumnType<T>, 'dataIndex' | 'ellipsis'> {
   dataIndex?: keyof T;

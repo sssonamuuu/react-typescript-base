@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import { InputProps, TextAreaProps } from 'antd/lib/input';
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import keyboardEventUtils from 'utils/keyboardEventUtils';
@@ -52,7 +52,7 @@ export default function BaseInput ({
   autoComplete = 'off',
   ...props
 }: BaseInputProps) {
-  const ref = useRef<Input>(null);
+  const ref = useRef<InputRef>(null);
   const isComposition = useRef(false);
   const lastValue = useRef(value);
   const [currentValue, setCurrentValue] = useState(lastValue.current);
