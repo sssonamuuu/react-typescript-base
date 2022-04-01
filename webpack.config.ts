@@ -88,7 +88,6 @@ const webpackConfig: webpack.Configuration & { devServer?: WebpackDevServer.Conf
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/),
 
     ...MODE === 'development' ? [
-      new webpack.HotModuleReplacementPlugin(),
       new ReactRefreshWebpackPlugin({ overlay: false }),
     ] : [
       new MiniCssExtractPlugin({
